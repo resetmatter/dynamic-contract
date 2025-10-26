@@ -1693,10 +1693,7 @@
                 }
             });
 
-            localStorage.setItem('contractData', JSON.stringify(contractData));
-            showSaveIndicator();
-
-            // Also sync to Gist if we have one configured
+            // Only save to Gist, not localStorage
             syncToGist(contractData);
         }
 
@@ -1714,8 +1711,15 @@
             const token = localStorage.getItem('githubToken');
             const gistId = localStorage.getItem('contractGistId');
 
-            // Only sync if we have both token and gist ID
-            if (!token || !gistId) {
+            // If no token, can't sync
+            if (!token) {
+                console.log('No GitHub token configured. Click "Get Shareable Link" to set up syncing.');
+                return;
+            }
+
+            // If no gist ID yet, user needs to create one first
+            if (!gistId) {
+                console.log('No Gist ID yet. Click "Get Shareable Link" to create your first shareable contract.');
                 return;
             }
 
@@ -1748,6 +1752,7 @@
 
                     if (response.ok) {
                         lastGistUpdate = now;
+                        showSaveIndicator();
                         console.log('Gist synced successfully');
                     } else {
                         console.error('Failed to sync gist:', response.status);
@@ -1758,8 +1763,13 @@
             }, 3000); // Wait 3 seconds after last change
         }
 
-        // Load saved data
+        // Load saved data (deprecated - now loads from Gist instead)
         function loadSavedData() {
+            // This function is kept for backwards compatibility but does nothing
+            // Data is now loaded from Gist via loadFromGist()
+            return;
+
+            /* OLD CODE - DISABLED
             const savedData = localStorage.getItem('contractData');
             if (!savedData) return;
 
@@ -1915,6 +1925,7 @@
             } catch (e) {
                 console.error('Error loading saved data:', e);
             }
+            */
         }
 
         // Debounced auto-save on input
@@ -1931,8 +1942,8 @@
 
         // Clear saved data (optional)
         function clearSavedData() {
-            if (confirm('Are you sure you want to clear all saved data?')) {
-                localStorage.removeItem('contractData');
+            if (confirm('Are you sure you want to start a new contract? This will clear your current Gist ID and start fresh.')) {
+                localStorage.removeItem('contractGistId');
                 location.reload();
             }
         }
@@ -2987,15 +2998,17 @@
                 initTextareaAutoResize(textarea);
             });
 
-            // Check if there's a gist ID in the URL
-            const gistId = getGistIdFromUrl();
-            if (gistId) {
-                // Load from gist first, then proceed with mode setup
-                await loadFromGist(gistId);
-            } else {
-                // Load from localStorage if no gist
-                loadSavedData();
+            // Check if there's a gist ID in the URL or localStorage
+            let gistId = getGistIdFromUrl(); // From shared link
+            if (!gistId) {
+                gistId = localStorage.getItem('contractGistId'); // From user's own saved gist
             }
+
+            if (gistId) {
+                // Load from gist - single source of truth
+                await loadFromGist(gistId);
+            }
+            // If no gist ID at all, start with a fresh contract
 
             // Check if brag mode
             if (isBragMode()) {
