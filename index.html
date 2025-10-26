@@ -1642,6 +1642,7 @@
         let lastKnownGistTimestamp = null;
         let userIsTyping = false;
         let typingTimeout = null;
+        let firstPendingChangeTime = null; // Track when first change was made (for max wait)
 
         // Auto-save function
         function autoSave() {
@@ -1736,7 +1737,24 @@
                 return;
             }
 
-            // Debounce: wait 1 second after last change before syncing
+            // Track when first change was made for max wait
+            if (firstPendingChangeTime === null) {
+                firstPendingChangeTime = Date.now();
+                console.log('[Sync] 🕐 First pending change tracked');
+            }
+
+            // Check if we've exceeded max wait time (5 seconds)
+            const timeSinceFirstChange = Date.now() - firstPendingChangeTime;
+            const MAX_WAIT = 5000; // 5 seconds max wait even during continuous editing
+
+            // Calculate debounce delay
+            let debounceDelay = 1000; // Normal: 1 second after last change
+            if (timeSinceFirstChange >= MAX_WAIT) {
+                debounceDelay = 0; // Force immediate sync if we've been waiting too long
+                console.log('[Sync] ⏰ Max wait time exceeded (', timeSinceFirstChange, 'ms), forcing sync now');
+            }
+
+            // Debounce: wait for delay after last change before syncing
             clearTimeout(gistUpdateTimeout);
             gistUpdateTimeout = setTimeout(async () => {
                 // Throttle: don't update more than once every 2 seconds
@@ -1744,6 +1762,8 @@
                 const timeSinceLastUpdate = now - lastGistUpdate;
                 if (timeSinceLastUpdate < 2000) {
                     console.log('[Sync] ⏭️ Skipping sync (throttled, only', timeSinceLastUpdate, 'ms since last)');
+                    // Reschedule to try again after throttle period
+                    setTimeout(() => syncToGist(contractData), 2000 - timeSinceLastUpdate);
                     return;
                 }
 
@@ -1772,15 +1792,18 @@
                         const result = await response.json();
                         // Update our timestamp to avoid polling thinking there's a new update
                         lastKnownGistTimestamp = result.updated_at;
+                        firstPendingChangeTime = null; // Reset max wait timer after successful sync
                         showSaveIndicator();
                         console.log('[Sync] ✅ Gist synced successfully. New timestamp:', result.updated_at);
                     } else {
                         console.error('[Sync] ❌ Failed to sync gist:', response.status);
+                        firstPendingChangeTime = null; // Reset even on failure
                     }
                 } catch (error) {
-                    console.error('Error syncing to gist:', error);
+                    console.error('[Sync] ❌ Error syncing to gist:', error);
+                    firstPendingChangeTime = null; // Reset even on error
                 }
-            }, 1000); // Wait 1 second after last change
+            }, debounceDelay);
         }
 
         // Load saved data (deprecated - now loads from Gist instead)
