@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
     <style>
         * {
             margin: 0;
@@ -683,6 +683,247 @@
             animation: slideUp 0.5s ease-out;
         }
 
+        .brag-mode-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: #ffb6c1;
+            border: 1px solid rgba(220, 20, 60, 0.6);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .brag-mode-btn:hover {
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+            border-color: #ff69b4;
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .brag-mode-btn:active {
+            transform: translateY(0);
+        }
+
+        .brag-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .brag-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d1414 100%);
+            border: 2px solid #8b0000;
+            box-shadow:
+                0 0 0 1px rgba(255, 105, 180, 0.3),
+                0 0 60px rgba(139, 0, 0, 0.8),
+                inset 0 0 100px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: 2001;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        .brag-modal-header {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            color: #ffb6c1;
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .brag-modal-section {
+            margin-bottom: 25px;
+        }
+
+        .brag-modal-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: #d4768f;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.5);
+            padding-bottom: 8px;
+        }
+
+        .brag-checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .brag-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            color: #ffb6c1;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+
+        .brag-checkbox-label:hover {
+            background: rgba(139, 0, 0, 0.2);
+        }
+
+        .brag-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #dc143c;
+        }
+
+        .brag-radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .brag-radio-label {
+            display: flex;
+            align-items: center;
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            color: #ffb6c1;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+
+        .brag-radio-label:hover {
+            background: rgba(139, 0, 0, 0.2);
+        }
+
+        .brag-radio-label input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #dc143c;
+        }
+
+        .brag-modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .brag-action-btn {
+            flex: 1;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: #ffb6c1;
+            border: 1px solid rgba(220, 20, 60, 0.6);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .brag-action-btn:hover {
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+            border-color: #ff69b4;
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .brag-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #ffb6c1;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .brag-close-btn:hover {
+            background: rgba(220, 20, 60, 0.3);
+            color: #fff;
+        }
+
+        /* Brag mode visibility styles */
+        .brag-blur {
+            filter: blur(8px);
+            user-select: none;
+        }
+
+        .brag-redacted {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: transparent !important;
+            border-radius: 3px;
+            user-select: none;
+        }
+
+        .brag-placeholder::before {
+            content: attr(data-placeholder);
+            color: #d4768f;
+            font-style: italic;
+        }
+
+        .brag-placeholder {
+            color: transparent !important;
+        }
+
         @keyframes slideUp {
             from {
                 bottom: -100px;
@@ -852,7 +1093,8 @@
             .action-buttons,
             .readonly-indicator,
             #sign-button-container,
-            .contract-signed-indicator {
+            .contract-signed-indicator,
+            .brag-modal-overlay {
                 display: none !important;
             }
 
@@ -924,6 +1166,10 @@
                 right: 10px;
                 transform: none;
             }
+
+            .brag-checkbox-group {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -932,6 +1178,7 @@
     <div class="action-buttons" id="action-buttons">
         <button class="action-btn" onclick="generateShareableLink()">📋 Get Shareable Link</button>
         <button class="action-btn" onclick="saveAsPNG()">💾 Save as PNG</button>
+        <button class="action-btn brag-mode-btn" onclick="openBragModal()">✨ Brag Mode</button>
     </div>
 
     <!-- Readonly Indicator and Sign Button (shown in readonly mode) -->
@@ -941,11 +1188,97 @@
 
     <div id="sign-button-container" style="display: none;">
         <button class="action-btn" onclick="scrollToSignature()">✍️ Sign Contract</button>
+        <button class="action-btn brag-mode-btn" onclick="openBragModal()">✨ Brag Mode</button>
     </div>
 
     <!-- Contract Signed Indicator -->
     <div class="contract-signed-indicator" id="contract-signed-indicator">
         ✓ Contract Signed & Automatically Saved
+    </div>
+
+    <!-- Brag Mode Modal -->
+    <div class="brag-modal-overlay" id="brag-modal-overlay" onclick="closeBragModal()">
+        <div class="brag-modal" onclick="event.stopPropagation()">
+            <button class="brag-close-btn" onclick="closeBragModal()">×</button>
+            <h2 class="brag-modal-header">✨ Brag Mode ✨</h2>
+
+            <div class="brag-modal-section">
+                <div class="brag-modal-section-title">What to Hide</div>
+                <div class="brag-checkbox-group">
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-names" checked>
+                        Names
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-signatures" checked>
+                        Signatures
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-dates">
+                        Dates
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-rules">
+                        Commands/Rules
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-hard-limits" checked>
+                        Hard Limits
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-soft-limits" checked>
+                        Soft Limits
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-safewords" checked>
+                        Safewords
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-punishments">
+                        Punishments
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-rewards">
+                        Rewards
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-duties">
+                        Daily Duties
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-expectations">
+                        Expectations
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-release">
+                        Release Clause
+                    </label>
+                </div>
+            </div>
+
+            <div class="brag-modal-section">
+                <div class="brag-modal-section-title">How to Hide</div>
+                <div class="brag-radio-group">
+                    <label class="brag-radio-label">
+                        <input type="radio" name="hide-method" value="blur" checked>
+                        Blur Filter (blurred text)
+                    </label>
+                    <label class="brag-radio-label">
+                        <input type="radio" name="hide-method" value="redacted">
+                        Redacted Bars (████████)
+                    </label>
+                    <label class="brag-radio-label">
+                        <input type="radio" name="hide-method" value="placeholder">
+                        Placeholder Text ([REDACTED])
+                    </label>
+                </div>
+            </div>
+
+            <div class="brag-modal-actions">
+                <button class="brag-action-btn" onclick="generateBragLink()">📋 Copy Brag Link</button>
+                <button class="brag-action-btn" onclick="saveBragPNG()">💾 Save Brag PNG</button>
+            </div>
+        </div>
     </div>
 
     <div class="contract-container">
@@ -970,9 +1303,9 @@
                 <h1 class="title">D/s Dynamic Contract</h1>
                 <p class="subtitle">
                     Between Dom
-                    <input type="text" value="Matthew" readonly style="cursor: default;" aria-label="Dominant's name">
+                    <input id="subtitle-dominant-name" type="text" value="Matthew" readonly style="cursor: default;" aria-label="Dominant's name">
                     and his sub
-                    <input type="text" value="Shailah" readonly style="cursor: default;" aria-label="Submissive's name">
+                    <input id="subtitle-submissive-name" type="text" value="Shailah" readonly style="cursor: default;" aria-label="Submissive's name">
                 </p>
             </div>
 
@@ -1781,34 +2114,35 @@
             const actionButtons = document.getElementById('action-buttons');
             const autosaveIndicator = document.getElementById('autosave-indicator');
             actionButtons.style.display = 'none';
-            autosaveIndicator.style.display = 'none';
 
             // Show indicator
             const indicator = document.getElementById('autosave-indicator');
             indicator.textContent = '📸 Generating PNG...';
             indicator.classList.add('show');
+            indicator.style.display = 'block';
 
-            // Use html2canvas to capture the contract
-            html2canvas(document.querySelector('.contract-container'), {
-                backgroundColor: '#1a0a0a',
-                scale: 2,
-                logging: false,
-                useCORS: true,
-                allowTaint: true
-            }).then(canvas => {
-                // Convert canvas to blob
-                canvas.toBlob(blob => {
+            // Wait for DOM to settle
+            setTimeout(() => {
+                indicator.style.display = 'none';
+
+                // Use html-to-image for accurate rendering
+                htmlToImage.toPng(document.querySelector('.contract-container'), {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    cacheBust: true,
+                    style: {
+                        transform: 'scale(1)',
+                        transformOrigin: 'top left'
+                    }
+                }).then(dataUrl => {
                     // Create download link
-                    const url = URL.createObjectURL(blob);
                     const link = document.createElement('a');
                     link.download = 'contract-' + new Date().toISOString().split('T')[0] + '.png';
-                    link.href = url;
+                    link.href = dataUrl;
                     link.click();
 
-                    // Cleanup
-                    URL.revokeObjectURL(url);
-
                     // Show success
+                    indicator.style.display = 'block';
                     indicator.textContent = '✓ PNG Saved!';
                     setTimeout(() => {
                         indicator.classList.remove('show');
@@ -1817,16 +2151,17 @@
 
                     // Restore buttons
                     actionButtons.style.display = 'flex';
+                }).catch(err => {
+                    console.error('Error generating PNG:', err);
+                    indicator.style.display = 'block';
+                    indicator.textContent = '❌ Error generating PNG';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+                    actionButtons.style.display = 'flex';
                 });
-            }).catch(err => {
-                console.error('Error generating PNG:', err);
-                indicator.textContent = '❌ Error';
-                setTimeout(() => {
-                    indicator.classList.remove('show');
-                    indicator.textContent = '✓ Saved';
-                }, 2000);
-                actionButtons.style.display = 'flex';
-            });
+            }, 200);
         }
 
         // Set today's date in signature fields
@@ -1870,15 +2205,334 @@
             });
         }
 
+        // Brag Mode Functions
+        function openBragModal() {
+            document.getElementById('brag-modal-overlay').style.display = 'block';
+        }
+
+        function closeBragModal() {
+            document.getElementById('brag-modal-overlay').style.display = 'none';
+        }
+
+        function getBragOptions() {
+            return {
+                hideNames: document.getElementById('hide-names').checked,
+                hideSignatures: document.getElementById('hide-signatures').checked,
+                hideDates: document.getElementById('hide-dates').checked,
+                hideRules: document.getElementById('hide-rules').checked,
+                hideHardLimits: document.getElementById('hide-hard-limits').checked,
+                hideSoftLimits: document.getElementById('hide-soft-limits').checked,
+                hideSafewords: document.getElementById('hide-safewords').checked,
+                hidePunishments: document.getElementById('hide-punishments').checked,
+                hideRewards: document.getElementById('hide-rewards').checked,
+                hideDuties: document.getElementById('hide-duties').checked,
+                hideExpectations: document.getElementById('hide-expectations').checked,
+                hideRelease: document.getElementById('hide-release').checked,
+                method: document.querySelector('input[name="hide-method"]:checked').value
+            };
+        }
+
+        function generateBragLink() {
+            autoSave();
+            const options = getBragOptions();
+
+            // Build URL parameters
+            const params = new URLSearchParams();
+            params.set('brag', 'true');
+            Object.keys(options).forEach(key => {
+                if (options[key] === true || (key === 'method' && options[key])) {
+                    params.set(key, options[key]);
+                }
+            });
+
+            const baseUrl = window.location.href.split('?')[0];
+            const bragUrl = baseUrl + '?' + params.toString();
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(bragUrl).then(() => {
+                const indicator = document.getElementById('autosave-indicator');
+                indicator.textContent = '✓ Brag Link Copied!';
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    indicator.textContent = '✓ Saved';
+                }, 3000);
+                closeBragModal();
+            }).catch(err => {
+                alert('Brag link: ' + bragUrl);
+                closeBragModal();
+            });
+        }
+
+        function saveBragPNG() {
+            autoSave();
+            const options = getBragOptions();
+
+            // Hide buttons and indicators FIRST
+            const actionButtons = document.getElementById('action-buttons');
+            const autosaveIndicator = document.getElementById('autosave-indicator');
+            const readonlyIndicator = document.getElementById('readonly-indicator');
+            const signBtnContainer = document.getElementById('sign-button-container');
+
+            if (actionButtons) actionButtons.style.display = 'none';
+            if (readonlyIndicator) readonlyIndicator.style.display = 'none';
+            if (signBtnContainer) signBtnContainer.style.display = 'none';
+            closeBragModal();
+
+            // Show generating indicator
+            const indicator = document.getElementById('autosave-indicator');
+            indicator.textContent = '📸 Generating Brag PNG...';
+            indicator.classList.add('show');
+            indicator.style.display = 'block';
+
+            // Apply brag mode styling
+            applyBragMode(options);
+
+            // Wait for DOM to update and filters to be fully applied
+            setTimeout(() => {
+                // Hide the generating indicator before screenshot
+                indicator.style.display = 'none';
+
+                // Use html-to-image for pixel-perfect rendering with filters
+                htmlToImage.toPng(document.querySelector('.contract-container'), {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    cacheBust: true,
+                    filter: (node) => {
+                        // Filter out the indicator
+                        return node.id !== 'autosave-indicator';
+                    },
+                    style: {
+                        transform: 'scale(1)',
+                        transformOrigin: 'top left'
+                    }
+                }).then(dataUrl => {
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.download = 'contract-brag-' + new Date().toISOString().split('T')[0] + '.png';
+                    link.href = dataUrl;
+                    link.click();
+
+                    // Show success
+                    indicator.style.display = 'block';
+                    indicator.textContent = '✓ Brag PNG Saved!';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+
+                    // Remove brag mode styling
+                    removeBragMode();
+
+                    // Restore buttons
+                    if (actionButtons) actionButtons.style.display = 'flex';
+                }).catch(err => {
+                    console.error('Error generating PNG:', err);
+                    indicator.style.display = 'block';
+                    indicator.textContent = '❌ Error generating PNG';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+                    removeBragMode();
+                    if (actionButtons) actionButtons.style.display = 'flex';
+                });
+            }, 500); // Longer delay to ensure all CSS filters are fully applied
+        }
+
+        function applyBragMode(options) {
+            const method = options.method;
+
+            // Names
+            if (options.hideNames) {
+                applyBragStyle('#dominant-name', method, '[Owner Name]');
+                applyBragStyle('#submissive-name', method, '[Submissive Name]');
+                applyBragStyle('#subtitle-dominant-name', method, '[Dom]');
+                applyBragStyle('#subtitle-submissive-name', method, '[Sub]');
+            }
+
+            // Signatures
+            if (options.hideSignatures) {
+                applyBragStyle('#owner-signature', method, '[Signature]');
+                applyBragStyle('#submissive-signature', method, '[Signature]');
+            }
+
+            // Dates
+            if (options.hideDates) {
+                applyBragStyle('#effective-date', method, '[Date]');
+                applyBragStyle('#owner-signature-date', method, '[Date]');
+                applyBragStyle('#submissive-signature-date', method, '[Date]');
+            }
+
+            // Rules
+            if (options.hideRules) {
+                document.querySelectorAll('#rules-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Command]');
+                });
+            }
+
+            // Hard Limits
+            if (options.hideHardLimits) {
+                document.querySelectorAll('#hard-limits-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Hard Limit]');
+                });
+            }
+
+            // Soft Limits
+            if (options.hideSoftLimits) {
+                document.querySelectorAll('#soft-limits-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Soft Limit]');
+                });
+            }
+
+            // Safewords
+            if (options.hideSafewords) {
+                document.querySelectorAll('#safewords-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Safeword]');
+                });
+            }
+
+            // Punishments
+            if (options.hidePunishments) {
+                document.querySelectorAll('#punishments-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Punishment]');
+                });
+            }
+
+            // Rewards
+            if (options.hideRewards) {
+                document.querySelectorAll('#rewards-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Reward]');
+                });
+            }
+
+            // Daily Duties
+            if (options.hideDuties) {
+                document.querySelectorAll('#daily-duties-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Duty]');
+                });
+            }
+
+            // Expectations
+            if (options.hideExpectations) {
+                document.querySelectorAll('#expectations-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Expectation]');
+                });
+            }
+
+            // Release Clause
+            if (options.hideRelease) {
+                applyBragStyle('#release-clause', method, '[Release Clause]');
+                applyBragStyle('#duration-control', method, '[Duration]');
+                applyBragStyle('#review-schedule', method, '[Review Schedule]');
+            }
+        }
+
+        function applyBragStyle(selector, method, placeholder) {
+            const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            if (!el) return;
+
+            // Store original value
+            el.setAttribute('data-original-value', el.value || '');
+
+            if (method === 'blur') {
+                el.classList.add('brag-blur');
+                // Force a repaint to ensure blur is applied
+                el.offsetHeight;
+            } else if (method === 'redacted') {
+                el.classList.add('brag-redacted');
+                // For redacted, replace with blocks that fill the field
+                const length = el.value ? el.value.length : 15;
+                el.value = '█'.repeat(Math.max(length, 15));
+                // Force a repaint
+                el.offsetHeight;
+            } else if (method === 'placeholder') {
+                el.classList.add('brag-placeholder');
+                el.setAttribute('data-placeholder', placeholder);
+                const originalValue = el.value;
+                el.value = '';
+                // Force rendering of placeholder
+                el.offsetHeight;
+            }
+        }
+
+        function removeBragMode() {
+            document.querySelectorAll('.brag-blur, .brag-redacted, .brag-placeholder').forEach(el => {
+                el.classList.remove('brag-blur', 'brag-redacted', 'brag-placeholder');
+                const originalValue = el.getAttribute('data-original-value');
+                if (originalValue !== null) {
+                    el.value = originalValue;
+                    el.removeAttribute('data-original-value');
+                }
+                el.removeAttribute('data-placeholder');
+            });
+        }
+
+        function isBragMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('brag') === 'true';
+        }
+
+        function enableBragMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const options = {
+                hideNames: urlParams.get('hideNames') === 'true',
+                hideSignatures: urlParams.get('hideSignatures') === 'true',
+                hideDates: urlParams.get('hideDates') === 'true',
+                hideRules: urlParams.get('hideRules') === 'true',
+                hideHardLimits: urlParams.get('hideHardLimits') === 'true',
+                hideSoftLimits: urlParams.get('hideSoftLimits') === 'true',
+                hideSafewords: urlParams.get('hideSafewords') === 'true',
+                hidePunishments: urlParams.get('hidePunishments') === 'true',
+                hideRewards: urlParams.get('hideRewards') === 'true',
+                hideDuties: urlParams.get('hideDuties') === 'true',
+                hideExpectations: urlParams.get('hideExpectations') === 'true',
+                hideRelease: urlParams.get('hideRelease') === 'true',
+                method: urlParams.get('method') || 'blur'
+            };
+
+            applyBragMode(options);
+
+            // Hide buttons in brag mode
+            const actionButtons = document.getElementById('action-buttons');
+            const signButtonContainer = document.getElementById('sign-button-container');
+            const readonlyIndicator = document.getElementById('readonly-indicator');
+
+            if (actionButtons) actionButtons.style.display = 'none';
+            if (signButtonContainer) signButtonContainer.style.display = 'none';
+            if (readonlyIndicator) readonlyIndicator.style.display = 'none';
+
+            // Make all fields readonly
+            document.querySelectorAll('input, textarea, button').forEach(el => {
+                el.setAttribute('readonly', 'readonly');
+                el.disabled = true;
+                el.style.pointerEvents = 'none';
+            });
+
+            // Scroll to top of page in brag mode
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }, 100);
+        }
+
         // Initialize on page load
         window.addEventListener('load', () => {
+            // Check if brag mode
+            if (isBragMode()) {
+                loadSavedData();
+                setTodaysDate();
+                initDatePickers();
+                enableBragMode();
+            }
             // Check if readonly mode
-            if (isReadOnlyMode()) {
+            else if (isReadOnlyMode()) {
                 loadSavedData();
                 setTodaysDate(); // Set date after loading saved data
                 initDatePickers(); // Initialize date pickers
                 enableReadOnlyMode();
-            } else {
+            }
+            // Normal edit mode
+            else {
                 loadSavedData();
                 setTodaysDate(); // Set date after loading saved data
                 initDatePickers(); // Initialize date pickers
