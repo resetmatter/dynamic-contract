@@ -1627,6 +1627,8 @@
     <script>
         let ruleCount = 3;
         let autosaveTimeout;
+        let gistUpdateTimeout;
+        let lastGistUpdate = 0;
 
         // Auto-save function
         function autoSave() {
@@ -1693,6 +1695,9 @@
 
             localStorage.setItem('contractData', JSON.stringify(contractData));
             showSaveIndicator();
+
+            // Also sync to Gist if we have one configured
+            syncToGist(contractData);
         }
 
         // Show save indicator
@@ -1702,6 +1707,55 @@
             setTimeout(() => {
                 indicator.classList.remove('show');
             }, 2000);
+        }
+
+        // Sync contract data to GitHub Gist (with debouncing to avoid excessive API calls)
+        async function syncToGist(contractData) {
+            const token = localStorage.getItem('githubToken');
+            const gistId = localStorage.getItem('contractGistId');
+
+            // Only sync if we have both token and gist ID
+            if (!token || !gistId) {
+                return;
+            }
+
+            // Debounce: wait 3 seconds after last change before syncing
+            clearTimeout(gistUpdateTimeout);
+            gistUpdateTimeout = setTimeout(async () => {
+                // Throttle: don't update more than once every 10 seconds
+                const now = Date.now();
+                if (now - lastGistUpdate < 10000) {
+                    return;
+                }
+
+                try {
+                    const gistData = {
+                        files: {
+                            "contract-data.json": {
+                                content: JSON.stringify(contractData, null, 2)
+                            }
+                        }
+                    };
+
+                    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify(gistData)
+                    });
+
+                    if (response.ok) {
+                        lastGistUpdate = now;
+                        console.log('Gist synced successfully');
+                    } else {
+                        console.error('Failed to sync gist:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error syncing to gist:', error);
+                }
+            }, 3000); // Wait 3 seconds after last change
         }
 
         // Load saved data
