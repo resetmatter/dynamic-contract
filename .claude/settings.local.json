@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/d/Downloads/twitter_media_harvest/**)",
+      "WebSearch",
+      "WebFetch(domain:www.cleanpng.com)",
+      "WebFetch(domain:www.pngwing.com)",
+      "WebFetch(domain:gallery.yopriceville.com)",
+      "Bash(python3:*)",
+      "Read(//mnt/d/Screenshots/New Screenshots/**)",
+      "Bash(identify:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

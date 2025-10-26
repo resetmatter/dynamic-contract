@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract of Submission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, #1a0a0a 0%, #2d1414 50%, #1a0a0a 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .contract-container {
+            max-width: 900px;
+            width: 100%;
+            background:
+                linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98)),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 0, 0, 0.02) 2px,
+                    rgba(139, 0, 0, 0.02) 4px
+                );
+            border: 3px solid #8b0000;
+            box-shadow:
+                0 0 0 1px rgba(255, 105, 180, 0.3),
+                0 0 30px rgba(139, 0, 0, 0.6),
+                inset 0 0 100px rgba(0, 0, 0, 0.8),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: visible;
+            border-radius: 5px;
+        }
+
+        /* Leather texture */
+        .contract-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 30% 40%, rgba(80, 40, 40, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(80, 40, 40, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Pink bows in corners */
+        .bow {
+            position: absolute;
+            font-size: 80px;
+            z-index: 20;
+            filter: drop-shadow(3px 3px 10px rgba(255, 105, 180, 0.5));
+            animation: gentleBounce 3s ease-in-out infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0) rotate(var(--rotate)); }
+            50% { transform: translateY(-5px) rotate(var(--rotate)); }
+        }
+
+        .bow-top-left {
+            top: -30px;
+            left: -30px;
+            --rotate: -15deg;
+        }
+
+        .bow-top-right {
+            top: -30px;
+            right: -30px;
+            --rotate: 15deg;
+        }
+
+        .bow-bottom-left {
+            bottom: -30px;
+            left: -30px;
+            --rotate: 15deg;
+        }
+
+        .bow-bottom-right {
+            bottom: -30px;
+            right: -30px;
+            --rotate: -15deg;
+        }
+
+        /* Chain borders */
+        .chain-border {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.7;
+            z-index: 5;
+        }
+
+        .chain-vertical {
+            top: 80px;
+            bottom: 80px;
+            width: 35px;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                transparent 15px,
+                #1a1a1a 15px,
+                #2a2a2a 18px,
+                #3a3a3a 20px,
+                #4a4a4a 22px,
+                #3a3a3a 24px,
+                #2a2a2a 27px,
+                #1a1a1a 30px,
+                transparent 30px,
+                transparent 45px
+            );
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .chain-left {
+            left: 15px;
+        }
+
+        .chain-right {
+            right: 15px;
+        }
+
+        .chain-horizontal {
+            left: 80px;
+            right: 80px;
+            height: 35px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 15px,
+                #1a1a1a 15px,
+                #2a2a2a 18px,
+                #3a3a3a 20px,
+                #4a4a4a 22px,
+                #3a3a3a 24px,
+                #2a2a2a 27px,
+                #1a1a1a 30px,
+                transparent 30px,
+                transparent 45px
+            );
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .chain-top {
+            top: 15px;
+        }
+
+        .chain-bottom {
+            bottom: 15px;
+        }
+
+        /* Subtle pink accent line */
+        .pink-accent {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(255, 105, 180, 0.3), transparent);
+            pointer-events: none;
+        }
+
+        .pink-accent-top {
+            top: 3px;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .pink-accent-bottom {
+            bottom: 3px;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .content {
+            padding: 60px 55px 55px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .header::after {
+            content: '⛓️ 🎀 ⛓️';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98));
+            padding: 0 20px;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 44px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b0000, #ff69b4, #8b0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #d4768f;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .subtitle input {
+            border: none;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+            font-family: inherit;
+            font-size: inherit;
+            font-style: inherit;
+            color: #ff6b9d;
+            text-align: center;
+            padding: 5px 12px;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .subtitle input:focus {
+            outline: none;
+            border-bottom-color: #ff69b4;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
+        }
+
+        .section {
+            margin: 35px 0;
+        }
+
+        .section-header {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            color: #dc143c;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-header::before {
+            content: '🎀';
+            font-size: 22px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.5));
+        }
+
+        .section-header::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, rgba(220, 20, 60, 0.5), transparent);
+        }
+
+        .field-group {
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .field-label {
+            font-size: 13px;
+            color: #d4768f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .field-input,
+        .field-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(139, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.3);
+            font-family: 'Crimson Text', serif;
+            font-size: 15px;
+            color: #ffb6c1;
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .field-input::placeholder,
+        .field-textarea::placeholder {
+            color: rgba(255, 182, 193, 0.4);
+        }
+
+        .field-input:focus,
+        .field-textarea:focus {
+            outline: none;
+            border-color: #ff69b4;
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow:
+                0 0 0 2px rgba(255, 105, 180, 0.2),
+                0 0 15px rgba(255, 105, 180, 0.15),
+                inset 0 0 20px rgba(255, 105, 180, 0.05);
+        }
+
+        .field-textarea {
+            min-height: 95px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .add-rule-btn {
+            display: block;
+            margin: 25px auto;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: #ffb6c1;
+            border: 1px solid rgba(220, 20, 60, 0.6);
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow:
+                0 4px 15px rgba(139, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .add-rule-btn::before {
+            content: '🎀 ';
+            filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.8));
+        }
+
+        .add-rule-btn::after {
+            content: ' 🎀';
+            filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.8));
+        }
+
+        .add-rule-btn:hover {
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+            border-color: #ff69b4;
+            box-shadow:
+                0 6px 20px rgba(220, 20, 60, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .add-rule-btn:active {
+            transform: translateY(0);
+        }
+
+        .signature-section {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 2px solid rgba(139, 0, 0, 0.6);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        .signature-box {
+            text-align: center;
+            position: relative;
+        }
+
+        .signature-box::before {
+            content: '🎀';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.6));
+        }
+
+        .signature-box label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            color: #dc143c;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .signature-input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            background: transparent;
+            font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+            font-size: 26px;
+            color: #ff6b9d;
+            text-align: center;
+            padding: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .signature-input:focus {
+            outline: none;
+            border-bottom-color: #ff69b4;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .date-input {
+            font-family: 'Crimson Text', serif !important;
+            font-size: 14px !important;
+            margin-top: 15px;
+            color: #d4768f !important;
+        }
+
+        .decorative-divider {
+            text-align: center;
+            margin: 35px 0;
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        .terms-notice {
+            background: rgba(139, 0, 0, 0.15);
+            border: 1px solid rgba(139, 0, 0, 0.4);
+            border-left: 4px solid #8b0000;
+            padding: 20px;
+            margin: 30px 0;
+            font-size: 13px;
+            color: #d4768f;
+            font-style: italic;
+            line-height: 1.6;
+            border-radius: 3px;
+        }
+
+        @media print {
+            body {
+                background: #0a0505;
+                padding: 0;
+            }
+
+            .contract-container {
+                box-shadow: none;
+            }
+
+            .add-rule-btn {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 50px 30px 45px;
+            }
+
+            .title {
+                font-size: 34px;
+            }
+
+            .signature-section {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .bow {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="contract-container">
+        <!-- Subtle pink accent lines -->
+        <div class="pink-accent pink-accent-top"></div>
+        <div class="pink-accent pink-accent-bottom"></div>
+
+        <!-- Pink bows in corners -->
+        <div class="bow bow-top-left">🎀</div>
+        <div class="bow bow-top-right">🎀</div>
+        <div class="bow bow-bottom-left">🎀</div>
+        <div class="bow bow-bottom-right">🎀</div>
+
+        <!-- Chain borders -->
+        <div class="chain-border chain-vertical chain-left"></div>
+        <div class="chain-border chain-vertical chain-right"></div>
+        <div class="chain-border chain-horizontal chain-top"></div>
+        <div class="chain-border chain-horizontal chain-bottom"></div>
+
+        <div class="content">
+            <div class="header">
+                <h1 class="title">Contract of Submission</h1>
+                <p class="subtitle">
+                    Between
+                    <input type="text" placeholder="Dominant" aria-label="Dominant's name">
+                    and
+                    <input type="text" placeholder="Submissive" aria-label="Submissive's name">
+                </p>
+            </div>
+
+            <div class="terms-notice">
+                This contract is entered into consensually by both parties. All activities are bound by established safe words, hard limits, and mutual respect. Either party may renegotiate or terminate this agreement through open communication.
+            </div>
+
+            <section class="section">
+                <h2 class="section-header">Parties</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Dominant (Name & Title)</label>
+                    <input type="text" class="field-input" placeholder="Sir, Master, Mistress, Daddy, Owner...">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Submissive (Name & Title)</label>
+                    <input type="text" class="field-input" placeholder="pet, kitten, baby girl, princess, slave...">
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-header">Rules & Protocols</h2>
+
+                <div id="rules-container">
+                    <div class="field-group">
+                        <label class="field-label">Rule 1</label>
+                        <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Rule 2</label>
+                        <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                    </div>
+
+                    <div class="field-group">
+                        <label class="field-label">Rule 3</label>
+                        <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                    </div>
+                </div>
+
+                <button class="add-rule-btn" onclick="addRule()">Add Rule</button>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Boundaries</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Hard Limits (Absolute No)</label>
+                    <textarea class="field-textarea" placeholder="List non-negotiable boundaries..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Soft Limits (Requires Discussion)</label>
+                    <textarea class="field-textarea" placeholder="List activities requiring negotiation..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Safe Words & Signals</label>
+                    <input type="text" class="field-input" placeholder="Red, Yellow, Green / Non-verbal signals...">
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Discipline</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Rewards</label>
+                    <textarea class="field-textarea" placeholder="Privileges, praise, treats, physical affection..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Punishments</label>
+                    <textarea class="field-textarea" placeholder="Loss of privileges, spanking, corner time, writing lines..."></textarea>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Terms</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Effective Date</label>
+                    <input type="date" class="field-input date-input">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Duration</label>
+                    <input type="text" class="field-input" placeholder="6 months, 1 year, ongoing...">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Review Schedule</label>
+                    <input type="text" class="field-input" placeholder="Weekly, monthly, quarterly check-ins...">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Termination Clause</label>
+                    <textarea class="field-textarea" placeholder="How either party can exit this contract..."></textarea>
+                </div>
+            </section>
+
+            <section class="signature-section">
+                <div class="signature-box">
+                    <label>Dominant's Signature</label>
+                    <input type="text" class="signature-input" placeholder="Sign here">
+                    <input type="date" class="field-input date-input" aria-label="Date">
+                </div>
+
+                <div class="signature-box">
+                    <label>Submissive's Signature</label>
+                    <input type="text" class="signature-input" placeholder="Sign here">
+                    <input type="date" class="field-input date-input" aria-label="Date">
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        let ruleCount = 3;
+
+        function addRule() {
+            ruleCount++;
+            const container = document.getElementById('rules-container');
+            const newRule = document.createElement('div');
+            newRule.className = 'field-group';
+            newRule.innerHTML = `
+                <label class="field-label">Rule ${ruleCount}</label>
+                <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+            `;
+            container.appendChild(newRule);
+            newRule.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    </script>
+</body>
+</html>
