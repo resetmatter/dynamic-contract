@@ -1200,6 +1200,7 @@
     <div class="readonly-indicator" id="readonly-indicator" style="display: none;">
         🔒 Read-Only View
         <button class="action-btn" onclick="promptForPassword()" style="margin-left: 15px; font-size: 11px; padding: 6px 12px;">🔓 Enter Password to Edit</button>
+        <button class="action-btn" onclick="promptForAccessToken()" style="margin-left: 10px; font-size: 11px; padding: 6px 12px;">🔑 Enter Access Code</button>
     </div>
 
     <div id="sign-button-container" style="display: none;">
@@ -1592,8 +1593,7 @@
     <div class="autosave-indicator" id="autosave-indicator">✓ Saved</div>
 
     <script>
-        // GLOBAL CONFIGURATION - Hardcoded for automatic setup
-        const GITHUB_TOKEN = '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';
+        // GLOBAL CONFIGURATION
         const GLOBAL_GIST_ID = '2f493d0ca0120faa7b82327664bd3b45';
         const EDIT_PASSWORD = 'chiset'; // Password required to edit the contract
 
@@ -1691,8 +1691,14 @@
                 return;
             }
 
-            const token = GITHUB_TOKEN;
+            const token = localStorage.getItem('githubToken');
             const gistId = GLOBAL_GIST_ID;
+
+            // If no token, can't sync
+            if (!token) {
+                console.log('[Sync] ⚠️ No access token configured.');
+                return;
+            }
 
             // Track when first change was made for max wait
             if (firstPendingChangeTime === null) {
@@ -2165,6 +2171,24 @@
             }
 
             return false;
+        }
+
+        // Check if access token has been saved
+        function hasAccessToken() {
+            return localStorage.getItem('githubToken') !== null;
+        }
+
+        // Prompt user for access token on first visit
+        function promptForAccessToken() {
+            const token = prompt('Welcome! To sync this contract, please paste the access code provided to you:');
+
+            if (token && token.trim()) {
+                localStorage.setItem('githubToken', token.trim());
+                alert('Access code saved! The contract will now sync across your devices.');
+                location.reload();
+            } else if (token !== null) {
+                alert('No access code entered. You can view the contract in read-only mode.');
+            }
         }
 
         // Check if password has been entered correctly in this session
@@ -2920,6 +2944,15 @@
 
         // Initialize on page load
         window.addEventListener('load', async () => {
+            // Check if this is first visit (no access token saved)
+            if (!hasAccessToken()) {
+                // Prompt for access token on first visit
+                setTimeout(() => {
+                    promptForAccessToken();
+                }, 500);
+                // Continue loading in readonly mode
+            }
+
             // Initialize auto-resize for all textareas
             document.querySelectorAll('.field-textarea, .field-textarea-small').forEach(textarea => {
                 initTextareaAutoResize(textarea);
