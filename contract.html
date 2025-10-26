@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contract of Submission</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -266,6 +269,7 @@
             margin-bottom: 20px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -278,10 +282,9 @@
         }
 
         .section-header::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(to right, rgba(220, 20, 60, 0.5), transparent);
+            content: '🎀';
+            font-size: 22px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.5));
         }
 
         .field-group {
@@ -341,6 +344,12 @@
 
         .field-textarea {
             min-height: 95px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .field-textarea-small {
+            min-height: 50px;
             resize: vertical;
             line-height: 1.6;
         }
@@ -483,6 +492,28 @@
             gap: 12px;
             margin-bottom: 12px;
             animation: fadeIn 0.3s ease;
+            cursor: move;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .list-item:hover {
+            background: rgba(139, 0, 0, 0.15);
+            transform: translateX(3px);
+        }
+
+        .list-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+            background: rgba(220, 20, 60, 0.2);
+        }
+
+        .list-item.drag-over {
+            border-top: 3px solid #ff69b4;
+            background: rgba(255, 105, 180, 0.15);
         }
 
         .list-item::before {
@@ -490,11 +521,24 @@
             font-size: 16px;
             flex-shrink: 0;
             filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.5));
+            cursor: grab;
         }
 
-        .list-item input {
+        .list-item.dragging::before {
+            cursor: grabbing;
+        }
+
+        .list-item input,
+        .list-item textarea {
             flex: 1;
             margin-bottom: 0 !important;
+            cursor: text;
+        }
+
+        .list-item textarea {
+            min-height: 45px;
+            resize: vertical;
+            padding: 10px 14px;
         }
 
         .add-item-btn {
@@ -547,6 +591,243 @@
             opacity: 1;
         }
 
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: #ffb6c1;
+            border: 1px solid rgba(220, 20, 60, 0.6);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+            border-color: #ff69b4;
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .readonly-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(220, 20, 60, 0.95));
+            color: #ffb6c1;
+            padding: 12px 20px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            border: 1px solid rgba(255, 105, 180, 0.5);
+        }
+
+        #sign-button-container {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        #sign-button-container .action-btn {
+            padding: 12px 24px;
+        }
+
+        .contract-signed-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(0, 139, 0, 0.95), rgba(34, 139, 34, 0.95));
+            color: #d4ffd4;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            border: 1px solid rgba(144, 238, 144, 0.5);
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                bottom: -100px;
+                opacity: 0;
+            }
+            to {
+                bottom: 20px;
+                opacity: 1;
+            }
+        }
+
+        /* Flatpickr custom theme */
+        .flatpickr-calendar {
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.98), rgba(30, 15, 15, 1));
+            border: 2px solid #8b0000;
+            box-shadow: 0 0 30px rgba(139, 0, 0, 0.6);
+            border-radius: 5px;
+        }
+
+        .flatpickr-months {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            border-bottom: 1px solid rgba(255, 105, 180, 0.3);
+        }
+
+        .flatpickr-current-month {
+            color: #ffb6c1;
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background: rgba(139, 0, 0, 0.5);
+            color: #ffb6c1;
+            border: 1px solid rgba(139, 0, 0, 0.6);
+        }
+
+        .flatpickr-current-month .numInputWrapper input {
+            color: #ffb6c1;
+            background: rgba(139, 0, 0, 0.3);
+        }
+
+        .flatpickr-weekdays {
+            background: rgba(139, 0, 0, 0.2);
+            color: #d4768f;
+        }
+
+        .flatpickr-weekday {
+            color: #d4768f;
+            font-weight: 600;
+        }
+
+        .flatpickr-day {
+            color: #ffb6c1;
+            border-color: rgba(139, 0, 0, 0.2);
+        }
+
+        .flatpickr-day:hover {
+            background: rgba(139, 0, 0, 0.3);
+            border-color: #ff69b4;
+            color: #fff;
+        }
+
+        .flatpickr-day.today {
+            background: rgba(220, 20, 60, 0.3);
+            border-color: #dc143c;
+            color: #fff;
+        }
+
+        .flatpickr-day.selected {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            border-color: #ff69b4;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .flatpickr-day.selected:hover {
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+        }
+
+        .flatpickr-monthDropdown-months:hover,
+        .flatpickr-monthDropdown-months:focus {
+            background: rgba(220, 20, 60, 0.5);
+        }
+
+        span.flatpickr-weekday {
+            color: #d4768f;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            font-size: 10px;
+            letter-spacing: 1px;
+        }
+
+        .flatpickr-months .flatpickr-prev-month,
+        .flatpickr-months .flatpickr-next-month {
+            color: #ffb6c1;
+            fill: #ffb6c1;
+        }
+
+        .flatpickr-months .flatpickr-prev-month:hover svg,
+        .flatpickr-months .flatpickr-next-month:hover svg {
+            fill: #fff;
+        }
+
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            color: rgba(255, 182, 193, 0.3);
+        }
+
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            appearance: none;
+            background: rgba(139, 0, 0, 0.5);
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+        /* Readonly mode styles */
+        body.readonly-mode input:not(#submissive-signature),
+        body.readonly-mode textarea {
+            pointer-events: none;
+        }
+
+        body.readonly-mode input:not(#submissive-signature):hover,
+        body.readonly-mode textarea:hover,
+        body.readonly-mode input:not(#submissive-signature):focus,
+        body.readonly-mode textarea:focus {
+            border-color: rgba(139, 0, 0, 0.4) !important;
+            background: rgba(0, 0, 0, 0.3) !important;
+            box-shadow: none !important;
+        }
+
+        .signature-input-highlight {
+            animation: signatureGlow 2s ease-in-out 3;
+        }
+
+        @keyframes signatureGlow {
+            0%, 100% {
+                border-bottom-color: rgba(139, 0, 0, 0.6);
+                text-shadow: none;
+            }
+            50% {
+                border-bottom-color: #ff69b4;
+                text-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+            }
+        }
+
         @media print {
             body {
                 background:
@@ -567,7 +848,11 @@
 
             .add-rule-btn,
             .add-item-btn,
-            .autosave-indicator {
+            .autosave-indicator,
+            .action-buttons,
+            .readonly-indicator,
+            #sign-button-container,
+            .contract-signed-indicator {
                 display: none !important;
             }
 
@@ -594,10 +879,75 @@
             .bow {
                 font-size: 60px;
             }
+
+            .action-buttons {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .action-btn {
+                flex: 1;
+                font-size: 9px;
+                padding: 10px 12px;
+            }
+
+            .readonly-indicator {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                text-align: center;
+                font-size: 10px;
+                padding: 10px 15px;
+            }
+
+            #sign-button-container {
+                top: 55px;
+                right: 10px;
+                left: 10px;
+            }
+
+            #sign-button-container .action-btn {
+                width: 100%;
+                font-size: 10px;
+                padding: 10px 15px;
+            }
+
+            .contract-signed-indicator {
+                bottom: 10px;
+                font-size: 12px;
+                padding: 12px 20px;
+                left: 10px;
+                right: 10px;
+                transform: none;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Action Buttons (hidden in readonly mode) -->
+    <div class="action-buttons" id="action-buttons">
+        <button class="action-btn" onclick="generateShareableLink()">📋 Get Shareable Link</button>
+        <button class="action-btn" onclick="saveAsPNG()">💾 Save as PNG</button>
+    </div>
+
+    <!-- Readonly Indicator and Sign Button (shown in readonly mode) -->
+    <div class="readonly-indicator" id="readonly-indicator" style="display: none;">
+        🔒 Read-Only View
+    </div>
+
+    <div id="sign-button-container" style="display: none;">
+        <button class="action-btn" onclick="scrollToSignature()">✍️ Sign Contract</button>
+    </div>
+
+    <!-- Contract Signed Indicator -->
+    <div class="contract-signed-indicator" id="contract-signed-indicator">
+        ✓ Contract Signed & Automatically Saved
+    </div>
+
     <div class="contract-container">
         <!-- Subtle pink accent lines -->
         <div class="pink-accent pink-accent-top"></div>
@@ -635,12 +985,12 @@
 
                 <div class="field-group">
                     <label class="field-label">Dominant (Owner & Caregiver)</label>
-                    <input type="text" class="field-input" placeholder="Sir, Owner, Daddy...">
+                    <textarea id="dominant-name" class="field-input field-textarea-small" placeholder="Sir, Owner, Daddy..."></textarea>
                 </div>
 
                 <div class="field-group">
                     <label class="field-label">Submissive (Little & Property)</label>
-                    <input type="text" class="field-input" placeholder="little girl, baby girl, princess, pet, toy, belonging...">
+                    <textarea id="submissive-name" class="field-input field-textarea-small" placeholder="little girl, baby girl, princess, pet, toy, belonging..."></textarea>
                 </div>
             </section>
 
@@ -670,20 +1020,62 @@
             <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
 
             <section class="section">
+                <h2 class="section-header">Required Duties & Service</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Daily Requirements</label>
+                    <div class="list-container">
+                        <div id="daily-duties-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addDailyDuty()">Add Daily Requirement</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Ongoing Expectations</label>
+                    <div class="list-container">
+                        <div id="expectations-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addExpectation()">Add Expectation</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
                 <h2 class="section-header">Boundaries</h2>
 
                 <div class="field-group">
                     <label class="field-label">Hard Limits (Absolute No)</label>
                     <div class="list-container">
                         <div id="hard-limits-container">
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter hard limit...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter hard limit...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter hard limit...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addHardLimit()">Add Hard Limit</button>
@@ -694,14 +1086,14 @@
                     <label class="field-label">Soft Limits (Requires Discussion)</label>
                     <div class="list-container">
                         <div id="soft-limits-container">
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter soft limit...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter soft limit...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter soft limit...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addSoftLimit()">Add Soft Limit</button>
@@ -712,14 +1104,14 @@
                     <label class="field-label">Safe Words & Signals</label>
                     <div class="list-container">
                         <div id="safewords-container">
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter safe word or signal...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter safe word or signal...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter safe word or signal...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addSafeword()">Add Safe Word/Signal</button>
@@ -736,14 +1128,14 @@
                     <label class="field-label">Rewards for Obedience & Service</label>
                     <div class="list-container">
                         <div id="rewards-container">
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Privileges granted for pleasing the Dominant...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Privileges granted for pleasing the Dominant...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Privileges granted for pleasing the Dominant...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addReward()">Add Reward</button>
@@ -754,14 +1146,14 @@
                     <label class="field-label">Punishments for Disobedience & Failure</label>
                     <div class="list-container">
                         <div id="punishments-container">
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Consequences for failing to obey or please...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Consequences for failing to obey or please...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
                             </div>
-                            <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Consequences for failing to obey or please...">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addPunishment()">Add Punishment</button>
@@ -776,36 +1168,36 @@
 
                 <div class="field-group">
                     <label class="field-label">Effective Date</label>
-                    <input type="date" class="field-input date-input">
+                    <input id="effective-date" type="date" class="field-input date-input">
                 </div>
 
                 <div class="field-group">
                     <label class="field-label">Duration of Control</label>
-                    <input type="text" class="field-input" placeholder="6 months, 1 year, indefinite, permanent...">
+                    <textarea id="duration-control" class="field-input field-textarea-small" placeholder="6 months, 1 year, indefinite, permanent..."></textarea>
                 </div>
 
                 <div class="field-group">
                     <label class="field-label">Review Schedule (Dominant's Discretion)</label>
-                    <input type="text" class="field-input" placeholder="When the Dominant chooses to review terms...">
+                    <textarea id="review-schedule" class="field-input field-textarea-small" placeholder="When the Dominant chooses to review terms..."></textarea>
                 </div>
 
                 <div class="field-group">
                     <label class="field-label">Release Clause</label>
-                    <textarea class="field-textarea" placeholder="Conditions under which ownership may be terminated..."></textarea>
+                    <textarea id="release-clause" class="field-textarea" placeholder="Conditions under which ownership may be terminated..."></textarea>
                 </div>
             </section>
 
             <section class="signature-section">
                 <div class="signature-box">
                     <label>Owner's Signature</label>
-                    <input type="text" class="signature-input" placeholder="Sign here">
-                    <input type="date" class="field-input date-input" aria-label="Date">
+                    <input id="owner-signature" type="text" class="signature-input" placeholder="Sign here">
+                    <input id="owner-signature-date" type="date" class="field-input date-input" aria-label="Date">
                 </div>
 
-                <div class="signature-box">
+                <div class="signature-box" id="submissive-signature-box">
                     <label>Submissive's Acceptance</label>
-                    <input type="text" class="signature-input" placeholder="Sign here">
-                    <input type="date" class="field-input date-input" aria-label="Date">
+                    <input id="submissive-signature" type="text" class="signature-input" placeholder="Sign here">
+                    <input id="submissive-signature-date" type="date" class="field-input date-input" aria-label="Date">
                 </div>
             </section>
         </div>
@@ -826,33 +1218,45 @@
                 safewords: [],
                 rewards: [],
                 punishments: [],
+                dailyDuties: [],
+                expectations: [],
                 rules: [],
                 otherFields: {}
             };
 
             // Save hard limits
-            document.querySelectorAll('#hard-limits-container .list-item input').forEach(input => {
-                contractData.hardLimits.push(input.value);
+            document.querySelectorAll('#hard-limits-container .list-item textarea').forEach(textarea => {
+                contractData.hardLimits.push(textarea.value);
             });
 
             // Save soft limits
-            document.querySelectorAll('#soft-limits-container .list-item input').forEach(input => {
-                contractData.softLimits.push(input.value);
+            document.querySelectorAll('#soft-limits-container .list-item textarea').forEach(textarea => {
+                contractData.softLimits.push(textarea.value);
             });
 
             // Save safe words
-            document.querySelectorAll('#safewords-container .list-item input').forEach(input => {
-                contractData.safewords.push(input.value);
+            document.querySelectorAll('#safewords-container .list-item textarea').forEach(textarea => {
+                contractData.safewords.push(textarea.value);
             });
 
             // Save rewards
-            document.querySelectorAll('#rewards-container .list-item input').forEach(input => {
-                contractData.rewards.push(input.value);
+            document.querySelectorAll('#rewards-container .list-item textarea').forEach(textarea => {
+                contractData.rewards.push(textarea.value);
             });
 
             // Save punishments
-            document.querySelectorAll('#punishments-container .list-item input').forEach(input => {
-                contractData.punishments.push(input.value);
+            document.querySelectorAll('#punishments-container .list-item textarea').forEach(textarea => {
+                contractData.punishments.push(textarea.value);
+            });
+
+            // Save daily duties
+            document.querySelectorAll('#daily-duties-container .list-item textarea').forEach(textarea => {
+                contractData.dailyDuties.push(textarea.value);
+            });
+
+            // Save expectations
+            document.querySelectorAll('#expectations-container .list-item textarea').forEach(textarea => {
+                contractData.expectations.push(textarea.value);
             });
 
             // Save rules/commands
@@ -896,81 +1300,113 @@
 
                 // Restore hard limits
                 if (contractData.hardLimits && contractData.hardLimits.length > 0) {
-                    const hardLimitsInputs = document.querySelectorAll('#hard-limits-container .list-item input');
+                    const hardLimitsTextareas = document.querySelectorAll('#hard-limits-container .list-item textarea');
                     contractData.hardLimits.forEach((value, index) => {
-                        if (index >= hardLimitsInputs.length) {
+                        if (index >= hardLimitsTextareas.length) {
                             addHardLimit();
                         }
                     });
                     // Set values
-                    const updatedInputs = document.querySelectorAll('#hard-limits-container .list-item input');
+                    const updatedTextareas = document.querySelectorAll('#hard-limits-container .list-item textarea');
                     contractData.hardLimits.forEach((value, index) => {
-                        if (updatedInputs[index]) {
-                            updatedInputs[index].value = value;
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
                         }
                     });
                 }
 
                 // Restore soft limits
                 if (contractData.softLimits && contractData.softLimits.length > 0) {
-                    const softLimitsInputs = document.querySelectorAll('#soft-limits-container .list-item input');
+                    const softLimitsTextareas = document.querySelectorAll('#soft-limits-container .list-item textarea');
                     contractData.softLimits.forEach((value, index) => {
-                        if (index >= softLimitsInputs.length) {
+                        if (index >= softLimitsTextareas.length) {
                             addSoftLimit();
                         }
                     });
-                    const updatedInputs = document.querySelectorAll('#soft-limits-container .list-item input');
+                    const updatedTextareas = document.querySelectorAll('#soft-limits-container .list-item textarea');
                     contractData.softLimits.forEach((value, index) => {
-                        if (updatedInputs[index]) {
-                            updatedInputs[index].value = value;
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
                         }
                     });
                 }
 
                 // Restore safe words
                 if (contractData.safewords && contractData.safewords.length > 0) {
-                    const safewordsInputs = document.querySelectorAll('#safewords-container .list-item input');
+                    const safewordsTextareas = document.querySelectorAll('#safewords-container .list-item textarea');
                     contractData.safewords.forEach((value, index) => {
-                        if (index >= safewordsInputs.length) {
+                        if (index >= safewordsTextareas.length) {
                             addSafeword();
                         }
                     });
-                    const updatedInputs = document.querySelectorAll('#safewords-container .list-item input');
+                    const updatedTextareas = document.querySelectorAll('#safewords-container .list-item textarea');
                     contractData.safewords.forEach((value, index) => {
-                        if (updatedInputs[index]) {
-                            updatedInputs[index].value = value;
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
                         }
                     });
                 }
 
                 // Restore rewards
                 if (contractData.rewards && contractData.rewards.length > 0) {
-                    const rewardsInputs = document.querySelectorAll('#rewards-container .list-item input');
+                    const rewardsTextareas = document.querySelectorAll('#rewards-container .list-item textarea');
                     contractData.rewards.forEach((value, index) => {
-                        if (index >= rewardsInputs.length) {
+                        if (index >= rewardsTextareas.length) {
                             addReward();
                         }
                     });
-                    const updatedInputs = document.querySelectorAll('#rewards-container .list-item input');
+                    const updatedTextareas = document.querySelectorAll('#rewards-container .list-item textarea');
                     contractData.rewards.forEach((value, index) => {
-                        if (updatedInputs[index]) {
-                            updatedInputs[index].value = value;
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
                         }
                     });
                 }
 
                 // Restore punishments
                 if (contractData.punishments && contractData.punishments.length > 0) {
-                    const punishmentsInputs = document.querySelectorAll('#punishments-container .list-item input');
+                    const punishmentsTextareas = document.querySelectorAll('#punishments-container .list-item textarea');
                     contractData.punishments.forEach((value, index) => {
-                        if (index >= punishmentsInputs.length) {
+                        if (index >= punishmentsTextareas.length) {
                             addPunishment();
                         }
                     });
-                    const updatedInputs = document.querySelectorAll('#punishments-container .list-item input');
+                    const updatedTextareas = document.querySelectorAll('#punishments-container .list-item textarea');
                     contractData.punishments.forEach((value, index) => {
-                        if (updatedInputs[index]) {
-                            updatedInputs[index].value = value;
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore daily duties
+                if (contractData.dailyDuties && contractData.dailyDuties.length > 0) {
+                    const dailyDutiesTextareas = document.querySelectorAll('#daily-duties-container .list-item textarea');
+                    contractData.dailyDuties.forEach((value, index) => {
+                        if (index >= dailyDutiesTextareas.length) {
+                            addDailyDuty();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#daily-duties-container .list-item textarea');
+                    contractData.dailyDuties.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore expectations
+                if (contractData.expectations && contractData.expectations.length > 0) {
+                    const expectationsTextareas = document.querySelectorAll('#expectations-container .list-item textarea');
+                    contractData.expectations.forEach((value, index) => {
+                        if (index >= expectationsTextareas.length) {
+                            addExpectation();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#expectations-container .list-item textarea');
+                    contractData.expectations.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
                         }
                     });
                 }
@@ -1046,8 +1482,10 @@
             const container = document.getElementById('hard-limits-container');
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
-            listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter hard limit...">';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>';
             container.appendChild(listItem);
+            initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
         }
@@ -1056,8 +1494,10 @@
             const container = document.getElementById('soft-limits-container');
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
-            listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter soft limit...">';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>';
             container.appendChild(listItem);
+            initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
         }
@@ -1066,8 +1506,10 @@
             const container = document.getElementById('safewords-container');
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
-            listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter safe word or signal...">';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>';
             container.appendChild(listItem);
+            initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
         }
@@ -1076,8 +1518,10 @@
             const container = document.getElementById('rewards-container');
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
-            listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter reward...">';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter reward..."></textarea>';
             container.appendChild(listItem);
+            initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
         }
@@ -1086,16 +1530,365 @@
             const container = document.getElementById('punishments-container');
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
-            listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter punishment...">';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter punishment..."></textarea>';
             container.appendChild(listItem);
+            initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
         }
 
+        function addDailyDuty() {
+            const container = document.getElementById('daily-duties-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>';
+            container.appendChild(listItem);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addExpectation() {
+            const container = document.getElementById('expectations-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>';
+            container.appendChild(listItem);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        // Drag and drop functionality
+        let draggedItem = null;
+
+        function initDragAndDrop(item) {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+        }
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.list-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            scheduleAutoSave();
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (this !== draggedItem) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            if (draggedItem !== this) {
+                const parent = this.parentNode;
+                const allItems = [...parent.querySelectorAll('.list-item')];
+                const draggedIndex = allItems.indexOf(draggedItem);
+                const targetIndex = allItems.indexOf(this);
+
+                if (draggedIndex < targetIndex) {
+                    parent.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    parent.insertBefore(draggedItem, this);
+                }
+            }
+
+            return false;
+        }
+
+        // Check if page is in readonly mode
+        function isReadOnlyMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('readonly') === 'true';
+        }
+
+        // Make the page readonly
+        function enableReadOnlyMode() {
+            // Add readonly class to body
+            document.body.classList.add('readonly-mode');
+
+            // Disable all inputs and textareas EXCEPT submissive signature
+            document.querySelectorAll('input, textarea').forEach(field => {
+                if (field.id !== 'submissive-signature') {
+                    field.setAttribute('readonly', 'readonly');
+                    field.style.cursor = 'default';
+                }
+            });
+
+            // Specifically make the submissive date field readonly and set to today
+            const subSignatureDate = document.getElementById('submissive-signature-date');
+            if (subSignatureDate) {
+                subSignatureDate.setAttribute('readonly', 'readonly');
+                subSignatureDate.style.cursor = 'default';
+                subSignatureDate.style.pointerEvents = 'none';
+            }
+
+            // Hide action buttons
+            document.getElementById('action-buttons').style.display = 'none';
+
+            // Show readonly indicator and sign button FIRST
+            document.getElementById('readonly-indicator').style.display = 'block';
+            document.getElementById('sign-button-container').style.display = 'flex';
+
+            // Disable all buttons EXCEPT the sign button
+            document.querySelectorAll('button').forEach(button => {
+                // Don't disable the sign button
+                if (!button.closest('#sign-button-container')) {
+                    button.disabled = true;
+                    button.style.display = 'none';
+                }
+            });
+
+            // Disable dragging
+            document.querySelectorAll('.list-item').forEach(item => {
+                item.setAttribute('draggable', 'false');
+                item.style.cursor = 'default';
+            });
+
+            // Enable autosave for submissive signature field only
+            const subSignature = document.getElementById('submissive-signature');
+
+            if (subSignature) {
+                subSignature.addEventListener('input', scheduleAutoSave);
+                subSignature.addEventListener('blur', checkIfContractSigned);
+                subSignature.addEventListener('input', checkIfContractSigned);
+            }
+
+            // Scroll to top of page in readonly mode
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }, 100);
+        }
+
+        // Timeout for checking if contract is signed
+        let signCheckTimeout;
+
+        // Check if contract is signed and show confirmation
+        function checkIfContractSigned() {
+            // Clear any existing timeout
+            if (signCheckTimeout) {
+                clearTimeout(signCheckTimeout);
+            }
+
+            const subSignature = document.getElementById('submissive-signature');
+
+            // Check if signature is filled (at least 2 characters to prevent accidental triggers)
+            if (subSignature && subSignature.value.trim().length >= 2) {
+                // Wait 3 seconds after she stops typing
+                signCheckTimeout = setTimeout(() => {
+                    // Show signed indicator
+                    const indicator = document.getElementById('contract-signed-indicator');
+                    indicator.style.display = 'block';
+
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 5000);
+
+                    // Update sign button to show it's complete
+                    const signBtn = document.querySelector('#sign-button-container .action-btn');
+                    if (signBtn) {
+                        signBtn.textContent = '✓ Signed';
+                        signBtn.style.background = 'linear-gradient(135deg, #006400, #228b22)';
+                        signBtn.disabled = true;
+                    }
+                }, 3000); // 3 second delay
+            }
+        }
+
+        // Scroll to and highlight submissive signature section
+        function scrollToSignature() {
+            const signatureBox = document.getElementById('submissive-signature-box');
+            const signatureInput = document.getElementById('submissive-signature');
+
+            // Scroll to signature section
+            signatureBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Focus on signature input and add glow to the underline
+            setTimeout(() => {
+                signatureInput.focus();
+                signatureInput.classList.add('signature-input-highlight');
+
+                // Remove highlight after animation completes (3 pulses × 2s = 6s)
+                setTimeout(() => {
+                    signatureInput.classList.remove('signature-input-highlight');
+                }, 6000);
+            }, 500);
+        }
+
+        // Generate shareable readonly link
+        function generateShareableLink() {
+            // Save current state first
+            autoSave();
+
+            // Create readonly URL
+            const baseUrl = window.location.href.split('?')[0];
+            const readonlyUrl = baseUrl + '?readonly=true';
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(readonlyUrl).then(() => {
+                // Show indicator
+                const indicator = document.getElementById('autosave-indicator');
+                indicator.textContent = '✓ Link Copied!';
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    indicator.textContent = '✓ Saved';
+                }, 3000);
+            }).catch(err => {
+                alert('Shareable link: ' + readonlyUrl);
+            });
+        }
+
+        // Save contract as PNG
+        function saveAsPNG() {
+            // Save current state first
+            autoSave();
+
+            // Hide action buttons temporarily
+            const actionButtons = document.getElementById('action-buttons');
+            const autosaveIndicator = document.getElementById('autosave-indicator');
+            actionButtons.style.display = 'none';
+            autosaveIndicator.style.display = 'none';
+
+            // Show indicator
+            const indicator = document.getElementById('autosave-indicator');
+            indicator.textContent = '📸 Generating PNG...';
+            indicator.classList.add('show');
+
+            // Use html2canvas to capture the contract
+            html2canvas(document.querySelector('.contract-container'), {
+                backgroundColor: '#1a0a0a',
+                scale: 2,
+                logging: false,
+                useCORS: true,
+                allowTaint: true
+            }).then(canvas => {
+                // Convert canvas to blob
+                canvas.toBlob(blob => {
+                    // Create download link
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'contract-' + new Date().toISOString().split('T')[0] + '.png';
+                    link.href = url;
+                    link.click();
+
+                    // Cleanup
+                    URL.revokeObjectURL(url);
+
+                    // Show success
+                    indicator.textContent = '✓ PNG Saved!';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+
+                    // Restore buttons
+                    actionButtons.style.display = 'flex';
+                });
+            }).catch(err => {
+                console.error('Error generating PNG:', err);
+                indicator.textContent = '❌ Error';
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    indicator.textContent = '✓ Saved';
+                }, 2000);
+                actionButtons.style.display = 'flex';
+            });
+        }
+
+        // Set today's date in signature fields
+        function setTodaysDate() {
+            const today = new Date().toISOString().split('T')[0];
+            const ownerDate = document.getElementById('owner-signature-date');
+            const subDate = document.getElementById('submissive-signature-date');
+
+            // Only set if not already filled
+            if (ownerDate && !ownerDate.value) {
+                ownerDate.value = today;
+            }
+            if (subDate && !subDate.value) {
+                subDate.value = today;
+            }
+        }
+
+        // Initialize flatpickr date pickers
+        function initDatePickers() {
+            const dateConfig = {
+                dateFormat: "Y-m-d",
+                allowInput: true,
+                defaultDate: new Date(),
+                theme: "dark"
+            };
+
+            // Initialize all date inputs
+            document.querySelectorAll('input[type="date"]').forEach(input => {
+                // In readonly mode, don't initialize flatpickr for submissive date
+                if (isReadOnlyMode() && input.id === 'submissive-signature-date') {
+                    return; // Skip this date picker in readonly mode
+                }
+
+                flatpickr(input, {
+                    ...dateConfig,
+                    onChange: function(selectedDates, dateStr, instance) {
+                        // Trigger autosave when date changes
+                        scheduleAutoSave();
+                    }
+                });
+            });
+        }
+
         // Initialize on page load
         window.addEventListener('load', () => {
-            loadSavedData();
-            initAutoSave();
+            // Check if readonly mode
+            if (isReadOnlyMode()) {
+                loadSavedData();
+                setTodaysDate(); // Set date after loading saved data
+                initDatePickers(); // Initialize date pickers
+                enableReadOnlyMode();
+            } else {
+                loadSavedData();
+                setTodaysDate(); // Set date after loading saved data
+                initDatePickers(); // Initialize date pickers
+                initAutoSave();
+
+                // Initialize drag and drop for all existing list items
+                document.querySelectorAll('.list-item').forEach(item => {
+                    initDragAndDrop(item);
+                });
+            }
         });
     </script>
 </body>
