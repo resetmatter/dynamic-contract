@@ -104,72 +104,6 @@
             --rotate: -15deg;
         }
 
-        /* Chain borders */
-        .chain-border {
-            position: absolute;
-            pointer-events: none;
-            opacity: 0.7;
-            z-index: 5;
-        }
-
-        .chain-vertical {
-            top: 80px;
-            bottom: 80px;
-            width: 35px;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent 0px,
-                transparent 15px,
-                #1a1a1a 15px,
-                #2a2a2a 18px,
-                #3a3a3a 20px,
-                #4a4a4a 22px,
-                #3a3a3a 24px,
-                #2a2a2a 27px,
-                #1a1a1a 30px,
-                transparent 30px,
-                transparent 45px
-            );
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .chain-left {
-            left: 15px;
-        }
-
-        .chain-right {
-            right: 15px;
-        }
-
-        .chain-horizontal {
-            left: 80px;
-            right: 80px;
-            height: 35px;
-            background: repeating-linear-gradient(
-                90deg,
-                transparent 0px,
-                transparent 15px,
-                #1a1a1a 15px,
-                #2a2a2a 18px,
-                #3a3a3a 20px,
-                #4a4a4a 22px,
-                #3a3a3a 24px,
-                #2a2a2a 27px,
-                #1a1a1a 30px,
-                transparent 30px,
-                transparent 45px
-            );
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .chain-top {
-            top: 15px;
-        }
-
-        .chain-bottom {
-            bottom: 15px;
-        }
-
         /* Subtle pink accent line */
         .pink-accent {
             position: absolute;
@@ -320,7 +254,7 @@
             border: 1px solid rgba(139, 0, 0, 0.4);
             background: rgba(0, 0, 0, 0.3);
             font-family: 'Crimson Text', serif;
-            font-size: 15px;
+            font-size: 17px;
             color: #ffb6c1;
             transition: all 0.3s ease;
             border-radius: 3px;
@@ -346,12 +280,14 @@
             min-height: 95px;
             resize: vertical;
             line-height: 1.6;
+            overflow: hidden;
         }
 
         .field-textarea-small {
             min-height: 50px;
             resize: vertical;
             line-height: 1.6;
+            overflow: hidden;
         }
 
         .add-rule-btn {
@@ -505,6 +441,57 @@
             transform: translateX(3px);
         }
 
+        .command-item {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .command-item .field-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .command-item-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .command-item-content:hover {
+            background: rgba(139, 0, 0, 0.15);
+        }
+
+        .command-item-content .field-textarea {
+            flex: 1;
+        }
+
+        .party-item {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .party-item .field-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .party-item-content {
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .party-item-content:hover {
+            background: rgba(139, 0, 0, 0.15);
+        }
+
         .list-item.dragging {
             opacity: 0.5;
             transform: scale(0.95);
@@ -539,6 +526,35 @@
             min-height: 45px;
             resize: vertical;
             padding: 10px 14px;
+            flex: 1;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            border: 1px solid rgba(220, 20, 60, 0.6);
+            color: #ffb6c1;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 3px;
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+            border-color: #ff69b4;
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .delete-btn:active {
+            transform: translateY(0);
         }
 
         .add-item-btn {
@@ -1188,7 +1204,7 @@
 
     <div id="sign-button-container" style="display: none;">
         <button class="action-btn" onclick="scrollToSignature()">✍️ Sign Contract</button>
-        <button class="action-btn brag-mode-btn" onclick="openBragModal()">✨ Brag Mode</button>
+        <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()">✨ Brag Mode</button>
     </div>
 
     <!-- Contract Signed Indicator -->
@@ -1292,12 +1308,6 @@
         <div class="bow bow-bottom-left">🎀</div>
         <div class="bow bow-bottom-right">🎀</div>
 
-        <!-- Chain borders -->
-        <div class="chain-border chain-vertical chain-left"></div>
-        <div class="chain-border chain-vertical chain-right"></div>
-        <div class="chain-border chain-horizontal chain-top"></div>
-        <div class="chain-border chain-horizontal chain-bottom"></div>
-
         <div class="content">
             <div class="header">
                 <h1 class="title">D/s Dynamic Contract</h1>
@@ -1317,37 +1327,59 @@
                 <h2 class="section-header">Parties</h2>
 
                 <div class="field-group">
-                    <label class="field-label">Dominant (Owner & Caregiver)</label>
-                    <textarea id="dominant-name" class="field-input field-textarea-small" placeholder="Sir, Owner, Daddy..."></textarea>
-                </div>
+                    <div class="list-container">
+                        <div class="party-item">
+                            <label class="field-label">Dominant (Owner & Caregiver)</label>
+                            <div class="party-item-content">
+                                <textarea id="dominant-name" class="field-input field-textarea-small" placeholder="Sir, Owner, Daddy..."></textarea>
+                            </div>
+                        </div>
 
-                <div class="field-group">
-                    <label class="field-label">Submissive (Little & Property)</label>
-                    <textarea id="submissive-name" class="field-input field-textarea-small" placeholder="little girl, baby girl, princess, pet, toy, belonging..."></textarea>
+                        <div class="party-item">
+                            <label class="field-label">Submissive (Little & Property)</label>
+                            <div class="party-item-content">
+                                <textarea id="submissive-name" class="field-input field-textarea-small" placeholder="little girl, baby girl, princess, pet, toy, belonging..."></textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
 
             <section class="section">
                 <h2 class="section-header">Commands & Absolute Rules</h2>
 
-                <div id="rules-container">
-                    <div class="field-group">
-                        <label class="field-label">Command 1</label>
-                        <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
-                    </div>
+                <div class="field-group">
+                    <div class="list-container">
+                        <div id="rules-container">
+                            <div class="command-item">
+                                <label class="field-label">Command 1</label>
+                                <div class="command-item-content">
+                                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                                </div>
+                            </div>
 
-                    <div class="field-group">
-                        <label class="field-label">Command 2</label>
-                        <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
-                    </div>
+                            <div class="command-item">
+                                <label class="field-label">Command 2</label>
+                                <div class="command-item-content">
+                                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                                </div>
+                            </div>
 
-                    <div class="field-group">
-                        <label class="field-label">Command 3</label>
-                        <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                            <div class="command-item">
+                                <label class="field-label">Command 3</label>
+                                <div class="command-item-content">
+                                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addRule()">Add Command</button>
                     </div>
                 </div>
-
-                <button class="add-rule-btn" onclick="addRule()">Add Command</button>
             </section>
 
             <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
@@ -1361,12 +1393,15 @@
                         <div id="daily-duties-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addDailyDuty()">Add Daily Requirement</button>
@@ -1379,12 +1414,15 @@
                         <div id="expectations-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addExpectation()">Add Expectation</button>
@@ -1403,12 +1441,15 @@
                         <div id="hard-limits-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addHardLimit()">Add Hard Limit</button>
@@ -1421,12 +1462,15 @@
                         <div id="soft-limits-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addSoftLimit()">Add Soft Limit</button>
@@ -1439,12 +1483,15 @@
                         <div id="safewords-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addSafeword()">Add Safe Word/Signal</button>
@@ -1463,12 +1510,15 @@
                         <div id="rewards-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addReward()">Add Reward</button>
@@ -1481,12 +1531,15 @@
                         <div id="punishments-container">
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                             <div class="list-item" draggable="true">
                                 <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addPunishment()">Add Punishment</button>
@@ -1801,12 +1854,17 @@
             ruleCount++;
             const container = document.getElementById('rules-container');
             const newRule = document.createElement('div');
-            newRule.className = 'field-group';
+            newRule.className = 'command-item';
             newRule.innerHTML = `
                 <label class="field-label">Command ${ruleCount}</label>
-                <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                <div class="command-item-content">
+                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                </div>
             `;
             container.appendChild(newRule);
+            const textarea = newRule.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             newRule.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
         }
@@ -1816,8 +1874,10 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter hard limit..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
@@ -1828,8 +1888,10 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter soft limit..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
@@ -1840,8 +1902,10 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
@@ -1852,8 +1916,10 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter reward..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
@@ -1864,8 +1930,10 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter punishment..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
@@ -1876,8 +1944,10 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
@@ -1888,11 +1958,46 @@
             const listItem = document.createElement('div');
             listItem.className = 'list-item';
             listItem.setAttribute('draggable', 'true');
-            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>';
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
             container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
             initDragAndDrop(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
             scheduleAutoSave();
+        }
+
+        // Auto-resize textarea functionality
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function initTextareaAutoResize(textarea) {
+            // Initial resize
+            autoResizeTextarea(textarea);
+
+            // Add event listener for future changes
+            textarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Delete functionality
+        function deleteCommandItem(button) {
+            const commandItem = button.closest('.command-item');
+            if (commandItem) {
+                commandItem.remove();
+                scheduleAutoSave();
+            }
+        }
+
+        function deleteListItem(button) {
+            const listItem = button.closest('.list-item');
+            if (listItem) {
+                listItem.remove();
+                scheduleAutoSave();
+            }
         }
 
         // Drag and drop functionality
@@ -1989,11 +2094,15 @@
             }
 
             // Hide action buttons
-            document.getElementById('action-buttons').style.display = 'none';
+            const actionButtons = document.getElementById('action-buttons');
+            if (actionButtons) actionButtons.style.display = 'none';
 
             // Show readonly indicator and sign button FIRST
-            document.getElementById('readonly-indicator').style.display = 'block';
-            document.getElementById('sign-button-container').style.display = 'flex';
+            const readonlyIndicator = document.getElementById('readonly-indicator');
+            const signButtonContainer = document.getElementById('sign-button-container');
+
+            if (readonlyIndicator) readonlyIndicator.style.display = 'block';
+            if (signButtonContainer) signButtonContainer.style.display = 'flex';
 
             // Disable all buttons EXCEPT the sign button
             document.querySelectorAll('button').forEach(button => {
@@ -2019,9 +2128,19 @@
                 subSignature.addEventListener('input', checkIfContractSigned);
             }
 
-            // Scroll to top of page in readonly mode
+            // Scroll to top of page in readonly mode and check brag button visibility
             setTimeout(() => {
                 window.scrollTo({ top: 0, behavior: 'instant' });
+
+                // Check if contract is already signed and show/hide brag button accordingly
+                const readonlyBragBtn = document.getElementById('readonly-brag-btn');
+                if (readonlyBragBtn) {
+                    if (subSignature && subSignature.value.trim() !== '') {
+                        readonlyBragBtn.style.display = 'block';
+                    } else {
+                        readonlyBragBtn.style.display = 'none';
+                    }
+                }
             }, 100);
         }
 
@@ -2056,6 +2175,12 @@
                         signBtn.textContent = '✓ Signed';
                         signBtn.style.background = 'linear-gradient(135deg, #006400, #228b22)';
                         signBtn.disabled = true;
+                    }
+
+                    // Show brag mode button now that contract is signed
+                    const readonlyBragBtn = document.getElementById('readonly-brag-btn');
+                    if (readonlyBragBtn) {
+                        readonlyBragBtn.style.display = 'block';
                     }
                 }, 3000); // 3 second delay
             }
@@ -2517,6 +2642,11 @@
 
         // Initialize on page load
         window.addEventListener('load', () => {
+            // Initialize auto-resize for all textareas
+            document.querySelectorAll('.field-textarea, .field-textarea-small').forEach(textarea => {
+                initTextareaAutoResize(textarea);
+            });
+
             // Check if brag mode
             if (isBragMode()) {
                 loadSavedData();
