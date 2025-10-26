@@ -462,10 +462,10 @@
             border-left: 4px solid #8b0000;
             padding: 20px;
             margin: 30px 0;
-            font-size: 13px;
+            font-size: 16px;
             color: #d4768f;
             font-style: italic;
-            line-height: 1.6;
+            line-height: 1.8;
             border-radius: 3px;
         }
 
@@ -526,6 +526,27 @@
             content: '+ ';
         }
 
+        .autosave-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.9), rgba(220, 20, 60, 0.9));
+            color: #ffb6c1;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .autosave-indicator.show {
+            opacity: 1;
+        }
+
         @media print {
             body {
                 background:
@@ -545,7 +566,8 @@
             }
 
             .add-rule-btn,
-            .add-item-btn {
+            .add-item-btn,
+            .autosave-indicator {
                 display: none !important;
             }
 
@@ -595,54 +617,54 @@
 
         <div class="content">
             <div class="header">
-                <h1 class="title">Contract of Submission</h1>
+                <h1 class="title">D/s Dynamic Contract</h1>
                 <p class="subtitle">
-                    Between
+                    Between Dom
                     <input type="text" value="Matthew" readonly style="cursor: default;" aria-label="Dominant's name">
-                    and
+                    and his sub
                     <input type="text" value="Shailah" readonly style="cursor: default;" aria-label="Submissive's name">
                 </p>
             </div>
 
             <div class="terms-notice">
-                This contract is entered into consensually by both parties. All activities are bound by established safe words, hard limits, and mutual respect. Either party may renegotiate or terminate this agreement through open communication.
+                This contract establishes a Total Power Exchange (TPE) dynamic where the submissive willingly surrenders complete control and authority to the Dominant. The submissive acknowledges the Dominant's absolute authority in all matters and agrees to obey without question. All activities remain bound by established safe words and hard limits. Either party may terminate this agreement, though renegotiation requires the Dominant's approval.
             </div>
 
             <section class="section">
                 <h2 class="section-header">Parties</h2>
 
                 <div class="field-group">
-                    <label class="field-label">Dominant (Name & Title)</label>
-                    <input type="text" class="field-input" placeholder="Sir, Master, Mistress, Daddy, Owner...">
+                    <label class="field-label">Dominant (Owner & Caregiver)</label>
+                    <input type="text" class="field-input" placeholder="Sir, Owner, Daddy...">
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label">Submissive (Name & Title)</label>
-                    <input type="text" class="field-input" placeholder="pet, kitten, baby girl, princess, slave...">
+                    <label class="field-label">Submissive (Little & Property)</label>
+                    <input type="text" class="field-input" placeholder="little girl, baby girl, princess, pet, toy, belonging...">
                 </div>
             </section>
 
             <section class="section">
-                <h2 class="section-header">Rules & Protocols</h2>
+                <h2 class="section-header">Commands & Absolute Rules</h2>
 
                 <div id="rules-container">
                     <div class="field-group">
-                        <label class="field-label">Rule 1</label>
-                        <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                        <label class="field-label">Command 1</label>
+                        <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
                     </div>
 
                     <div class="field-group">
-                        <label class="field-label">Rule 2</label>
-                        <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                        <label class="field-label">Command 2</label>
+                        <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
                     </div>
 
                     <div class="field-group">
-                        <label class="field-label">Rule 3</label>
-                        <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                        <label class="field-label">Command 3</label>
+                        <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
                     </div>
                 </div>
 
-                <button class="add-rule-btn" onclick="addRule()">Add Rule</button>
+                <button class="add-rule-btn" onclick="addRule()">Add Command</button>
             </section>
 
             <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
@@ -708,20 +730,20 @@
             <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
 
             <section class="section">
-                <h2 class="section-header">Discipline</h2>
+                <h2 class="section-header">Discipline & Correction</h2>
 
                 <div class="field-group">
-                    <label class="field-label">Rewards</label>
+                    <label class="field-label">Rewards for Obedience & Service</label>
                     <div class="list-container">
                         <div id="rewards-container">
                             <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter reward...">
+                                <input type="text" class="field-input" placeholder="Privileges granted for pleasing the Dominant...">
                             </div>
                             <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter reward...">
+                                <input type="text" class="field-input" placeholder="Privileges granted for pleasing the Dominant...">
                             </div>
                             <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter reward...">
+                                <input type="text" class="field-input" placeholder="Privileges granted for pleasing the Dominant...">
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addReward()">Add Reward</button>
@@ -729,17 +751,17 @@
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label">Punishments</label>
+                    <label class="field-label">Punishments for Disobedience & Failure</label>
                     <div class="list-container">
                         <div id="punishments-container">
                             <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter punishment...">
+                                <input type="text" class="field-input" placeholder="Consequences for failing to obey or please...">
                             </div>
                             <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter punishment...">
+                                <input type="text" class="field-input" placeholder="Consequences for failing to obey or please...">
                             </div>
                             <div class="list-item">
-                                <input type="text" class="field-input" placeholder="Enter punishment...">
+                                <input type="text" class="field-input" placeholder="Consequences for failing to obey or please...">
                             </div>
                         </div>
                         <button class="add-item-btn" onclick="addPunishment()">Add Punishment</button>
@@ -750,7 +772,7 @@
             <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
 
             <section class="section">
-                <h2 class="section-header">Terms</h2>
+                <h2 class="section-header">Terms of Ownership</h2>
 
                 <div class="field-group">
                     <label class="field-label">Effective Date</label>
@@ -758,30 +780,30 @@
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label">Duration</label>
-                    <input type="text" class="field-input" placeholder="6 months, 1 year, ongoing...">
+                    <label class="field-label">Duration of Control</label>
+                    <input type="text" class="field-input" placeholder="6 months, 1 year, indefinite, permanent...">
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label">Review Schedule</label>
-                    <input type="text" class="field-input" placeholder="Weekly, monthly, quarterly check-ins...">
+                    <label class="field-label">Review Schedule (Dominant's Discretion)</label>
+                    <input type="text" class="field-input" placeholder="When the Dominant chooses to review terms...">
                 </div>
 
                 <div class="field-group">
-                    <label class="field-label">Termination Clause</label>
-                    <textarea class="field-textarea" placeholder="How either party can exit this contract..."></textarea>
+                    <label class="field-label">Release Clause</label>
+                    <textarea class="field-textarea" placeholder="Conditions under which ownership may be terminated..."></textarea>
                 </div>
             </section>
 
             <section class="signature-section">
                 <div class="signature-box">
-                    <label>Dominant's Signature</label>
+                    <label>Owner's Signature</label>
                     <input type="text" class="signature-input" placeholder="Sign here">
                     <input type="date" class="field-input date-input" aria-label="Date">
                 </div>
 
                 <div class="signature-box">
-                    <label>Submissive's Signature</label>
+                    <label>Submissive's Acceptance</label>
                     <input type="text" class="signature-input" placeholder="Sign here">
                     <input type="date" class="field-input date-input" aria-label="Date">
                 </div>
@@ -789,8 +811,222 @@
         </div>
     </div>
 
+    <div class="autosave-indicator" id="autosave-indicator">✓ Saved</div>
+
     <script>
         let ruleCount = 3;
+        let autosaveTimeout;
+
+        // Auto-save function
+        function autoSave() {
+            const contractData = {
+                ruleCount: ruleCount,
+                hardLimits: [],
+                softLimits: [],
+                safewords: [],
+                rewards: [],
+                punishments: [],
+                rules: [],
+                otherFields: {}
+            };
+
+            // Save hard limits
+            document.querySelectorAll('#hard-limits-container .list-item input').forEach(input => {
+                contractData.hardLimits.push(input.value);
+            });
+
+            // Save soft limits
+            document.querySelectorAll('#soft-limits-container .list-item input').forEach(input => {
+                contractData.softLimits.push(input.value);
+            });
+
+            // Save safe words
+            document.querySelectorAll('#safewords-container .list-item input').forEach(input => {
+                contractData.safewords.push(input.value);
+            });
+
+            // Save rewards
+            document.querySelectorAll('#rewards-container .list-item input').forEach(input => {
+                contractData.rewards.push(input.value);
+            });
+
+            // Save punishments
+            document.querySelectorAll('#punishments-container .list-item input').forEach(input => {
+                contractData.punishments.push(input.value);
+            });
+
+            // Save rules/commands
+            document.querySelectorAll('#rules-container textarea').forEach(textarea => {
+                contractData.rules.push(textarea.value);
+            });
+
+            // Save all other fields with IDs
+            document.querySelectorAll('input[type="text"]:not(.list-item input), input[type="date"], textarea:not(#rules-container textarea)').forEach(field => {
+                if (field.id || field.getAttribute('aria-label')) {
+                    const key = field.id || field.getAttribute('aria-label') || field.placeholder;
+                    contractData.otherFields[key] = field.value;
+                }
+            });
+
+            localStorage.setItem('contractData', JSON.stringify(contractData));
+            showSaveIndicator();
+        }
+
+        // Show save indicator
+        function showSaveIndicator() {
+            const indicator = document.getElementById('autosave-indicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // Load saved data
+        function loadSavedData() {
+            const savedData = localStorage.getItem('contractData');
+            if (!savedData) return;
+
+            try {
+                const contractData = JSON.parse(savedData);
+
+                // Restore rule count
+                if (contractData.ruleCount) {
+                    ruleCount = contractData.ruleCount;
+                }
+
+                // Restore hard limits
+                if (contractData.hardLimits && contractData.hardLimits.length > 0) {
+                    const hardLimitsInputs = document.querySelectorAll('#hard-limits-container .list-item input');
+                    contractData.hardLimits.forEach((value, index) => {
+                        if (index >= hardLimitsInputs.length) {
+                            addHardLimit();
+                        }
+                    });
+                    // Set values
+                    const updatedInputs = document.querySelectorAll('#hard-limits-container .list-item input');
+                    contractData.hardLimits.forEach((value, index) => {
+                        if (updatedInputs[index]) {
+                            updatedInputs[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore soft limits
+                if (contractData.softLimits && contractData.softLimits.length > 0) {
+                    const softLimitsInputs = document.querySelectorAll('#soft-limits-container .list-item input');
+                    contractData.softLimits.forEach((value, index) => {
+                        if (index >= softLimitsInputs.length) {
+                            addSoftLimit();
+                        }
+                    });
+                    const updatedInputs = document.querySelectorAll('#soft-limits-container .list-item input');
+                    contractData.softLimits.forEach((value, index) => {
+                        if (updatedInputs[index]) {
+                            updatedInputs[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore safe words
+                if (contractData.safewords && contractData.safewords.length > 0) {
+                    const safewordsInputs = document.querySelectorAll('#safewords-container .list-item input');
+                    contractData.safewords.forEach((value, index) => {
+                        if (index >= safewordsInputs.length) {
+                            addSafeword();
+                        }
+                    });
+                    const updatedInputs = document.querySelectorAll('#safewords-container .list-item input');
+                    contractData.safewords.forEach((value, index) => {
+                        if (updatedInputs[index]) {
+                            updatedInputs[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore rewards
+                if (contractData.rewards && contractData.rewards.length > 0) {
+                    const rewardsInputs = document.querySelectorAll('#rewards-container .list-item input');
+                    contractData.rewards.forEach((value, index) => {
+                        if (index >= rewardsInputs.length) {
+                            addReward();
+                        }
+                    });
+                    const updatedInputs = document.querySelectorAll('#rewards-container .list-item input');
+                    contractData.rewards.forEach((value, index) => {
+                        if (updatedInputs[index]) {
+                            updatedInputs[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore punishments
+                if (contractData.punishments && contractData.punishments.length > 0) {
+                    const punishmentsInputs = document.querySelectorAll('#punishments-container .list-item input');
+                    contractData.punishments.forEach((value, index) => {
+                        if (index >= punishmentsInputs.length) {
+                            addPunishment();
+                        }
+                    });
+                    const updatedInputs = document.querySelectorAll('#punishments-container .list-item input');
+                    contractData.punishments.forEach((value, index) => {
+                        if (updatedInputs[index]) {
+                            updatedInputs[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore rules/commands
+                if (contractData.rules && contractData.rules.length > 0) {
+                    const rulesTextareas = document.querySelectorAll('#rules-container textarea');
+                    contractData.rules.forEach((value, index) => {
+                        if (index >= rulesTextareas.length) {
+                            addRule();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#rules-container textarea');
+                    contractData.rules.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore other fields
+                if (contractData.otherFields) {
+                    Object.keys(contractData.otherFields).forEach(key => {
+                        const field = document.getElementById(key) ||
+                                    document.querySelector(`[aria-label="${key}"]`) ||
+                                    document.querySelector(`[placeholder="${key}"]`);
+                        if (field) {
+                            field.value = contractData.otherFields[key];
+                        }
+                    });
+                }
+
+            } catch (e) {
+                console.error('Error loading saved data:', e);
+            }
+        }
+
+        // Debounced auto-save on input
+        function scheduleAutoSave() {
+            clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(autoSave, 500);
+        }
+
+        // Add event listeners for auto-save
+        function initAutoSave() {
+            document.addEventListener('input', scheduleAutoSave);
+            document.addEventListener('change', scheduleAutoSave);
+        }
+
+        // Clear saved data (optional)
+        function clearSavedData() {
+            if (confirm('Are you sure you want to clear all saved data?')) {
+                localStorage.removeItem('contractData');
+                location.reload();
+            }
+        }
 
         function addRule() {
             ruleCount++;
@@ -798,11 +1034,12 @@
             const newRule = document.createElement('div');
             newRule.className = 'field-group';
             newRule.innerHTML = `
-                <label class="field-label">Rule ${ruleCount}</label>
-                <textarea class="field-textarea" placeholder="State the rule, protocol, or expectation..."></textarea>
+                <label class="field-label">Command ${ruleCount}</label>
+                <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
             `;
             container.appendChild(newRule);
             newRule.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
         }
 
         function addHardLimit() {
@@ -812,6 +1049,7 @@
             listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter hard limit...">';
             container.appendChild(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
         }
 
         function addSoftLimit() {
@@ -821,6 +1059,7 @@
             listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter soft limit...">';
             container.appendChild(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
         }
 
         function addSafeword() {
@@ -830,6 +1069,7 @@
             listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter safe word or signal...">';
             container.appendChild(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
         }
 
         function addReward() {
@@ -839,6 +1079,7 @@
             listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter reward...">';
             container.appendChild(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
         }
 
         function addPunishment() {
@@ -848,7 +1089,14 @@
             listItem.innerHTML = '<input type="text" class="field-input" placeholder="Enter punishment...">';
             container.appendChild(listItem);
             listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
         }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            loadSavedData();
+            initAutoSave();
+        });
     </script>
 </body>
 </html>
