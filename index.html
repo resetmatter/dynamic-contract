@@ -1736,12 +1736,12 @@
                 return;
             }
 
-            // Debounce: wait 3 seconds after last change before syncing
+            // Debounce: wait 1 second after last change before syncing
             clearTimeout(gistUpdateTimeout);
             gistUpdateTimeout = setTimeout(async () => {
-                // Throttle: don't update more than once every 10 seconds
+                // Throttle: don't update more than once every 2 seconds
                 const now = Date.now();
-                if (now - lastGistUpdate < 10000) {
+                if (now - lastGistUpdate < 2000) {
                     return;
                 }
 
@@ -1776,7 +1776,7 @@
                 } catch (error) {
                     console.error('Error syncing to gist:', error);
                 }
-            }, 3000); // Wait 3 seconds after last change
+            }, 1000); // Wait 1 second after last change
         }
 
         // Load saved data (deprecated - now loads from Gist instead)
@@ -2924,11 +2924,11 @@
 
         // Start polling for updates
         function startGistPolling() {
-            // Poll every 5 seconds
+            // Poll every 2 seconds for near-instant updates
             if (pollingInterval) {
                 clearInterval(pollingInterval);
             }
-            pollingInterval = setInterval(checkForGistUpdates, 5000);
+            pollingInterval = setInterval(checkForGistUpdates, 2000);
         }
 
         // Stop polling
@@ -2945,7 +2945,7 @@
             clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
                 userIsTyping = false;
-            }, 5000); // Consider user done typing after 5 seconds of inactivity
+            }, 2000); // Consider user done typing after 2 seconds of inactivity
         }
 
         // Helper function to apply contract data (used by both localStorage and Gist loading)
