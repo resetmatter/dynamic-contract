@@ -2765,7 +2765,16 @@
         // Load contract data from GitHub Gist
         async function loadFromGist(gistId, silent = false) {
             try {
-                const response = await fetch(`https://api.github.com/gists/${gistId}`);
+                // Try to use token if available (needed for private gists)
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `token ${token}`;
+                }
+
+                const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    headers: headers
+                });
 
                 if (!response.ok) {
                     throw new Error(`Failed to fetch gist: ${response.status}`);
@@ -2792,7 +2801,13 @@
             } catch (error) {
                 console.error('Error loading gist:', error);
                 if (!silent) {
-                    alert('Error loading contract data from link. The link may be invalid or expired.');
+                    const hasToken = localStorage.getItem('githubToken');
+                    if (!hasToken) {
+                        console.log('[Load] ⚠️ No access token - waiting for user to enter it');
+                        // Don't show error if we're waiting for token on first visit
+                    } else {
+                        alert('Error loading contract data. Please check your access code and try again.');
+                    }
                 }
                 return false;
             }
@@ -2808,7 +2823,16 @@
             }
 
             try {
-                const response = await fetch(`https://api.github.com/gists/${gistId}`);
+                // Use token if available (needed for private gists)
+                const token = localStorage.getItem('githubToken');
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `token ${token}`;
+                }
+
+                const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    headers: headers
+                });
 
                 if (!response.ok) {
                     console.log('[Polling] Failed to fetch gist:', response.status);
