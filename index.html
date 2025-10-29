@@ -1801,7 +1801,7 @@
         const GLOBAL_GIST_ID = '2f493d0ca0120faa7b82327664bd3b45';
         const EDIT_PASSWORD = 'chiset'; // Password required to edit the contract
         // Encrypted GitHub token (decrypted using password)
-        const ENCRYPTED_TOKEN = 'Dh0KCxVYUFkwFy88JVc9LyszMVM9IDAyNjk8LzQuLg==';
+        const ENCRYPTED_TOKEN = 'BAAZLAg8KgVdAw5ELiIbPzw7Eh8QMAIRFRAdOjYfVjgTH1EWGgYFRg==';
 
         // Simple XOR encryption/decryption
         function decryptToken(encrypted, password) {
@@ -2528,10 +2528,10 @@
             const readonlyIndicator = document.getElementById('readonly-indicator');
             if (readonlyIndicator) readonlyIndicator.style.display = 'flex';
 
-            // Disable all buttons EXCEPT those in readonly-indicator
+            // Disable all buttons EXCEPT those in readonly-indicator and theme toggle
             document.querySelectorAll('button').forEach(button => {
-                // Don't disable buttons in readonly indicator
-                if (!button.closest('#readonly-indicator')) {
+                // Don't disable buttons in readonly indicator or theme toggle
+                if (!button.closest('#readonly-indicator') && button.id !== 'theme-toggle') {
                     button.disabled = true;
                     button.style.display = 'none';
                 }
