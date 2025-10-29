@@ -15,24 +15,113 @@
             box-sizing: border-box;
         }
 
+        /* CSS Variables for Theme Colors */
+        :root {
+            --bg-gradient-1: rgba(139, 0, 0, 0.15);
+            --bg-gradient-2: rgba(139, 0, 0, 0.15);
+            --bg-color-1: #1a0a0a;
+            --bg-color-2: #2d1414;
+            --bg-color-3: #1a0a0a;
+
+            --container-bg-1: rgba(20, 10, 10, 0.95);
+            --container-bg-2: rgba(30, 15, 15, 0.98);
+            --container-texture-1: rgba(80, 40, 40, 0.15);
+            --container-texture-2: rgba(80, 40, 40, 0.15);
+            --container-border: #8b0000;
+            --container-border-pink: rgba(255, 105, 180, 0.3);
+            --container-shadow: rgba(139, 0, 0, 0.6);
+
+            --primary-red: #8b0000;
+            --crimson: #dc143c;
+            --hot-pink: #ff69b4;
+            --light-pink: #ffb6c1;
+            --dusty-pink: #d4768f;
+            --pink-text: #ff6b9d;
+
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --input-bg-focus: rgba(0, 0, 0, 0.5);
+            --input-border: rgba(139, 0, 0, 0.4);
+            --input-text: #ffb6c1;
+            --input-placeholder: rgba(255, 182, 193, 0.4);
+
+            --btn-gradient-1: #8b0000;
+            --btn-gradient-2: #dc143c;
+            --btn-gradient-hover-1: #dc143c;
+            --btn-gradient-hover-2: #ff1744;
+            --btn-border: rgba(220, 20, 60, 0.6);
+            --btn-text: #ffb6c1;
+            --btn-shadow: rgba(139, 0, 0, 0.5);
+
+            --border-decorative: rgba(139, 0, 0, 0.6);
+            --list-bg: rgba(0, 0, 0, 0.2);
+            --list-border: rgba(139, 0, 0, 0.3);
+            --list-item-bg: rgba(0, 0, 0, 0.1);
+            --list-item-hover: rgba(139, 0, 0, 0.15);
+        }
+
+        /* Light Mode Theme */
+        body.light-mode {
+            --bg-gradient-1: rgba(255, 182, 193, 0.2);
+            --bg-gradient-2: rgba(255, 192, 203, 0.2);
+            --bg-color-1: #fff5f7;
+            --bg-color-2: #ffe8ec;
+            --bg-color-3: #fff5f7;
+
+            --container-bg-1: rgba(255, 255, 255, 0.95);
+            --container-bg-2: rgba(255, 250, 252, 0.98);
+            --container-texture-1: rgba(255, 182, 193, 0.08);
+            --container-texture-2: rgba(255, 192, 203, 0.08);
+            --container-border: #b8566e;
+            --container-border-pink: rgba(255, 105, 180, 0.4);
+            --container-shadow: rgba(184, 86, 110, 0.3);
+
+            --primary-red: #a8385d;
+            --crimson: #d63864;
+            --hot-pink: #ff69b4;
+            --light-pink: #ff85b8;
+            --dusty-pink: #b8566e;
+            --pink-text: #d63864;
+
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-bg-focus: rgba(255, 255, 255, 1);
+            --input-border: rgba(184, 86, 110, 0.3);
+            --input-text: #6b2e43;
+            --input-placeholder: rgba(184, 86, 110, 0.5);
+
+            --btn-gradient-1: #d63864;
+            --btn-gradient-2: #ff85b8;
+            --btn-gradient-hover-1: #ff85b8;
+            --btn-gradient-hover-2: #ffa3c7;
+            --btn-border: rgba(214, 56, 100, 0.6);
+            --btn-text: #ffffff;
+            --btn-shadow: rgba(184, 86, 110, 0.4);
+
+            --border-decorative: rgba(184, 86, 110, 0.4);
+            --list-bg: rgba(255, 245, 247, 0.6);
+            --list-border: rgba(184, 86, 110, 0.2);
+            --list-item-bg: rgba(255, 255, 255, 0.4);
+            --list-item-hover: rgba(255, 182, 193, 0.3);
+        }
+
         body {
             font-family: 'Crimson Text', serif;
             background:
-                radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
-                linear-gradient(135deg, #1a0a0a 0%, #2d1414 50%, #1a0a0a 100%);
+                radial-gradient(circle at 20% 50%, var(--bg-gradient-1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, var(--bg-gradient-2) 0%, transparent 50%),
+                linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 50%, var(--bg-color-3) 100%);
             min-height: 100vh;
             padding: 40px 20px;
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: background 0.5s ease;
         }
 
         .contract-container {
             max-width: 900px;
             width: 100%;
             background:
-                linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98)),
+                linear-gradient(135deg, var(--container-bg-1), var(--container-bg-2)),
                 repeating-linear-gradient(
                     45deg,
                     transparent,
@@ -40,15 +129,16 @@
                     rgba(139, 0, 0, 0.02) 2px,
                     rgba(139, 0, 0, 0.02) 4px
                 );
-            border: 3px solid #8b0000;
+            border: 3px solid var(--container-border);
             box-shadow:
-                0 0 0 1px rgba(255, 105, 180, 0.3),
-                0 0 30px rgba(139, 0, 0, 0.6),
+                0 0 0 1px var(--container-border-pink),
+                0 0 30px var(--container-shadow),
                 inset 0 0 100px rgba(0, 0, 0, 0.8),
                 0 20px 60px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: visible;
             border-radius: 5px;
+            transition: all 0.5s ease;
         }
 
         /* Leather texture */
@@ -60,9 +150,10 @@
             right: 0;
             bottom: 0;
             background-image:
-                radial-gradient(circle at 30% 40%, rgba(80, 40, 40, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 70% 60%, rgba(80, 40, 40, 0.15) 0%, transparent 50%);
+                radial-gradient(circle at 30% 40%, var(--container-texture-1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, var(--container-texture-2) 0%, transparent 50%);
             pointer-events: none;
+            transition: background-image 0.5s ease;
         }
 
         /* Pink bows in corners */
@@ -135,7 +226,7 @@
             text-align: center;
             margin-bottom: 40px;
             padding-bottom: 30px;
-            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            border-bottom: 2px solid var(--border-decorative);
             position: relative;
         }
 
@@ -146,7 +237,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 20px;
-            background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98));
+            background: linear-gradient(135deg, var(--container-bg-1), var(--container-bg-2));
             padding: 0 20px;
         }
 
@@ -154,7 +245,7 @@
             font-family: 'Cinzel', serif;
             font-size: 44px;
             font-weight: 700;
-            background: linear-gradient(135deg, #8b0000, #ff69b4, #8b0000);
+            background: linear-gradient(135deg, var(--primary-red), var(--hot-pink), var(--primary-red));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -166,19 +257,19 @@
 
         .subtitle {
             font-size: 16px;
-            color: #d4768f;
+            color: var(--dusty-pink);
             font-style: italic;
             margin-top: 15px;
         }
 
         .subtitle input {
             border: none;
-            border-bottom: 1px solid rgba(139, 0, 0, 0.6);
+            border-bottom: 1px solid var(--border-decorative);
             background: rgba(255, 255, 255, 0.03);
             font-family: inherit;
             font-size: inherit;
             font-style: inherit;
-            color: #ff6b9d;
+            color: var(--pink-text);
             text-align: center;
             padding: 5px 12px;
             min-width: 150px;
@@ -187,7 +278,7 @@
 
         .subtitle input:focus {
             outline: none;
-            border-bottom-color: #ff69b4;
+            border-bottom-color: var(--hot-pink);
             background: rgba(255, 255, 255, 0.05);
             box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
         }
@@ -199,7 +290,7 @@
         .section-header {
             font-family: 'Cinzel', serif;
             font-size: 26px;
-            color: #dc143c;
+            color: var(--crimson);
             margin-bottom: 20px;
             display: flex;
             align-items: center;
@@ -239,7 +330,7 @@
 
         .field-label {
             font-size: 13px;
-            color: #d4768f;
+            color: var(--dusty-pink);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -251,25 +342,25 @@
         .field-textarea {
             width: 100%;
             padding: 12px 16px;
-            border: 1px solid rgba(139, 0, 0, 0.4);
-            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
             font-family: 'Crimson Text', serif;
             font-size: 17px;
-            color: #ffb6c1;
+            color: var(--input-text);
             transition: all 0.3s ease;
             border-radius: 3px;
         }
 
         .field-input::placeholder,
         .field-textarea::placeholder {
-            color: rgba(255, 182, 193, 0.4);
+            color: var(--input-placeholder);
         }
 
         .field-input:focus,
         .field-textarea:focus {
             outline: none;
-            border-color: #ff69b4;
-            background: rgba(0, 0, 0, 0.5);
+            border-color: var(--hot-pink);
+            background: var(--input-bg-focus);
             box-shadow:
                 0 0 0 2px rgba(255, 105, 180, 0.2),
                 0 0 15px rgba(255, 105, 180, 0.15),
@@ -294,9 +385,9 @@
             display: block;
             margin: 25px auto;
             padding: 12px 35px;
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            color: #ffb6c1;
-            border: 1px solid rgba(220, 20, 60, 0.6);
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
             font-family: 'Cinzel', serif;
             font-size: 13px;
             font-weight: 600;
@@ -304,7 +395,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             box-shadow:
-                0 4px 15px rgba(139, 0, 0, 0.5),
+                0 4px 15px var(--btn-shadow),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
             border-radius: 3px;
@@ -321,8 +412,8 @@
         }
 
         .add-rule-btn:hover {
-            background: linear-gradient(135deg, #dc143c, #ff1744);
-            border-color: #ff69b4;
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
             box-shadow:
                 0 6px 20px rgba(220, 20, 60, 0.7),
                 inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -336,7 +427,7 @@
         .signature-section {
             margin-top: 50px;
             padding-top: 40px;
-            border-top: 2px solid rgba(139, 0, 0, 0.6);
+            border-top: 2px solid var(--border-decorative);
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 50px;
@@ -361,7 +452,7 @@
             display: block;
             font-family: 'Cinzel', serif;
             font-size: 12px;
-            color: #dc143c;
+            color: var(--crimson);
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -371,11 +462,11 @@
         .signature-input {
             width: 100%;
             border: none;
-            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            border-bottom: 2px solid var(--border-decorative);
             background: transparent;
             font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
             font-size: 26px;
-            color: #ff6b9d;
+            color: var(--pink-text);
             text-align: center;
             padding: 10px 0;
             transition: all 0.3s ease;
@@ -383,7 +474,7 @@
 
         .signature-input:focus {
             outline: none;
-            border-bottom-color: #ff69b4;
+            border-bottom-color: var(--hot-pink);
             text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
@@ -391,7 +482,7 @@
             font-family: 'Crimson Text', serif !important;
             font-size: 14px !important;
             margin-top: 15px;
-            color: #d4768f !important;
+            color: var(--dusty-pink) !important;
         }
 
         .decorative-divider {
@@ -402,21 +493,21 @@
         }
 
         .terms-notice {
-            background: rgba(139, 0, 0, 0.15);
-            border: 1px solid rgba(139, 0, 0, 0.4);
-            border-left: 4px solid #8b0000;
+            background: var(--list-item-bg);
+            border: 1px solid var(--list-border);
+            border-left: 4px solid var(--primary-red);
             padding: 20px;
             margin: 30px 0;
             font-size: 16px;
-            color: #d4768f;
+            color: var(--dusty-pink);
             font-style: italic;
             line-height: 1.8;
             border-radius: 3px;
         }
 
         .list-container {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(139, 0, 0, 0.3);
+            background: var(--list-bg);
+            border: 1px solid var(--list-border);
             border-radius: 4px;
             padding: 20px;
             margin-top: 12px;
@@ -433,11 +524,11 @@
             margin: 6px 0;
             border-radius: 4px;
             transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--list-item-bg);
         }
 
         .list-item:hover {
-            background: rgba(139, 0, 0, 0.15);
+            background: var(--list-item-hover);
             transform: translateX(3px);
         }
 
@@ -459,11 +550,11 @@
             margin: 6px 0;
             border-radius: 4px;
             transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--list-item-bg);
         }
 
         .command-item-content:hover {
-            background: rgba(139, 0, 0, 0.15);
+            background: var(--list-item-hover);
         }
 
         .command-item-content .field-textarea {
@@ -485,11 +576,11 @@
             margin: 6px 0;
             border-radius: 4px;
             transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.1);
+            background: var(--list-item-bg);
         }
 
         .party-item-content:hover {
-            background: rgba(139, 0, 0, 0.15);
+            background: var(--list-item-hover);
         }
 
         .list-item.dragging {
@@ -530,9 +621,9 @@
         }
 
         .delete-btn {
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            border: 1px solid rgba(220, 20, 60, 0.6);
-            color: #ffb6c1;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
             cursor: pointer;
             padding: 8px 12px;
             border-radius: 3px;
@@ -542,13 +633,13 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(139, 0, 0, 0.4);
+            box-shadow: 0 2px 8px var(--btn-shadow);
             flex-shrink: 0;
         }
 
         .delete-btn:hover {
-            background: linear-gradient(135deg, #dc143c, #ff1744);
-            border-color: #ff69b4;
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
             box-shadow: 0 4px 12px rgba(220, 20, 60, 0.6);
             transform: translateY(-1px);
         }
@@ -562,15 +653,15 @@
             margin: 12px 0 0 0;
             padding: 8px 20px;
             background: linear-gradient(135deg, rgba(139, 0, 0, 0.6), rgba(220, 20, 60, 0.6));
-            color: #ffb6c1;
-            border: 1px solid rgba(220, 20, 60, 0.4);
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
             font-family: 'Cinzel', serif;
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            box-shadow: 0 2px 8px rgba(139, 0, 0, 0.3);
+            box-shadow: 0 2px 8px var(--btn-shadow);
             transition: all 0.3s ease;
             border-radius: 3px;
         }
@@ -590,13 +681,13 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, rgba(139, 0, 0, 0.9), rgba(220, 20, 60, 0.9));
-            color: #ffb6c1;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
             padding: 10px 20px;
             border-radius: 5px;
             font-family: 'Cinzel', serif;
             font-size: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px var(--btn-shadow);
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 1000;
@@ -619,16 +710,16 @@
 
         .action-btn {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            color: #ffb6c1;
-            border: 1px solid rgba(220, 20, 60, 0.6);
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
             font-family: 'Cinzel', serif;
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 4px 15px var(--btn-shadow);
             transition: all 0.3s ease;
             border-radius: 3px;
             text-align: center;
@@ -636,8 +727,8 @@
         }
 
         .action-btn:hover {
-            background: linear-gradient(135deg, #dc143c, #ff1744);
-            border-color: #ff69b4;
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
             box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
             transform: translateY(-2px);
         }
@@ -650,8 +741,8 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(220, 20, 60, 0.95));
-            color: #ffb6c1;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
             padding: 12px 20px;
             border-radius: 5px;
             font-family: 'Cinzel', serif;
@@ -659,9 +750,9 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px var(--btn-shadow);
             z-index: 1000;
-            border: 1px solid rgba(255, 105, 180, 0.5);
+            border: 1px solid var(--btn-border);
         }
 
         #sign-button-container {
@@ -701,16 +792,16 @@
 
         .brag-mode-btn {
             padding: 12px 24px;
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            color: #ffb6c1;
-            border: 1px solid rgba(220, 20, 60, 0.6);
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
             font-family: 'Cinzel', serif;
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 4px 15px var(--btn-shadow);
             transition: all 0.3s ease;
             border-radius: 3px;
             text-align: center;
@@ -718,8 +809,8 @@
         }
 
         .brag-mode-btn:hover {
-            background: linear-gradient(135deg, #dc143c, #ff1744);
-            border-color: #ff69b4;
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
             box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
             transform: translateY(-2px);
         }
@@ -780,7 +871,7 @@
         .brag-modal-header {
             font-family: 'Cinzel', serif;
             font-size: 24px;
-            color: #ffb6c1;
+            color: var(--light-pink);
             text-align: center;
             margin-bottom: 20px;
             text-transform: uppercase;
@@ -795,11 +886,11 @@
         .brag-modal-section-title {
             font-family: 'Cinzel', serif;
             font-size: 14px;
-            color: #d4768f;
+            color: var(--dusty-pink);
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 12px;
-            border-bottom: 1px solid rgba(139, 0, 0, 0.5);
+            border-bottom: 1px solid var(--border-decorative);
             padding-bottom: 8px;
         }
 
@@ -815,7 +906,7 @@
             align-items: center;
             font-family: 'Crimson Text', serif;
             font-size: 14px;
-            color: #ffb6c1;
+            color: var(--light-pink);
             cursor: pointer;
             padding: 8px;
             border-radius: 3px;
@@ -823,7 +914,7 @@
         }
 
         .brag-checkbox-label:hover {
-            background: rgba(139, 0, 0, 0.2);
+            background: var(--list-item-hover);
         }
 
         .brag-checkbox-label input[type="checkbox"] {
@@ -845,7 +936,7 @@
             align-items: center;
             font-family: 'Crimson Text', serif;
             font-size: 14px;
-            color: #ffb6c1;
+            color: var(--light-pink);
             cursor: pointer;
             padding: 8px;
             border-radius: 3px;
@@ -853,7 +944,7 @@
         }
 
         .brag-radio-label:hover {
-            background: rgba(139, 0, 0, 0.2);
+            background: var(--list-item-hover);
         }
 
         .brag-radio-label input[type="radio"] {
@@ -873,23 +964,23 @@
         .brag-action-btn {
             flex: 1;
             padding: 15px 25px;
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            color: #ffb6c1;
-            border: 1px solid rgba(220, 20, 60, 0.6);
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
             font-family: 'Cinzel', serif;
             font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            box-shadow: 0 4px 15px rgba(139, 0, 0, 0.5);
+            box-shadow: 0 4px 15px var(--btn-shadow);
             transition: all 0.3s ease;
             border-radius: 5px;
         }
 
         .brag-action-btn:hover {
-            background: linear-gradient(135deg, #dc143c, #ff1744);
-            border-color: #ff69b4;
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
             box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
             transform: translateY(-2px);
         }
@@ -1085,6 +1176,94 @@
             }
         }
 
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 0;
+            background: linear-gradient(135deg, #dc143c, #ff69b4);
+            color: #fff;
+            border: 2px solid #ff69b4;
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow:
+                0 0 0 2px rgba(255, 105, 180, 0.3),
+                0 4px 15px rgba(255, 105, 180, 0.4),
+                0 0 20px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Light mode theme toggle colors */
+        body.light-mode .theme-toggle {
+            background: linear-gradient(135deg, #ff85b8, #ffa3c7);
+            border-color: #d63864;
+            box-shadow:
+                0 0 0 2px rgba(214, 56, 100, 0.3),
+                0 4px 15px rgba(214, 56, 100, 0.4),
+                0 0 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .theme-toggle::before {
+            content: '🎀';
+            position: absolute;
+            top: -12px;
+            right: -8px;
+            font-size: 20px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.8));
+            animation: gentleBounce 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, transparent, rgba(255, 105, 180, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .theme-toggle:hover {
+            background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+            border-color: #ffb6c1;
+            box-shadow:
+                0 0 0 3px rgba(255, 182, 193, 0.5),
+                0 6px 25px rgba(255, 105, 180, 0.6),
+                0 0 35px rgba(255, 105, 180, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: linear-gradient(135deg, #ffa3c7, #ffc0db);
+            border-color: #ff85b8;
+            box-shadow:
+                0 0 0 3px rgba(255, 133, 184, 0.5),
+                0 6px 25px rgba(214, 56, 100, 0.5),
+                0 0 35px rgba(255, 105, 180, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+
+        .theme-toggle:hover::after {
+            opacity: 1;
+        }
+
+        .theme-toggle:active {
+            transform: translateY(0) scale(1);
+        }
+
         @media print {
             body {
                 background:
@@ -1092,6 +1271,10 @@
                     radial-gradient(circle at 80% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
                     linear-gradient(135deg, #1a0a0a 0%, #2d1414 50%, #1a0a0a 100%);
                 padding: 40px 20px;
+            }
+
+            .theme-toggle {
+                display: none !important;
             }
 
             .contract-container {
@@ -1186,10 +1369,29 @@
             .brag-checkbox-group {
                 grid-template-columns: 1fr;
             }
+
+            .theme-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .theme-toggle::before {
+                font-size: 16px;
+                top: -10px;
+                right: -6px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+        🌙
+    </button>
+
     <!-- Action Buttons (hidden in readonly mode) -->
     <div class="action-buttons" id="action-buttons">
         <button class="action-btn" onclick="saveAsPNG()">💾 Save as PNG</button>
@@ -1607,6 +1809,38 @@
         let userIsTyping = false;
         let typingTimeout = null;
         let firstPendingChangeTime = null; // Track when first change was made (for max wait)
+
+        // Theme Toggle Function
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+
+            // Toggle the light-mode class
+            body.classList.toggle('light-mode');
+
+            // Update the icon
+            if (body.classList.contains('light-mode')) {
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme on page load
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                themeToggle.textContent = '☀️';
+            } else {
+                themeToggle.textContent = '🌙';
+            }
+        }
 
         // Auto-save function
         function autoSave() {
@@ -2988,6 +3222,9 @@
 
         // Initialize on page load
         window.addEventListener('load', async () => {
+            // Load saved theme preference
+            loadSavedTheme();
+
             // Check if this is first visit (no access token saved)
             if (!hasAccessToken()) {
                 // Prompt for access token on first visit
