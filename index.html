@@ -3225,14 +3225,6 @@
             // Load saved theme preference
             loadSavedTheme();
 
-            // Check if this is first visit (no access token saved)
-            if (!hasAccessToken()) {
-                // Prompt for access token on first visit
-                setTimeout(() => {
-                    promptForAccessToken();
-                }, 500);
-                // Continue loading in readonly mode
-            }
 
             // Initialize auto-resize for all textareas
             document.querySelectorAll('.field-textarea, .field-textarea-small').forEach(textarea => {
@@ -3260,17 +3252,6 @@
                 // Also track typing in readonly mode (for submissive's signature)
                 document.addEventListener('input', markUserTyping);
 
-                // If not explicitly readonly via URL, prompt for password to edit
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('readonly') !== 'true' && !isPasswordAuthenticated()) {
-                    // Auto-prompt for password on first visit
-                    setTimeout(() => {
-                        const wantsToEdit = confirm('This contract is view-only. Would you like to enter a password to edit it?');
-                        if (wantsToEdit) {
-                            promptForPassword();
-                        }
-                    }, 1000); // Delay slightly so page loads first
-                }
             }
             // Normal edit mode (password authenticated)
             else {
