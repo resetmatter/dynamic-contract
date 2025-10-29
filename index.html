@@ -1182,16 +1182,16 @@
             top: 20px;
             left: 20px;
             padding: 0;
-            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
-            color: var(--btn-text);
-            border: 2px solid var(--hot-pink);
+            background: linear-gradient(135deg, #dc143c, #ff69b4);
+            color: #fff;
+            border: 2px solid #ff69b4;
             font-family: 'Cinzel', serif;
             font-size: 22px;
             font-weight: 600;
             cursor: pointer;
             box-shadow:
-                0 0 0 2px var(--container-border-pink),
-                0 4px 15px var(--btn-shadow),
+                0 0 0 2px rgba(255, 105, 180, 0.3),
+                0 4px 15px rgba(255, 105, 180, 0.4),
                 0 0 20px rgba(255, 105, 180, 0.3);
             transition: all 0.3s ease;
             border-radius: 50%;
@@ -1202,6 +1202,16 @@
             align-items: center;
             justify-content: center;
             position: relative;
+        }
+
+        /* Light mode theme toggle colors */
+        body.light-mode .theme-toggle {
+            background: linear-gradient(135deg, #ff85b8, #ffa3c7);
+            border-color: #d63864;
+            box-shadow:
+                0 0 0 2px rgba(214, 56, 100, 0.3),
+                0 4px 15px rgba(214, 56, 100, 0.4),
+                0 0 20px rgba(255, 105, 180, 0.2);
         }
 
         .theme-toggle::before {
@@ -1220,21 +1230,31 @@
             position: absolute;
             inset: -3px;
             border-radius: 50%;
-            background: linear-gradient(135deg, transparent, rgba(255, 105, 180, 0.3), transparent);
+            background: linear-gradient(135deg, transparent, rgba(255, 105, 180, 0.4), transparent);
             opacity: 0;
             transition: opacity 0.3s ease;
             pointer-events: none;
         }
 
         .theme-toggle:hover {
-            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
-            border-color: var(--light-pink);
+            background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+            border-color: #ffb6c1;
             box-shadow:
-                0 0 0 2px rgba(255, 105, 180, 0.5),
-                0 6px 25px rgba(220, 20, 60, 0.7),
-                0 0 30px rgba(255, 105, 180, 0.6),
-                inset 0 0 20px rgba(255, 105, 180, 0.2);
+                0 0 0 3px rgba(255, 182, 193, 0.5),
+                0 6px 25px rgba(255, 105, 180, 0.6),
+                0 0 35px rgba(255, 105, 180, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
             transform: translateY(-2px) scale(1.05);
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: linear-gradient(135deg, #ffa3c7, #ffc0db);
+            border-color: #ff85b8;
+            box-shadow:
+                0 0 0 3px rgba(255, 133, 184, 0.5),
+                0 6px 25px rgba(214, 56, 100, 0.5),
+                0 0 35px rgba(255, 105, 180, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
         }
 
         .theme-toggle:hover::after {
