@@ -743,16 +743,15 @@
             right: 20px;
             background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
             color: var(--btn-text);
-            padding: 12px 20px;
+            padding: 16px;
             border-radius: 5px;
             font-family: 'Cinzel', serif;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
             box-shadow: 0 4px 15px var(--btn-shadow);
             z-index: 1000;
             border: 1px solid var(--btn-border);
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
         }
 
         #sign-button-container {
@@ -1401,14 +1400,16 @@
 
     <!-- Readonly Indicator and Sign Button (shown in readonly mode) -->
     <div class="readonly-indicator" id="readonly-indicator" style="display: none;">
-        🔒 Read-Only View
-        <button class="action-btn" onclick="promptForPassword()" style="margin-left: 15px; font-size: 11px; padding: 6px 12px;">🔓 Enter Password to Edit</button>
-        <button class="action-btn" onclick="promptForAccessToken()" style="margin-left: 10px; font-size: 11px; padding: 6px 12px;">🔑 Enter Access Code</button>
+        <div style="text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+            🔒 Read-Only View
+        </div>
+        <button class="action-btn" onclick="promptForPassword()" style="width: 100%; margin-bottom: 8px;">🔓 Enter Password to Edit</button>
+        <button class="action-btn" onclick="scrollToSignature()" style="width: 100%; margin-bottom: 8px;">✍️ Sign Contract</button>
+        <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()" style="width: 100%;">✨ Brag Mode</button>
     </div>
 
     <div id="sign-button-container" style="display: none;">
-        <button class="action-btn" onclick="scrollToSignature()">✍️ Sign Contract</button>
-        <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()">✨ Brag Mode</button>
+        <!-- Buttons moved to readonly-indicator -->
     </div>
 
     <!-- Contract Signed Indicator -->
@@ -1799,6 +1800,26 @@
         // GLOBAL CONFIGURATION
         const GLOBAL_GIST_ID = '2f493d0ca0120faa7b82327664bd3b45';
         const EDIT_PASSWORD = 'chiset'; // Password required to edit the contract
+        // Encrypted GitHub token (decrypted using password)
+        const ENCRYPTED_TOKEN = 'BAAZLAg8KgVdAw5ELiIbPzw7Eh8QMAIRFRAdOjYfVjgTH1EWGgYFRg==';
+
+        // Simple XOR encryption/decryption
+        function decryptToken(encrypted, password) {
+            try {
+                const decoded = atob(encrypted);
+                let result = '';
+                for (let i = 0; i < decoded.length; i++) {
+                    result += String.fromCharCode(decoded.charCodeAt(i) ^ password.charCodeAt(i % password.length));
+                }
+                return result;
+            } catch (e) {
+                console.error('Failed to decrypt token:', e);
+                return null;
+            }
+        }
+
+        // Global variable to store decrypted token
+        let decryptedGithubToken = null;
 
         let ruleCount = 3;
         let autosaveTimeout;
@@ -1926,12 +1947,12 @@
                 return;
             }
 
-            const token = localStorage.getItem('githubToken');
+            const token = decryptedGithubToken;
             const gistId = GLOBAL_GIST_ID;
 
-            // If no token, can't sync
+            // If no token, user needs to authenticate
             if (!token) {
-                console.log('[Sync] ⚠️ No access token configured.');
+                console.log('[Sync] ⚠️ No token available. Please authenticate first.');
                 return;
             }
 
@@ -2416,7 +2437,7 @@
             // Try to copy to clipboard
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareableUrl).then(() => {
-                    alert(`📋 Shareable link copied to clipboard!\n\n${shareableUrl}\n\nShare this link with your sub. They will need to:\n1. Paste the access code when prompted\n2. View/sign the contract in read-only mode`);
+                    alert(`📋 Shareable link copied to clipboard!\n\n${shareableUrl}\n\nShare this link with your sub to view and sign the contract in read-only mode.`);
                 }).catch(() => {
                     // Fallback if clipboard fails
                     prompt('Copy this shareable link:', shareableUrl);
@@ -2455,9 +2476,15 @@
             const password = prompt('Enter password to edit the contract:');
 
             if (password === EDIT_PASSWORD) {
-                sessionStorage.setItem('editPasswordCorrect', 'true');
-                alert('Password correct! Reloading to enable editing...');
-                location.reload();
+                // Decrypt the GitHub token using the password
+                decryptedGithubToken = decryptToken(ENCRYPTED_TOKEN, password);
+                if (decryptedGithubToken) {
+                    sessionStorage.setItem('editPasswordCorrect', 'true');
+                    alert('Password correct! Reloading to enable editing with cloud sync...');
+                    location.reload();
+                } else {
+                    alert('Error decrypting token. Please contact support.');
+                }
             } else if (password !== null) {
                 alert('Incorrect password. You can view the contract in read-only mode.');
             }
@@ -2497,17 +2524,14 @@
             const actionButtons = document.getElementById('action-buttons');
             if (actionButtons) actionButtons.style.display = 'none';
 
-            // Show readonly indicator and sign button FIRST
+            // Show readonly indicator with all buttons
             const readonlyIndicator = document.getElementById('readonly-indicator');
-            const signButtonContainer = document.getElementById('sign-button-container');
+            if (readonlyIndicator) readonlyIndicator.style.display = 'flex';
 
-            if (readonlyIndicator) readonlyIndicator.style.display = 'block';
-            if (signButtonContainer) signButtonContainer.style.display = 'flex';
-
-            // Disable all buttons EXCEPT the sign button
+            // Disable all buttons EXCEPT those in readonly-indicator and theme toggle
             document.querySelectorAll('button').forEach(button => {
-                // Don't disable the sign button
-                if (!button.closest('#sign-button-container')) {
+                // Don't disable buttons in readonly indicator or theme toggle
+                if (!button.closest('#readonly-indicator') && button.id !== 'theme-toggle') {
                     button.disabled = true;
                     button.style.display = 'none';
                 }
@@ -3020,7 +3044,7 @@
         async function loadFromGist(gistId, silent = false) {
             try {
                 // Try to use token if available (needed for private gists)
-                const token = localStorage.getItem('githubToken');
+                const token = decryptedGithubToken;
                 const headers = {};
                 if (token) {
                     headers['Authorization'] = `token ${token}`;
@@ -3055,12 +3079,11 @@
             } catch (error) {
                 console.error('Error loading gist:', error);
                 if (!silent) {
-                    const hasToken = localStorage.getItem('githubToken');
-                    if (!hasToken) {
-                        console.log('[Load] ⚠️ No access token - waiting for user to enter it');
-                        // Don't show error if we're waiting for token on first visit
+                    if (!decryptedGithubToken) {
+                        console.log('[Load] ⚠️ No token available - user needs to authenticate');
+                        // Don't show error if we're in read-only mode
                     } else {
-                        alert('Error loading contract data. Please check your access code and try again.');
+                        alert('Error loading contract data. Please try again or contact support.');
                     }
                 }
                 return false;
@@ -3078,7 +3101,7 @@
 
             try {
                 // Use token if available (needed for private gists)
-                const token = localStorage.getItem('githubToken');
+                const token = decryptedGithubToken;
                 const headers = {};
                 if (token) {
                     headers['Authorization'] = `token ${token}`;
@@ -3225,13 +3248,12 @@
             // Load saved theme preference
             loadSavedTheme();
 
-            // Check if this is first visit (no access token saved)
-            if (!hasAccessToken()) {
-                // Prompt for access token on first visit
-                setTimeout(() => {
-                    promptForAccessToken();
-                }, 500);
-                // Continue loading in readonly mode
+            // Decrypt GitHub token if user is authenticated
+            if (isPasswordAuthenticated()) {
+                decryptedGithubToken = decryptToken(ENCRYPTED_TOKEN, EDIT_PASSWORD);
+                if (!decryptedGithubToken) {
+                    console.error('Failed to decrypt GitHub token');
+                }
             }
 
             // Initialize auto-resize for all textareas
@@ -3260,17 +3282,6 @@
                 // Also track typing in readonly mode (for submissive's signature)
                 document.addEventListener('input', markUserTyping);
 
-                // If not explicitly readonly via URL, prompt for password to edit
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('readonly') !== 'true' && !isPasswordAuthenticated()) {
-                    // Auto-prompt for password on first visit
-                    setTimeout(() => {
-                        const wantsToEdit = confirm('This contract is view-only. Would you like to enter a password to edit it?');
-                        if (wantsToEdit) {
-                            promptForPassword();
-                        }
-                    }, 1000); // Delay slightly so page loads first
-                }
             }
             // Normal edit mode (password authenticated)
             else {
