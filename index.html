@@ -743,16 +743,15 @@
             right: 20px;
             background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
             color: var(--btn-text);
-            padding: 12px 20px;
+            padding: 16px;
             border-radius: 5px;
             font-family: 'Cinzel', serif;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
             box-shadow: 0 4px 15px var(--btn-shadow);
             z-index: 1000;
             border: 1px solid var(--btn-border);
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
         }
 
         #sign-button-container {
@@ -1401,14 +1400,17 @@
 
     <!-- Readonly Indicator and Sign Button (shown in readonly mode) -->
     <div class="readonly-indicator" id="readonly-indicator" style="display: none;">
-        🔒 Read-Only View
-        <button class="action-btn" onclick="promptForPassword()" style="margin-left: 15px; font-size: 11px; padding: 6px 12px;">🔓 Enter Password to Edit</button>
-        <button class="action-btn" onclick="promptForAccessToken()" style="margin-left: 10px; font-size: 11px; padding: 6px 12px;">🔑 Enter Access Code</button>
+        <div style="text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+            🔒 Read-Only View
+        </div>
+        <button class="action-btn" onclick="promptForPassword()" style="width: 100%; margin-bottom: 8px;">🔓 Enter Password to Edit</button>
+        <button class="action-btn" onclick="promptForAccessToken()" style="width: 100%; margin-bottom: 8px;">🔑 Enter Access Code</button>
+        <button class="action-btn" onclick="scrollToSignature()" style="width: 100%; margin-bottom: 8px;">✍️ Sign Contract</button>
+        <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()" style="width: 100%;">✨ Brag Mode</button>
     </div>
 
     <div id="sign-button-container" style="display: none;">
-        <button class="action-btn" onclick="scrollToSignature()">✍️ Sign Contract</button>
-        <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()">✨ Brag Mode</button>
+        <!-- Buttons moved to readonly-indicator -->
     </div>
 
     <!-- Contract Signed Indicator -->
@@ -2497,17 +2499,14 @@
             const actionButtons = document.getElementById('action-buttons');
             if (actionButtons) actionButtons.style.display = 'none';
 
-            // Show readonly indicator and sign button FIRST
+            // Show readonly indicator with all buttons
             const readonlyIndicator = document.getElementById('readonly-indicator');
-            const signButtonContainer = document.getElementById('sign-button-container');
+            if (readonlyIndicator) readonlyIndicator.style.display = 'flex';
 
-            if (readonlyIndicator) readonlyIndicator.style.display = 'block';
-            if (signButtonContainer) signButtonContainer.style.display = 'flex';
-
-            // Disable all buttons EXCEPT those in sign-button-container and readonly-indicator
+            // Disable all buttons EXCEPT those in readonly-indicator
             document.querySelectorAll('button').forEach(button => {
-                // Don't disable buttons in sign container or readonly indicator
-                if (!button.closest('#sign-button-container') && !button.closest('#readonly-indicator')) {
+                // Don't disable buttons in readonly indicator
+                if (!button.closest('#readonly-indicator')) {
                     button.disabled = true;
                     button.style.display = 'none';
                 }
