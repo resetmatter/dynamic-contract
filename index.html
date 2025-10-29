@@ -1800,6 +1800,26 @@
         // GLOBAL CONFIGURATION
         const GLOBAL_GIST_ID = '2f493d0ca0120faa7b82327664bd3b45';
         const EDIT_PASSWORD = 'chiset'; // Password required to edit the contract
+        // Encrypted GitHub token (decrypted using password)
+        const ENCRYPTED_TOKEN = 'Dh0KCxVYUFkwFy88JVc9LyszMVM9IDAyNjk8LzQuLg==';
+
+        // Simple XOR encryption/decryption
+        function decryptToken(encrypted, password) {
+            try {
+                const decoded = atob(encrypted);
+                let result = '';
+                for (let i = 0; i < decoded.length; i++) {
+                    result += String.fromCharCode(decoded.charCodeAt(i) ^ password.charCodeAt(i % password.length));
+                }
+                return result;
+            } catch (e) {
+                console.error('Failed to decrypt token:', e);
+                return null;
+            }
+        }
+
+        // Global variable to store decrypted token
+        let decryptedGithubToken = null;
 
         let ruleCount = 3;
         let autosaveTimeout;
@@ -1927,14 +1947,12 @@
                 return;
             }
 
-            const token = localStorage.getItem('githubToken');
+            const token = decryptedGithubToken;
             const gistId = GLOBAL_GIST_ID;
 
-            // If no token, save to localStorage only (local-only mode)
+            // If no token, user needs to authenticate
             if (!token) {
-                console.log('[Sync] ⚠️ No access token configured. Saving locally only.');
-                localStorage.setItem('contractData', JSON.stringify(contractData));
-                showSaveIndicator();
+                console.log('[Sync] ⚠️ No token available. Please authenticate first.');
                 return;
             }
 
@@ -2458,9 +2476,15 @@
             const password = prompt('Enter password to edit the contract:');
 
             if (password === EDIT_PASSWORD) {
-                sessionStorage.setItem('editPasswordCorrect', 'true');
-                alert('Password correct! Reloading to enable editing...');
-                location.reload();
+                // Decrypt the GitHub token using the password
+                decryptedGithubToken = decryptToken(ENCRYPTED_TOKEN, password);
+                if (decryptedGithubToken) {
+                    sessionStorage.setItem('editPasswordCorrect', 'true');
+                    alert('Password correct! Reloading to enable editing with cloud sync...');
+                    location.reload();
+                } else {
+                    alert('Error decrypting token. Please contact support.');
+                }
             } else if (password !== null) {
                 alert('Incorrect password. You can view the contract in read-only mode.');
             }
@@ -3020,7 +3044,7 @@
         async function loadFromGist(gistId, silent = false) {
             try {
                 // Try to use token if available (needed for private gists)
-                const token = localStorage.getItem('githubToken');
+                const token = decryptedGithubToken;
                 const headers = {};
                 if (token) {
                     headers['Authorization'] = `token ${token}`;
@@ -3055,12 +3079,11 @@
             } catch (error) {
                 console.error('Error loading gist:', error);
                 if (!silent) {
-                    const hasToken = localStorage.getItem('githubToken');
-                    if (!hasToken) {
-                        console.log('[Load] ⚠️ No access token - waiting for user to enter it');
-                        // Don't show error if we're waiting for token on first visit
+                    if (!decryptedGithubToken) {
+                        console.log('[Load] ⚠️ No token available - user needs to authenticate');
+                        // Don't show error if we're in read-only mode
                     } else {
-                        alert('Error loading contract data. Please check your access code and try again.');
+                        alert('Error loading contract data. Please try again or contact support.');
                     }
                 }
                 return false;
@@ -3078,7 +3101,7 @@
 
             try {
                 // Use token if available (needed for private gists)
-                const token = localStorage.getItem('githubToken');
+                const token = decryptedGithubToken;
                 const headers = {};
                 if (token) {
                     headers['Authorization'] = `token ${token}`;
@@ -3225,6 +3248,13 @@
             // Load saved theme preference
             loadSavedTheme();
 
+            // Decrypt GitHub token if user is authenticated
+            if (isPasswordAuthenticated()) {
+                decryptedGithubToken = decryptToken(ENCRYPTED_TOKEN, EDIT_PASSWORD);
+                if (!decryptedGithubToken) {
+                    console.error('Failed to decrypt GitHub token');
+                }
+            }
 
             // Initialize auto-resize for all textareas
             document.querySelectorAll('.field-textarea, .field-textarea-small').forEach(textarea => {
