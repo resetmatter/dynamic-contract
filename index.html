@@ -2504,10 +2504,10 @@
             if (readonlyIndicator) readonlyIndicator.style.display = 'block';
             if (signButtonContainer) signButtonContainer.style.display = 'flex';
 
-            // Disable all buttons EXCEPT the sign button
+            // Disable all buttons EXCEPT those in sign-button-container and readonly-indicator
             document.querySelectorAll('button').forEach(button => {
-                // Don't disable the sign button
-                if (!button.closest('#sign-button-container')) {
+                // Don't disable buttons in sign container or readonly indicator
+                if (!button.closest('#sign-button-container') && !button.closest('#readonly-indicator')) {
                     button.disabled = true;
                     button.style.display = 'none';
                 }
