@@ -1404,7 +1404,6 @@
             🔒 Read-Only View
         </div>
         <button class="action-btn" onclick="promptForPassword()" style="width: 100%; margin-bottom: 8px;">🔓 Enter Password to Edit</button>
-        <button class="action-btn" onclick="promptForAccessToken()" style="width: 100%; margin-bottom: 8px;">🔑 Enter Access Code</button>
         <button class="action-btn" onclick="scrollToSignature()" style="width: 100%; margin-bottom: 8px;">✍️ Sign Contract</button>
         <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()" style="width: 100%;">✨ Brag Mode</button>
     </div>
@@ -1931,9 +1930,11 @@
             const token = localStorage.getItem('githubToken');
             const gistId = GLOBAL_GIST_ID;
 
-            // If no token, can't sync
+            // If no token, save to localStorage only (local-only mode)
             if (!token) {
-                console.log('[Sync] ⚠️ No access token configured.');
+                console.log('[Sync] ⚠️ No access token configured. Saving locally only.');
+                localStorage.setItem('contractData', JSON.stringify(contractData));
+                showSaveIndicator();
                 return;
             }
 
@@ -2418,7 +2419,7 @@
             // Try to copy to clipboard
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(shareableUrl).then(() => {
-                    alert(`📋 Shareable link copied to clipboard!\n\n${shareableUrl}\n\nShare this link with your sub. They will need to:\n1. Paste the access code when prompted\n2. View/sign the contract in read-only mode`);
+                    alert(`📋 Shareable link copied to clipboard!\n\n${shareableUrl}\n\nShare this link with your sub to view and sign the contract in read-only mode.`);
                 }).catch(() => {
                     // Fallback if clipboard fails
                     prompt('Copy this shareable link:', shareableUrl);
