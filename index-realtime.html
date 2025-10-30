@@ -1348,8 +1348,19 @@
                 document.getElementById('auth-screen').style.display = 'none';
 
                 if (isEditor) {
-                    // Show editor mode for public editors
+                    // Create a guest user for public editing
+                    currentUser = {
+                        id: 'public-editor',
+                        email: 'public-editor@guest',
+                        isPublicEditor: true
+                    };
+
+                    // Show main app
+                    document.getElementById('app').style.display = 'block';
+                    document.getElementById('contract-list-view').style.display = 'none';
                     document.getElementById('contract-editor').style.display = 'block';
+
+                    // Set contract title
                     document.getElementById('contract-title').value = currentContract.title;
 
                     // Load signatures
@@ -1358,16 +1369,23 @@
                     document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
                     document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
 
+                    // Hide buttons that shouldn't be available to public editors
+                    document.getElementById('back-to-list-btn').style.display = 'none';
+                    document.getElementById('share-btn').style.display = 'none';
+                    document.getElementById('history-btn').style.display = 'none';
+                    document.getElementById('save-snapshot-btn').style.display = 'none';
+
                     renderContractEditor();
                     setupRealtimeSync();
+                    // Don't setup presence for public users
 
                     // Add indicator that this is public editing
-                    const editorTitle = document.querySelector('.editor-title');
-                    if (editorTitle) {
-                        const indicator = document.createElement('span');
-                        indicator.style.cssText = 'color: var(--accent-pink); font-size: 0.8em; margin-left: 10px;';
-                        indicator.textContent = '(Shared Editor)';
-                        editorTitle.appendChild(indicator);
+                    const editorActions = document.querySelector('.editor-actions');
+                    if (editorActions) {
+                        const indicator = document.createElement('div');
+                        indicator.style.cssText = 'color: var(--accent-pink); font-size: 0.9em; font-weight: 600;';
+                        indicator.textContent = '🌐 Public Editor Mode';
+                        editorActions.insertBefore(indicator, editorActions.firstChild);
                     }
                 } else {
                     // Show preview for viewers
@@ -2143,6 +2161,11 @@
         // ============================================
 
         async function trackChange(changeType, description) {
+            // Skip history tracking for public editors
+            if (currentUser?.isPublicEditor) {
+                return;
+            }
+
             const { error } = await supabaseClient
                 .from('history')
                 .insert({
