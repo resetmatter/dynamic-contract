@@ -1345,6 +1345,8 @@
                 // Set as current contract
                 currentContract = data;
                 const isEditor = data.public_share_role === 'editor';
+
+                // Hide auth screen
                 document.getElementById('auth-screen').style.display = 'none';
 
                 if (isEditor) {
@@ -1355,10 +1357,12 @@
                         isPublicEditor: true
                     };
 
-                    // Show main app
-                    document.getElementById('app').style.display = 'block';
-                    document.getElementById('contract-list-view').style.display = 'none';
-                    document.getElementById('contract-editor').style.display = 'block';
+                    // Show contract editor (hide list view)
+                    const contractList = document.getElementById('contract-list');
+                    const contractEditor = document.getElementById('contract-editor');
+
+                    if (contractList) contractList.style.display = 'none';
+                    if (contractEditor) contractEditor.style.display = 'block';
 
                     // Set contract title
                     document.getElementById('contract-title').value = currentContract.title;
@@ -1370,10 +1374,15 @@
                     document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
 
                     // Hide buttons that shouldn't be available to public editors
-                    document.getElementById('back-to-list-btn').style.display = 'none';
-                    document.getElementById('share-btn').style.display = 'none';
-                    document.getElementById('history-btn').style.display = 'none';
-                    document.getElementById('save-snapshot-btn').style.display = 'none';
+                    const backBtn = document.getElementById('back-to-list-btn');
+                    const shareBtn = document.getElementById('share-btn');
+                    const historyBtn = document.getElementById('history-btn');
+                    const snapshotBtn = document.getElementById('save-snapshot-btn');
+
+                    if (backBtn) backBtn.style.display = 'none';
+                    if (shareBtn) shareBtn.style.display = 'none';
+                    if (historyBtn) historyBtn.style.display = 'none';
+                    if (snapshotBtn) snapshotBtn.style.display = 'none';
 
                     renderContractEditor();
                     setupRealtimeSync();
