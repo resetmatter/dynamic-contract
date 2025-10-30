@@ -881,7 +881,8 @@
         const SUPABASE_URL = 'https://sryxyqioytqxcmgtykao.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeXh5cWlveXRxeGNtZ3R5a2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MzY4NjMsImV4cCI6MjA3NzQxMjg2M30.QJxb6sUEngf-KEheV9C1Wj14_dDADzuW7PrQtAUcqPo';
 
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { createClient } = window.supabase;
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ============================================
         // APPLICATION STATE
@@ -1098,7 +1099,7 @@
 
         document.getElementById('create-contract-btn').addEventListener('click', createNewContract);
 
-        async function createNewContract() {
+        window.createNewContract = async function() {
             const { data, error } = await supabase
                 .from('contracts')
                 .insert({
@@ -1115,9 +1116,9 @@
             }
 
             openContract(data.id);
-        }
+        };
 
-        async function openContract(contractId) {
+        window.openContract = async function(contractId) {
             const { data, error } = await supabase
                 .from('contracts')
                 .select('*')
@@ -1134,9 +1135,9 @@
             renderContractEditor();
             setupRealtimeSync();
             showContractEditor();
-        }
+        };
 
-        async function deleteContract(contractId) {
+        window.deleteContract = async function(contractId) {
             if (!confirm('Are you sure you want to delete this contract?')) {
                 return;
             }
@@ -1153,7 +1154,7 @@
             }
 
             loadContracts();
-        }
+        };
 
         // ============================================
         // CONTRACT EDITOR
@@ -1237,6 +1238,7 @@
 
         // Field management functions
         window.addField = function(sectionIndex) {
+            collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             sections[sectionIndex].fields.push({
                 label: 'New Field',
@@ -1248,6 +1250,7 @@
         };
 
         window.removeField = function(sectionIndex, fieldIndex) {
+            collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             sections[sectionIndex].fields.splice(fieldIndex, 1);
             saveContract();
@@ -1255,6 +1258,7 @@
         };
 
         window.addListItem = function(sectionIndex, fieldIndex) {
+            collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             const field = sections[sectionIndex].fields[fieldIndex];
             if (!field.items) field.items = [];
@@ -1264,6 +1268,7 @@
         };
 
         window.removeListItem = function(sectionIndex, fieldIndex, itemIndex) {
+            collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             const field = sections[sectionIndex].fields[fieldIndex];
             field.items.splice(itemIndex, 1);
@@ -1273,12 +1278,14 @@
 
         window.removeSection = function(sectionIndex) {
             if (!confirm('Remove this section?')) return;
+            collectFormData(); // Capture any unsaved changes first
             currentContract.data.sections.splice(sectionIndex, 1);
             saveContract();
             renderContractEditor();
         };
 
         document.getElementById('add-section-btn').addEventListener('click', () => {
+            collectFormData(); // Capture any unsaved changes first
             currentContract.data.sections.push({
                 type: 'custom',
                 title: 'New Section',
@@ -1328,6 +1335,9 @@
                 const sectionIndex = parseInt(sectionEl.dataset.sectionIndex);
                 const section = currentContract.data.sections[sectionIndex];
 
+                // Safety check: skip if section doesn't exist
+                if (!section) return;
+
                 // Update section title
                 const titleEl = sectionEl.querySelector('[data-field="title"]');
                 if (titleEl) {
@@ -1338,6 +1348,9 @@
                 sectionEl.querySelectorAll('.field-group').forEach(fieldEl => {
                     const fieldIndex = parseInt(fieldEl.dataset.fieldIndex);
                     const field = section.fields[fieldIndex];
+
+                    // Safety check: skip if field doesn't exist
+                    if (!field) return;
 
                     // Update label
                     const labelEl = fieldEl.querySelector('[data-field-label]');
