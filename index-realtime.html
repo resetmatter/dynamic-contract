@@ -1048,7 +1048,8 @@
         // ============================================
 
         async function loadContracts() {
-            const { data, error } = await supabaseClient
+            // Try to load contracts with shares, but fall back if shares table doesn't exist
+            let { data, error } = await supabaseClient
                 .from('contracts')
                 .select(`
                     *,
@@ -1059,12 +1060,25 @@
                 `)
                 .order('updated_at', { ascending: false });
 
+            // If query failed (possibly because contract_shares doesn't exist yet), try without it
+            if (error) {
+                console.warn('Failed to load contracts with shares, trying without:', error);
+                const result = await supabaseClient
+                    .from('contracts')
+                    .select('*')
+                    .order('updated_at', { ascending: false });
+
+                data = result.data;
+                error = result.error;
+            }
+
             if (error) {
                 console.error('Error loading contracts:', error);
+                alert('Failed to load contracts. Make sure you ran the database schema script.');
                 return;
             }
 
-            renderContractList(data);
+            renderContractList(data || []);
         }
 
         function renderContractList(contracts) {
@@ -1106,8 +1120,6 @@
             }).join('');
         }
 
-        document.getElementById('create-contract-btn').addEventListener('click', createNewContract);
-
         window.createNewContract = async function() {
             const { data, error } = await supabaseClient
                 .from('contracts')
@@ -1126,6 +1138,8 @@
 
             openContract(data.id);
         };
+
+        document.getElementById('create-contract-btn').addEventListener('click', createNewContract);
 
         window.openContract = async function(contractId) {
             const { data, error } = await supabaseClient
