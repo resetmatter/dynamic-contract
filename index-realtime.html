@@ -702,6 +702,131 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Preview Modal */
+        .preview-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 3000;
+            overflow-y: auto;
+        }
+
+        .preview-overlay.open {
+            display: block;
+        }
+
+        .preview-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 60px;
+            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            min-height: calc(100vh - 80px);
+        }
+
+        .preview-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary-dark);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3001;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .preview-header h3 {
+            color: var(--accent-pink);
+            font-family: 'Cinzel', serif;
+            margin: 0;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .preview-content {
+            margin-top: 70px;
+            color: #000;
+            font-family: 'Crimson Text', serif;
+            line-height: 1.8;
+        }
+
+        .preview-content h1 {
+            font-family: 'Cinzel', serif;
+            color: var(--primary-dark);
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            border-bottom: 3px solid var(--primary-dark);
+            padding-bottom: 20px;
+        }
+
+        .preview-content h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--primary-dark);
+            font-size: 1.8em;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--accent-pink);
+            padding-left: 20px;
+        }
+
+        .preview-content h3 {
+            font-family: 'Cinzel', serif;
+            color: var(--primary-light);
+            font-size: 1.3em;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        .preview-content p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .preview-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .preview-content li {
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .preview-content li::before {
+            content: "⛓️";
+            position: absolute;
+            left: 0;
+            color: var(--accent-pink);
+        }
+
+        .preview-empty {
+            color: #999;
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .preview-date {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+
         /* Print Styles */
         @media print {
             .app-header,
@@ -710,8 +835,24 @@
             .add-item-btn,
             .remove-btn,
             .history-panel,
-            .dialog-overlay {
+            .dialog-overlay,
+            .preview-header {
                 display: none !important;
+            }
+
+            .preview-overlay {
+                display: block !important;
+                background: white !important;
+            }
+
+            .preview-container {
+                margin: 0 !important;
+                padding: 20px !important;
+                box-shadow: none !important;
+            }
+
+            .preview-content {
+                margin-top: 0 !important;
             }
 
             body {
@@ -722,6 +863,10 @@
             .contract-section {
                 page-break-inside: avoid;
                 border-color: black;
+            }
+
+            .preview-content h2 {
+                page-break-after: avoid;
             }
         }
     </style>
@@ -818,6 +963,7 @@
                         <span class="sync-dot" id="sync-dot"></span>
                         <span id="sync-text">Synced</span>
                     </div>
+                    <button class="btn" id="preview-btn">👁️ Preview</button>
                     <button class="btn btn-secondary" id="history-btn">📜 History</button>
                     <button class="btn btn-secondary" id="share-btn">🔗 Share</button>
                     <button class="btn" id="save-snapshot-btn">📸 Snapshot</button>
@@ -867,6 +1013,22 @@
             <div class="dialog-actions">
                 <button class="btn btn-secondary" id="cancel-share-btn">Cancel</button>
                 <button class="btn" id="confirm-share-btn">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Overlay -->
+    <div class="preview-overlay" id="preview-overlay">
+        <div class="preview-header">
+            <h3>📄 Contract Preview</h3>
+            <div class="preview-actions">
+                <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
+                <button class="btn" id="close-preview-btn">✕ Close</button>
+            </div>
+        </div>
+        <div class="preview-container">
+            <div class="preview-content" id="preview-content">
+                <!-- Preview content will be rendered here -->
             </div>
         </div>
     </div>
@@ -1606,6 +1768,77 @@
                 console.error('Error tracking change:', error);
             }
         }
+
+        // ============================================
+        // CONTRACT PREVIEW
+        // ============================================
+
+        document.getElementById('preview-btn').addEventListener('click', () => {
+            collectFormData(); // Make sure we have latest data
+            renderPreview();
+            document.getElementById('preview-overlay').classList.add('open');
+        });
+
+        document.getElementById('close-preview-btn').addEventListener('click', () => {
+            document.getElementById('preview-overlay').classList.remove('open');
+        });
+
+        function renderPreview() {
+            const sections = currentContract.data?.sections || [];
+            const title = currentContract.title || 'Untitled Contract';
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            let html = `<h1>${escapeHtml(title)}</h1>`;
+
+            sections.forEach(section => {
+                if (!section.title) return;
+
+                html += `<h2>${escapeHtml(section.title)}</h2>`;
+
+                if (!section.fields || section.fields.length === 0) {
+                    html += `<p class="preview-empty">[No content yet]</p>`;
+                    return;
+                }
+
+                section.fields.forEach(field => {
+                    if (!field.label && !field.value) return;
+
+                    html += `<h3>${escapeHtml(field.label || 'Field')}</h3>`;
+
+                    if (field.type === 'list' && field.items && field.items.length > 0) {
+                        html += '<ul>';
+                        field.items.forEach(item => {
+                            if (item.trim()) {
+                                html += `<li>${escapeHtml(item)}</li>`;
+                            }
+                        });
+                        html += '</ul>';
+                    } else if (field.value && field.value.trim()) {
+                        // Convert newlines to paragraphs
+                        const paragraphs = field.value.split('\n').filter(p => p.trim());
+                        paragraphs.forEach(para => {
+                            html += `<p>${escapeHtml(para)}</p>`;
+                        });
+                    } else {
+                        html += `<p class="preview-empty">[Not specified]</p>`;
+                    }
+                });
+            });
+
+            html += `<div class="preview-date">Contract date: ${date}</div>`;
+
+            document.getElementById('preview-content').innerHTML = html;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // HISTORY TRACKING
+        // ============================================
 
         document.getElementById('history-btn').addEventListener('click', async () => {
             document.getElementById('history-panel').classList.add('open');
