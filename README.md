@@ -5,7 +5,9 @@ A collaborative, real-time contract editor built for D/s relationships with auto
 ## ✨ Features
 
 ### Core Features
-- **Real-time Sync**: Changes sync instantly across all devices and tabs
+- **Real-time Sync**: Changes sync across all devices and tabs
+  - WebSocket sync (instant) if Realtime enabled
+  - Polling fallback (3 seconds) works automatically
 - **Multi-user Collaboration**: Share contracts with your partner with editor or viewer permissions
 - **Automatic History**: Every change is tracked automatically
 - **Manual Snapshots**: Save important milestones and restore them later
@@ -31,14 +33,22 @@ A collaborative, real-time contract editor built for D/s relationships with auto
 4. Copy and paste the contents of `supabase-schema.sql`
 5. Click **Run** to create all tables
 
-### Step 2: Enable Realtime
+### Step 2: Enable Realtime (OPTIONAL)
 
-1. In Supabase, go to **Database** → **Replication**
+**Note**: This step is optional! The app automatically falls back to polling if Realtime isn't available.
+
+**If available:**
+1. In Supabase, go to **Database** → **Replication** (or **Realtime**)
 2. Find these tables and enable realtime for each:
    - `contracts`
    - `contract_shares`
    - `history`
 3. Toggle the switch to enable replication
+
+**If "Coming Soon":**
+- Skip this step - polling will work automatically
+- Changes sync within 3 seconds instead of instant
+- Still fully functional for multi-device collaboration
 
 ### Step 3: Open the Application
 
@@ -92,8 +102,15 @@ Your partner will need to create an account with that email to access the contra
 
 1. Open the same contract in multiple browser tabs
 2. Or open on your phone and computer
-3. Edit in one place, see changes appear instantly in the other
+3. Edit in one place, see changes appear in the other
 4. The "Synced" indicator shows sync status
+
+**Check which sync mode is active:**
+- Open browser console (F12 → Console)
+- Look for:
+  - "✅ Realtime sync enabled (WebSocket)" = Instant sync
+  - "🔄 Polling sync active (checking every 3 seconds)" = 3-second sync
+- Both modes work great for collaboration!
 
 ## 🏗️ Architecture
 

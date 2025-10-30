@@ -893,6 +893,8 @@
         let presenceChannel = null;
         let saveTimeout = null;
         let isSyncing = false;
+        let pollingInterval = null;
+        let usePolling = false;
 
         // ============================================
         // AUTHENTICATION
@@ -1020,10 +1022,17 @@
         function showContractList() {
             document.getElementById('contract-list').style.display = 'block';
             document.getElementById('contract-editor').style.display = 'none';
+
+            // Clean up sync connections
             if (realtimeChannel) {
                 supabase.removeChannel(realtimeChannel);
                 realtimeChannel = null;
             }
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+
             loadContracts();
         }
 
@@ -1410,10 +1419,16 @@
         // ============================================
 
         function setupRealtimeSync() {
+            // Clean up existing connections
             if (realtimeChannel) {
                 supabase.removeChannel(realtimeChannel);
             }
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
 
+            // Try Realtime first (WebSocket-based)
             realtimeChannel = supabase
                 .channel(`contract:${currentContract.id}`)
                 .on(
@@ -1426,7 +1441,59 @@
                     },
                     handleRealtimeUpdate
                 )
-                .subscribe();
+                .subscribe((status, err) => {
+                    if (status === 'SUBSCRIBED') {
+                        console.log('✅ Realtime sync enabled (WebSocket)');
+                        usePolling = false;
+                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                        console.log('⚠️ Realtime not available, using polling fallback');
+                        usePolling = true;
+                        setupPollingSync();
+                    }
+                });
+
+            // Also start polling as a backup (will check usePolling flag)
+            setTimeout(() => {
+                if (!realtimeChannel || realtimeChannel.state !== 'joined') {
+                    console.log('⚠️ Realtime failed to connect, using polling fallback');
+                    usePolling = true;
+                    setupPollingSync();
+                }
+            }, 3000); // Wait 3 seconds for realtime to connect
+        }
+
+        function setupPollingSync() {
+            if (pollingInterval) return; // Already polling
+
+            // Poll every 3 seconds for changes
+            pollingInterval = setInterval(async () => {
+                if (isSyncing) return; // Don't poll while we're saving
+
+                try {
+                    const { data, error } = await supabase
+                        .from('contracts')
+                        .select('*')
+                        .eq('id', currentContract.id)
+                        .single();
+
+                    if (error) {
+                        console.error('Polling error:', error);
+                        return;
+                    }
+
+                    // Check if data changed
+                    if (data && JSON.stringify(data.data) !== JSON.stringify(currentContract.data)) {
+                        console.log('📥 Polling detected changes');
+                        currentContract = data;
+                        renderContractEditor();
+                        updateSyncStatus('synced');
+                    }
+                } catch (err) {
+                    console.error('Polling failed:', err);
+                }
+            }, 3000); // Poll every 3 seconds
+
+            console.log('🔄 Polling sync active (checking every 3 seconds)');
         }
 
         function handleRealtimeUpdate(payload) {

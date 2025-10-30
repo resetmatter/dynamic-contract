@@ -73,15 +73,17 @@ If you already have a Supabase project, skip to Step 2.
      - `contract_shares`
      - `history`
 
-## Step 4: Enable Realtime (1 minute)
+## Step 4: Enable Realtime (OPTIONAL - 1 minute)
 
-This is critical for real-time sync to work!
+**Note**: This step is OPTIONAL! The app uses polling fallback if Realtime isn't available.
+
+**If Realtime/Replication is available in your Supabase dashboard:**
 
 1. **Open Replication Settings**
    - Click "Database" in left sidebar
-   - Click "Replication" tab
+   - Look for "Replication" or "Realtime" tab
 
-2. **Enable Realtime for Tables**
+2. **Enable Realtime for Tables** (if available)
    - Find "contracts" table → Toggle the switch to **ON**
    - Find "contract_shares" table → Toggle the switch to **ON**
    - Find "history" table → Toggle the switch to **ON**
@@ -89,6 +91,11 @@ This is critical for real-time sync to work!
 3. **Verify**
    - All three tables should show as enabled
    - You may see a brief "Applying changes..." message
+
+**If Replication says "Coming Soon" or is unavailable:**
+- **No problem!** The app will automatically use polling (checks every 3 seconds)
+- Polling works great and you'll still see changes from other tabs/devices
+- It's slightly slower than WebSocket but fully functional
 
 ## Step 5: Configure the HTML File (2 minutes)
 
@@ -174,10 +181,15 @@ To test multi-tab sync:
 **Problem**: Edits in one tab don't appear in another
 
 **Solutions**:
-1. Verify Realtime is enabled (Step 4) - this is the most common issue!
-2. Check the sync indicator - should say "Synced"
-3. Look for errors in browser console (F12 → Console tab)
-4. Check Network tab (F12 → Network) for failed WebSocket (WS) connection
+1. **Check browser console (F12 → Console)**
+   - Look for: "✅ Realtime sync enabled (WebSocket)" - fastest sync
+   - Or: "🔄 Polling sync active" - still works, slightly slower
+2. **Polling mode is working if you see changes within 3-5 seconds**
+3. **If using polling and want WebSocket:**
+   - Enable Realtime in Supabase (Step 4)
+   - Refresh the page
+4. **Check the sync indicator** - should say "Synced"
+5. **Look for errors** in browser console (F12 → Console tab)
 
 ### "Can't login after signup"
 
