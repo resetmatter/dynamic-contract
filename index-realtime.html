@@ -722,10 +722,73 @@
         .preview-container {
             max-width: 900px;
             margin: 40px auto;
-            background: white;
+            background:
+                linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98)),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 0, 0, 0.02) 2px,
+                    rgba(139, 0, 0, 0.02) 4px
+                );
+            border: 3px solid #8b0000;
             padding: 60px;
-            box-shadow: 0 10px 50px rgba(0, 0, 0, 0.5);
+            box-shadow:
+                0 0 0 1px rgba(255, 105, 180, 0.3),
+                0 0 30px rgba(139, 0, 0, 0.6),
+                inset 0 0 100px rgba(0, 0, 0, 0.8),
+                0 20px 60px rgba(0, 0, 0, 0.5);
             min-height: calc(100vh - 80px);
+            position: relative;
+            border-radius: 5px;
+        }
+
+        /* Leather texture for preview */
+        .preview-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 30% 40%, rgba(80, 40, 40, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(80, 40, 40, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            border-radius: 5px;
+        }
+
+        /* Pink bows for preview */
+        .preview-bow {
+            position: absolute;
+            font-size: 60px;
+            z-index: 10;
+            filter: drop-shadow(3px 3px 10px rgba(255, 105, 180, 0.5));
+            opacity: 0.9;
+        }
+
+        .preview-bow-top-left {
+            top: -20px;
+            left: -20px;
+            transform: rotate(-15deg);
+        }
+
+        .preview-bow-top-right {
+            top: -20px;
+            right: -20px;
+            transform: rotate(15deg);
+        }
+
+        .preview-bow-bottom-left {
+            bottom: -20px;
+            left: -20px;
+            transform: rotate(15deg);
+        }
+
+        .preview-bow-bottom-right {
+            bottom: -20px;
+            right: -20px;
+            transform: rotate(-15deg);
         }
 
         .preview-header {
@@ -755,37 +818,62 @@
 
         .preview-content {
             margin-top: 70px;
-            color: #000;
+            color: #ffb6c1;
             font-family: 'Crimson Text', serif;
             line-height: 1.8;
+            position: relative;
+            z-index: 1;
         }
 
         .preview-content h1 {
             font-family: 'Cinzel', serif;
-            color: var(--primary-dark);
+            color: #ff69b4;
             text-align: center;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            border-bottom: 3px solid var(--primary-dark);
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
+            letter-spacing: 3px;
+            border: none;
             padding-bottom: 20px;
         }
 
         .preview-content h2 {
             font-family: 'Cinzel', serif;
-            color: var(--primary-dark);
-            font-size: 1.8em;
-            margin-top: 40px;
-            margin-bottom: 20px;
-            border-left: 5px solid var(--accent-pink);
-            padding-left: 20px;
+            color: #dc143c;
+            font-size: 2em;
+            margin-top: 50px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.3), rgba(220, 20, 60, 0.2));
+            border-left: 5px solid #ff69b4;
+            border-right: 5px solid #ff69b4;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+            text-align: center;
         }
 
         .preview-content h3 {
             font-family: 'Cinzel', serif;
-            color: var(--primary-light);
+            color: #ff85b8;
             font-size: 1.3em;
             margin-top: 25px;
             margin-bottom: 15px;
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
+        }
+
+        .preview-subtitle {
+            text-align: center;
+            color: #ffb6c1;
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .preview-divider {
+            text-align: center;
+            font-size: 2em;
+            margin: 40px 0;
+            color: #ff69b4;
+            filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
         }
 
         .preview-content p {
@@ -1353,15 +1441,60 @@
             const sections = currentContract.data?.sections || [];
 
             if (sections.length === 0) {
-                // Create default sections
+                // Create default sections matching original template
                 const defaultSections = [
-                    { type: 'parties', title: 'The Parties', fields: [] },
-                    { type: 'purpose', title: 'Purpose & Philosophy', fields: [] },
-                    { type: 'rules', title: 'Rules & Commands', fields: [] },
-                    { type: 'duties', title: 'Duties & Expectations', fields: [] },
-                    { type: 'boundaries', title: 'Boundaries & Limits', fields: [] },
-                    { type: 'discipline', title: 'Discipline & Rewards', fields: [] },
-                    { type: 'terms', title: 'Terms & Conditions', fields: [] }
+                    {
+                        type: 'parties',
+                        title: 'Parties',
+                        fields: [
+                            { label: 'Dominant (Owner & Caregiver)', type: 'textarea', value: '' },
+                            { label: 'Submissive (Little & Property)', type: 'textarea', value: '' }
+                        ]
+                    },
+                    {
+                        type: 'commands',
+                        title: 'Commands & Absolute Rules',
+                        fields: [
+                            { label: 'Command 1', type: 'textarea', value: '' },
+                            { label: 'Command 2', type: 'textarea', value: '' },
+                            { label: 'Command 3', type: 'textarea', value: '' }
+                        ]
+                    },
+                    {
+                        type: 'duties',
+                        title: 'Required Duties & Service',
+                        fields: [
+                            { label: 'Daily Requirements', type: 'list', items: ['', '', ''] },
+                            { label: 'Weekly Tasks', type: 'list', items: ['', ''] },
+                            { label: 'Service Expectations', type: 'textarea', value: '' }
+                        ]
+                    },
+                    {
+                        type: 'boundaries',
+                        title: 'Boundaries',
+                        fields: [
+                            { label: 'Hard Limits', type: 'list', items: ['', '', ''] },
+                            { label: 'Soft Limits', type: 'list', items: ['', ''] },
+                            { label: 'Safewords', type: 'textarea', value: '' }
+                        ]
+                    },
+                    {
+                        type: 'discipline',
+                        title: 'Discipline & Correction',
+                        fields: [
+                            { label: 'Punishments', type: 'list', items: ['', '', ''] },
+                            { label: 'Rewards', type: 'list', items: ['', ''] }
+                        ]
+                    },
+                    {
+                        type: 'terms',
+                        title: 'Terms of Ownership',
+                        fields: [
+                            { label: 'Contract Duration', type: 'text', value: '' },
+                            { label: 'Renegotiation Terms', type: 'textarea', value: '' },
+                            { label: 'Termination Conditions', type: 'textarea', value: '' }
+                        ]
+                    }
                 ];
 
                 currentContract.data = { sections: defaultSections };
@@ -1788,10 +1921,21 @@
             const title = currentContract.title || 'Untitled Contract';
             const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            let html = `<h1>${escapeHtml(title)}</h1>`;
+            let html = `
+                <div class="preview-bow preview-bow-top-left">🎀</div>
+                <div class="preview-bow preview-bow-top-right">🎀</div>
+                <div class="preview-bow preview-bow-bottom-left">🎀</div>
+                <div class="preview-bow preview-bow-bottom-right">🎀</div>
+                <h1>${escapeHtml(title)}</h1>
+            `;
 
-            sections.forEach(section => {
+            sections.forEach((section, index) => {
                 if (!section.title) return;
+
+                // Add decorative divider before each section (except first)
+                if (index > 0) {
+                    html += `<div class="preview-divider">⛓️ 🎀 ⛓️</div>`;
+                }
 
                 html += `<h2>${escapeHtml(section.title)}</h2>`;
 
@@ -1825,6 +1969,7 @@
                 });
             });
 
+            html += `<div class="preview-divider">⛓️ 🎀 ⛓️</div>`;
             html += `<div class="preview-date">Contract date: ${date}</div>`;
 
             document.getElementById('preview-content').innerHTML = html;
