@@ -1124,6 +1124,7 @@
             const { data, error } = await supabaseClient
                 .from('contracts')
                 .insert({
+                    user_id: currentUser.id,
                     title: 'New Contract',
                     data: { sections: [] }
                 })
