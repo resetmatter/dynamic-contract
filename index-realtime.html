@@ -1346,8 +1346,9 @@
                 currentContract = data;
                 const isEditor = data.public_share_role === 'editor';
 
-                // Hide auth screen
+                // Hide auth screen and show main app
                 document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'block';
 
                 if (isEditor) {
                     // Create a guest user for public editing
