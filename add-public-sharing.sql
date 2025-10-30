@@ -1,19 +1,27 @@
 -- ============================================
--- Add Public Sharing Feature
+-- Add Public Sharing Feature with Edit Permissions
 -- ============================================
 -- This migration adds the ability to share contracts publicly via a unique link
--- without requiring the recipient to have an account
+-- without requiring the recipient to have an account, with optional edit permissions
 
 -- Add public sharing columns to contracts table
 ALTER TABLE contracts
 ADD COLUMN IF NOT EXISTS public_share_token TEXT UNIQUE,
-ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE;
+ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS public_share_role TEXT DEFAULT 'viewer' CHECK (public_share_role IN ('viewer', 'editor'));
+
+-- Add signature fields to contracts table
+ALTER TABLE contracts
+ADD COLUMN IF NOT EXISTS owner_signature TEXT,
+ADD COLUMN IF NOT EXISTS owner_signature_date DATE,
+ADD COLUMN IF NOT EXISTS submissive_signature TEXT,
+ADD COLUMN IF NOT EXISTS submissive_signature_date DATE;
 
 -- Index for fast public lookups by token
 CREATE INDEX IF NOT EXISTS contracts_public_token_idx ON contracts(public_share_token) WHERE is_public = TRUE;
 
 -- ============================================
--- PUBLIC ACCESS POLICY
+-- PUBLIC ACCESS POLICIES
 -- ============================================
 -- Allow anyone to view contracts that are publicly shared via valid token
 
@@ -24,8 +32,17 @@ CREATE POLICY "Anyone can view public contracts with valid token"
         AND public_share_token IS NOT NULL
     );
 
+-- Allow public editors to update contracts if they have editor role
+CREATE POLICY "Anyone can update public contracts with editor token"
+    ON contracts FOR UPDATE
+    USING (
+        is_public = TRUE
+        AND public_share_token IS NOT NULL
+        AND public_share_role = 'editor'
+    );
+
 -- Note: The app will validate the token in the WHERE clause of the query
--- This policy just enables public access to public contracts
+-- This policy enables public access based on is_public and public_share_role
 
 -- ============================================
 -- Function to generate unique share token
@@ -53,4 +70,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-SELECT 'Public sharing feature added successfully!' AS message;
+SELECT 'Public sharing feature with edit permissions and signatures added successfully!' AS message;

@@ -948,6 +948,84 @@
             border-top: 2px solid rgba(139, 0, 0, 0.6);
         }
 
+        /* Terms Notice */
+        .preview-terms-notice {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            border-left: 4px solid #8b0000;
+            padding: 20px;
+            margin: 30px 0;
+            font-size: 16px;
+            color: #d4768f;
+            font-style: italic;
+            line-height: 1.8;
+            border-radius: 3px;
+        }
+
+        /* Signature Section */
+        .preview-signature-section {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 2px solid rgba(139, 0, 0, 0.6);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        .preview-signature-box {
+            text-align: center;
+            position: relative;
+        }
+
+        .preview-signature-box::before {
+            content: '🎀';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.6));
+        }
+
+        .preview-signature-box label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            color: #dc143c;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .preview-signature-value {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            background: transparent;
+            font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+            font-size: 26px;
+            color: #ff6b9d;
+            text-align: center;
+            padding: 10px 0;
+            min-height: 40px;
+        }
+
+        .preview-signature-date {
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            margin-top: 15px;
+            color: #d4768f;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .preview-signature-section {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+        }
+
         /* Print Styles */
         @media print {
             .app-header,
@@ -1098,6 +1176,23 @@
             </div>
 
             <button class="btn" id="add-section-btn" style="width: 100%; margin-top: 20px;">+ Add Section</button>
+
+            <!-- Signature Section -->
+            <div class="contract-section" style="margin-top: 50px; padding-top: 40px; border-top: 2px solid var(--border-color);">
+                <h2 style="text-align: center; color: var(--accent-pink); margin-bottom: 30px;">Signatures</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                    <div>
+                        <label style="display: block; color: var(--accent-pink); margin-bottom: 10px; font-weight: 600;">Owner's Signature</label>
+                        <input type="text" id="owner-signature" placeholder="Sign here" style="width: 100%; font-family: 'Brush Script MT', 'Lucida Handwriting', cursive; font-size: 24px; padding: 10px; border: none; border-bottom: 2px solid var(--border-color); background: transparent; color: var(--text-color);">
+                        <input type="date" id="owner-signature-date" style="width: 100%; margin-top: 10px; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-color);">
+                    </div>
+                    <div>
+                        <label style="display: block; color: var(--accent-pink); margin-bottom: 10px; font-weight: 600;">Submissive's Acceptance</label>
+                        <input type="text" id="submissive-signature" placeholder="Sign here" style="width: 100%; font-family: 'Brush Script MT', 'Lucida Handwriting', cursive; font-size: 24px; padding: 10px; border: none; border-bottom: 2px solid var(--border-color); background: transparent; color: var(--text-color);">
+                        <input type="date" id="submissive-signature-date" style="width: 100%; margin-top: 10px; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-color);">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1127,7 +1222,14 @@
                     </label>
                 </div>
                 <div id="public-link-container" style="display: none;">
-                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">Anyone with this link can view the contract (read-only):</p>
+                    <div class="form-group" style="margin: 10px 0;">
+                        <label for="public-share-role">Public Link Permission</label>
+                        <select id="public-share-role">
+                            <option value="viewer">Viewer (read-only)</option>
+                            <option value="editor">Editor (can edit)</option>
+                        </select>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">Anyone with this link can access the contract:</p>
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
                         <button class="btn btn-secondary" id="copy-link-btn">📋 Copy</button>
@@ -1240,16 +1342,43 @@
                     return;
                 }
 
-                // Set as current contract and show preview
+                // Set as current contract
                 currentContract = data;
+                const isEditor = data.public_share_role === 'editor';
                 document.getElementById('auth-screen').style.display = 'none';
-                renderPreview();
-                document.getElementById('preview-overlay').classList.add('open');
 
-                // Add message to preview
-                const previewHeader = document.querySelector('.preview-header h3');
-                if (previewHeader) {
-                    previewHeader.innerHTML = '📄 ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Shared View)</span>';
+                if (isEditor) {
+                    // Show editor mode for public editors
+                    document.getElementById('contract-editor').style.display = 'block';
+                    document.getElementById('contract-title').value = currentContract.title;
+
+                    // Load signatures
+                    document.getElementById('owner-signature').value = currentContract.owner_signature || '';
+                    document.getElementById('owner-signature-date').value = currentContract.owner_signature_date || '';
+                    document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
+                    document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
+
+                    renderContractEditor();
+                    setupRealtimeSync();
+
+                    // Add indicator that this is public editing
+                    const editorTitle = document.querySelector('.editor-title');
+                    if (editorTitle) {
+                        const indicator = document.createElement('span');
+                        indicator.style.cssText = 'color: var(--accent-pink); font-size: 0.8em; margin-left: 10px;';
+                        indicator.textContent = '(Shared Editor)';
+                        editorTitle.appendChild(indicator);
+                    }
+                } else {
+                    // Show preview for viewers
+                    renderPreview();
+                    document.getElementById('preview-overlay').classList.add('open');
+
+                    // Add message to preview
+                    const previewHeader = document.querySelector('.preview-header h3');
+                    if (previewHeader) {
+                        previewHeader.innerHTML = '📄 ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Shared View)</span>';
+                    }
                 }
             } catch (err) {
                 console.error('Error loading public contract:', err);
@@ -1504,6 +1633,13 @@
             }
 
             currentContract = data;
+
+            // Load signatures into form
+            document.getElementById('owner-signature').value = currentContract.owner_signature || '';
+            document.getElementById('owner-signature-date').value = currentContract.owner_signature_date || '';
+            document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
+            document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
+
             renderContractEditor();
             setupRealtimeSync();
             showContractEditor();
@@ -1735,6 +1871,11 @@
             debouncedSave();
         });
 
+        // Signature field event listeners
+        ['owner-signature', 'owner-signature-date', 'submissive-signature', 'submissive-signature-date'].forEach(id => {
+            document.getElementById(id).addEventListener('input', debouncedSave);
+        });
+
         // Debounced save function
         function debouncedSave() {
             clearTimeout(saveTimeout);
@@ -1802,11 +1943,21 @@
             if (isSyncing) return;
             isSyncing = true;
 
+            // Collect signature data
+            const ownerSig = document.getElementById('owner-signature')?.value || '';
+            const ownerDate = document.getElementById('owner-signature-date')?.value || null;
+            const subSig = document.getElementById('submissive-signature')?.value || '';
+            const subDate = document.getElementById('submissive-signature-date')?.value || null;
+
             const { error } = await supabaseClient
                 .from('contracts')
                 .update({
                     title: currentContract.title,
                     data: currentContract.data,
+                    owner_signature: ownerSig,
+                    owner_signature_date: ownerDate,
+                    submissive_signature: subSig,
+                    submissive_signature_date: subDate,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', currentContract.id);
@@ -1815,6 +1966,12 @@
                 console.error('Error saving contract:', error);
                 updateSyncStatus('error');
             } else {
+                // Update local copy with signatures
+                currentContract.owner_signature = ownerSig;
+                currentContract.owner_signature_date = ownerDate;
+                currentContract.submissive_signature = subSig;
+                currentContract.submissive_signature_date = subDate;
+
                 updateSyncStatus('synced');
                 // Track change in history
                 await trackChange('updated', 'Contract saved');
@@ -2043,6 +2200,10 @@
                 <div class="preview-bow preview-bow-bottom-right">🎀</div>
                 <h1>${escapeHtml(title)}</h1>
                 <p class="preview-subtitle">Between Dom ${escapeHtml(domName)} and his sub ${escapeHtml(subName)}</p>
+
+                <div class="preview-terms-notice">
+                    This contract establishes a Total Power Exchange (TPE) dynamic where the submissive willingly surrenders complete control and authority to the Dominant. The submissive acknowledges the Dominant's absolute authority in all matters and agrees to obey without question. All activities remain bound by established safe words and hard limits. Either party may terminate this agreement, though renegotiation requires the Dominant's approval.
+                </div>
             `;
 
             sections.forEach((section, index) => {
@@ -2085,7 +2246,31 @@
                 });
             });
 
-            html += `<div class="preview-divider">⛓️ 🎀 ⛓️</div>`;
+            // Add signature section matching index.html exactly
+            const ownerSig = currentContract.owner_signature || '';
+            const ownerDate = currentContract.owner_signature_date || '';
+            const subSig = currentContract.submissive_signature || '';
+            const subDate = currentContract.submissive_signature_date || '';
+
+            const ownerDateFormatted = ownerDate ? new Date(ownerDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '';
+            const subDateFormatted = subDate ? new Date(subDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '';
+
+            html += `
+                <div class="preview-signature-section">
+                    <div class="preview-signature-box">
+                        <label>Owner's Signature</label>
+                        <div class="preview-signature-value">${escapeHtml(ownerSig)}</div>
+                        <div class="preview-signature-date">${ownerDateFormatted}</div>
+                    </div>
+                    <div class="preview-signature-box">
+                        <label>Submissive's Acceptance</label>
+                        <div class="preview-signature-value">${escapeHtml(subSig)}</div>
+                        <div class="preview-signature-date">${subDateFormatted}</div>
+                    </div>
+                </div>
+            `;
+
+            html += `<div class="preview-divider" style="margin-top: 50px;">⛓️ 🎀 ⛓️</div>`;
             html += `<div class="preview-date">Contract date: ${date}</div>`;
 
             document.getElementById('preview-content').innerHTML = html;
@@ -2300,6 +2485,7 @@
             const toggle = document.getElementById('public-share-toggle');
             const container = document.getElementById('public-link-container');
             const linkInput = document.getElementById('public-link');
+            const roleSelect = document.getElementById('public-share-role');
 
             toggle.checked = isPublic;
 
@@ -2307,6 +2493,7 @@
                 container.style.display = 'block';
                 const shareUrl = `${window.location.origin}${window.location.pathname}?share=${currentContract.public_share_token}`;
                 linkInput.value = shareUrl;
+                roleSelect.value = currentContract.public_share_role || 'viewer';
             } else {
                 container.style.display = 'none';
             }
@@ -2314,6 +2501,7 @@
 
         document.getElementById('public-share-toggle').addEventListener('change', async (e) => {
             const isEnabled = e.target.checked;
+            const role = document.getElementById('public-share-role').value;
 
             if (isEnabled && !currentContract.public_share_token) {
                 // Generate new token
@@ -2322,13 +2510,15 @@
             }
 
             currentContract.is_public = isEnabled;
+            currentContract.public_share_role = role;
 
             // Update database
             const { error } = await supabaseClient
                 .from('contracts')
                 .update({
                     is_public: isEnabled,
-                    public_share_token: currentContract.public_share_token
+                    public_share_token: currentContract.public_share_token,
+                    public_share_role: role
                 })
                 .eq('id', currentContract.id);
 
@@ -2340,6 +2530,21 @@
             }
 
             await loadPublicShareStatus();
+        });
+
+        // Update role when changed
+        document.getElementById('public-share-role').addEventListener('change', async (e) => {
+            const role = e.target.value;
+            currentContract.public_share_role = role;
+
+            const { error } = await supabaseClient
+                .from('contracts')
+                .update({ public_share_role: role })
+                .eq('id', currentContract.id);
+
+            if (error) {
+                console.error('Error updating public share role:', error);
+            }
         });
 
         document.getElementById('copy-link-btn').addEventListener('click', () => {
