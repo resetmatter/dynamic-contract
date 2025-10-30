@@ -881,8 +881,8 @@
         const SUPABASE_URL = 'https://sryxyqioytqxcmgtykao.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNyeXh5cWlveXRxeGNtZ3R5a2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE4MzY4NjMsImV4cCI6MjA3NzQxMjg2M30.QJxb6sUEngf-KEheV9C1Wj14_dDADzuW7PrQtAUcqPo';
 
-        const { createClient } = window.supabase;
-        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ============================================
         // APPLICATION STATE
@@ -902,7 +902,7 @@
 
         // Check for existing session on load
         async function checkAuth() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
                 showApp();
@@ -930,7 +930,7 @@
             showAuthLoading(true);
             hideAuthMessages();
 
-            const { data, error } = await supabase.auth.signInWithPassword({
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email,
                 password
             });
@@ -955,7 +955,7 @@
             showAuthLoading(true);
             hideAuthMessages();
 
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password,
                 options: {
@@ -976,7 +976,7 @@
 
         // Logout
         document.getElementById('logout-btn').addEventListener('click', async () => {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             location.reload();
         });
 
@@ -1025,7 +1025,7 @@
 
             // Clean up sync connections
             if (realtimeChannel) {
-                supabase.removeChannel(realtimeChannel);
+                supabaseClient.removeChannel(realtimeChannel);
                 realtimeChannel = null;
             }
             if (pollingInterval) {
@@ -1048,7 +1048,7 @@
         // ============================================
 
         async function loadContracts() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('contracts')
                 .select(`
                     *,
@@ -1109,7 +1109,7 @@
         document.getElementById('create-contract-btn').addEventListener('click', createNewContract);
 
         window.createNewContract = async function() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('contracts')
                 .insert({
                     title: 'New Contract',
@@ -1128,7 +1128,7 @@
         };
 
         window.openContract = async function(contractId) {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('contracts')
                 .select('*')
                 .eq('id', contractId)
@@ -1151,7 +1151,7 @@
                 return;
             }
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('contracts')
                 .delete()
                 .eq('id', contractId);
@@ -1393,7 +1393,7 @@
             if (isSyncing) return;
             isSyncing = true;
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('contracts')
                 .update({
                     title: currentContract.title,
@@ -1421,7 +1421,7 @@
         function setupRealtimeSync() {
             // Clean up existing connections
             if (realtimeChannel) {
-                supabase.removeChannel(realtimeChannel);
+                supabaseClient.removeChannel(realtimeChannel);
             }
             if (pollingInterval) {
                 clearInterval(pollingInterval);
@@ -1429,7 +1429,7 @@
             }
 
             // Try Realtime first (WebSocket-based)
-            realtimeChannel = supabase
+            realtimeChannel = supabaseClient
                 .channel(`contract:${currentContract.id}`)
                 .on(
                     'postgres_changes',
@@ -1470,7 +1470,7 @@
                 if (isSyncing) return; // Don't poll while we're saving
 
                 try {
-                    const { data, error } = await supabase
+                    const { data, error } = await supabaseClient
                         .from('contracts')
                         .select('*')
                         .eq('id', currentContract.id)
@@ -1536,10 +1536,10 @@
 
         function setupPresence() {
             if (presenceChannel) {
-                supabase.removeChannel(presenceChannel);
+                supabaseClient.removeChannel(presenceChannel);
             }
 
-            presenceChannel = supabase.channel('presence')
+            presenceChannel = supabaseClient.channel('presence')
                 .on('presence', { event: 'sync' }, () => {
                     const state = presenceChannel.presenceState();
                     updatePresenceUI(state);
@@ -1577,7 +1577,7 @@
         // ============================================
 
         async function trackChange(changeType, description) {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('history')
                 .insert({
                     contract_id: currentContract.id,
@@ -1602,7 +1602,7 @@
         });
 
         async function loadHistory() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('history')
                 .select('*')
                 .eq('contract_id', currentContract.id)
@@ -1645,7 +1645,7 @@
             const description = prompt('Snapshot description:');
             if (!description) return;
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('history')
                 .insert({
                     contract_id: currentContract.id,
@@ -1670,7 +1670,7 @@
             }
 
             // Save current state as snapshot first
-            await supabase.from('history').insert({
+            await supabaseClient.from('history').insert({
                 contract_id: currentContract.id,
                 user_id: currentUser.id,
                 change_type: 'snapshot',
@@ -1680,7 +1680,7 @@
             });
 
             // Load the snapshot
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('history')
                 .select('snapshot')
                 .eq('id', historyId)
@@ -1721,7 +1721,7 @@
                 return;
             }
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('contract_shares')
                 .insert({
                     contract_id: currentContract.id,
@@ -1741,7 +1741,7 @@
         });
 
         async function loadShares() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('contract_shares')
                 .select('*')
                 .eq('contract_id', currentContract.id);
@@ -1767,7 +1767,7 @@
         }
 
         window.removeShare = async function(shareId) {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('contract_shares')
                 .delete()
                 .eq('id', shareId);
