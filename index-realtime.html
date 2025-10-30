@@ -1116,6 +1116,27 @@
     <div class="dialog-overlay" id="share-dialog">
         <div class="dialog">
             <h3>Share Contract</h3>
+
+            <!-- Public Sharing Section -->
+            <div class="form-group" style="background: rgba(139, 0, 0, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+                <h4 style="color: var(--accent-pink); margin: 0 0 10px;">🌐 Public Sharing (No Account Needed)</h4>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                        <input type="checkbox" id="public-share-toggle" style="cursor: pointer;">
+                        <span>Enable public link</span>
+                    </label>
+                </div>
+                <div id="public-link-container" style="display: none;">
+                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">Anyone with this link can view the contract (read-only):</p>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
+                        <button class="btn btn-secondary" id="copy-link-btn">📋 Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Sharing Section -->
+            <h4 style="color: var(--accent-pink); margin: 0 0 10px;">📧 Share with Registered Users</h4>
             <div class="form-group">
                 <label for="share-email">Partner's Email</label>
                 <input type="email" id="share-email" placeholder="partner@email.com">
@@ -1185,10 +1206,54 @@
 
         // Check for existing session on load
         async function checkAuth() {
+            // Check if accessing via public share link
+            const urlParams = new URLSearchParams(window.location.search);
+            const publicToken = urlParams.get('share');
+
+            if (publicToken) {
+                // Public access mode - no login required
+                await loadPublicContract(publicToken);
+                return;
+            }
+
+            // Normal auth flow
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 currentUser = session.user;
                 showApp();
+            }
+        }
+
+        // Load contract via public share token
+        async function loadPublicContract(token) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('contracts')
+                    .select('*')
+                    .eq('public_share_token', token)
+                    .eq('is_public', true)
+                    .single();
+
+                if (error || !data) {
+                    alert('Invalid or expired share link');
+                    window.location.href = window.location.pathname; // Remove token from URL
+                    return;
+                }
+
+                // Set as current contract and show preview
+                currentContract = data;
+                document.getElementById('auth-screen').style.display = 'none';
+                renderPreview();
+                document.getElementById('preview-overlay').classList.add('open');
+
+                // Add message to preview
+                const previewHeader = document.querySelector('.preview-header h3');
+                if (previewHeader) {
+                    previewHeader.innerHTML = '📄 ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Shared View)</span>';
+                }
+            } catch (err) {
+                console.error('Error loading public contract:', err);
+                alert('Error loading shared contract');
             }
         }
 
@@ -2150,6 +2215,7 @@
         document.getElementById('share-btn').addEventListener('click', async () => {
             document.getElementById('share-dialog').classList.add('open');
             await loadShares();
+            await loadPublicShareStatus();
         });
 
         document.getElementById('cancel-share-btn').addEventListener('click', () => {
@@ -2224,6 +2290,80 @@
 
             await loadShares();
         };
+
+        // ============================================
+        // PUBLIC SHARING
+        // ============================================
+
+        async function loadPublicShareStatus() {
+            const isPublic = currentContract.is_public || false;
+            const toggle = document.getElementById('public-share-toggle');
+            const container = document.getElementById('public-link-container');
+            const linkInput = document.getElementById('public-link');
+
+            toggle.checked = isPublic;
+
+            if (isPublic && currentContract.public_share_token) {
+                container.style.display = 'block';
+                const shareUrl = `${window.location.origin}${window.location.pathname}?share=${currentContract.public_share_token}`;
+                linkInput.value = shareUrl;
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.getElementById('public-share-toggle').addEventListener('change', async (e) => {
+            const isEnabled = e.target.checked;
+
+            if (isEnabled && !currentContract.public_share_token) {
+                // Generate new token
+                const token = generateShareToken();
+                currentContract.public_share_token = token;
+            }
+
+            currentContract.is_public = isEnabled;
+
+            // Update database
+            const { error } = await supabaseClient
+                .from('contracts')
+                .update({
+                    is_public: isEnabled,
+                    public_share_token: currentContract.public_share_token
+                })
+                .eq('id', currentContract.id);
+
+            if (error) {
+                console.error('Error updating public share:', error);
+                alert('Failed to update public sharing');
+                e.target.checked = !isEnabled; // Revert
+                return;
+            }
+
+            await loadPublicShareStatus();
+        });
+
+        document.getElementById('copy-link-btn').addEventListener('click', () => {
+            const linkInput = document.getElementById('public-link');
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value);
+
+            const btn = document.getElementById('copy-link-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        });
+
+        function generateShareToken() {
+            // Generate a random 32-character token
+            const array = new Uint8Array(24);
+            crypto.getRandomValues(array);
+            return btoa(String.fromCharCode(...array))
+                .replace(/\//g, '_')
+                .replace(/\+/g, '-')
+                .replace(/=/g, '');
+        }
 
         // ============================================
         // INITIALIZATION
