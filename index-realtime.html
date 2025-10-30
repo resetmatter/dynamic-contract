@@ -827,53 +827,86 @@
 
         .preview-content h1 {
             font-family: 'Cinzel', serif;
-            color: #ff69b4;
+            font-size: 44px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b0000, #ff69b4, #8b0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             text-align: center;
-            font-size: 3em;
-            margin-bottom: 30px;
-            text-shadow: 0 0 20px rgba(255, 105, 180, 0.4);
-            letter-spacing: 3px;
-            border: none;
-            padding-bottom: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
         }
 
         .preview-content h2 {
             font-family: 'Cinzel', serif;
+            font-size: 26px;
             color: #dc143c;
-            font-size: 2em;
-            margin-top: 50px;
-            margin-bottom: 25px;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(139, 0, 0, 0.3), rgba(220, 20, 60, 0.2));
-            border-left: 5px solid #ff69b4;
-            border-right: 5px solid #ff69b4;
-            text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
-            text-align: center;
+            margin-bottom: 20px;
+            margin-top: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .preview-content h2::before {
+            content: '🎀';
+            font-size: 22px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.5));
+        }
+
+        .preview-content h2::after {
+            content: '🎀';
+            font-size: 22px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.5));
         }
 
         .preview-content h3 {
-            font-family: 'Cinzel', serif;
-            color: #ff85b8;
-            font-size: 1.3em;
-            margin-top: 25px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 5px rgba(255, 105, 180, 0.2);
+            font-family: 'Crimson Text', serif;
+            font-size: 13px;
+            color: #d4768f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            margin-top: 20px;
+            display: block;
         }
 
         .preview-subtitle {
             text-align: center;
-            color: #ffb6c1;
-            font-size: 1.2em;
-            margin-bottom: 30px;
+            color: #d4768f;
+            font-size: 16px;
             font-style: italic;
+            margin-top: 15px;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            position: relative;
+        }
+
+        .preview-subtitle::after {
+            content: '⛓️ 🎀 ⛓️';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98));
+            padding: 0 20px;
         }
 
         .preview-divider {
             text-align: center;
-            font-size: 2em;
-            margin: 40px 0;
-            color: #ff69b4;
-            filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.5));
+            font-size: 24px;
+            margin: 35px 0;
+            color: #ffb6c1;
+            opacity: 0.8;
         }
 
         .preview-content p {
@@ -900,7 +933,7 @@
         }
 
         .preview-empty {
-            color: #999;
+            color: rgba(255, 182, 193, 0.4);
             font-style: italic;
             text-align: center;
             padding: 20px;
@@ -908,11 +941,11 @@
 
         .preview-date {
             text-align: center;
-            color: #666;
+            color: #d4768f;
             font-style: italic;
             margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid #ddd;
+            border-top: 2px solid rgba(139, 0, 0, 0.6);
         }
 
         /* Print Styles */
@@ -1447,52 +1480,53 @@
                         type: 'parties',
                         title: 'Parties',
                         fields: [
-                            { label: 'Dominant (Owner & Caregiver)', type: 'textarea', value: '' },
-                            { label: 'Submissive (Little & Property)', type: 'textarea', value: '' }
+                            { label: 'Dominant (Owner & Caregiver)', type: 'textarea', value: 'Matthew - Sir, Owner, Daddy' },
+                            { label: 'Submissive (Little & Property)', type: 'textarea', value: 'Shailah - little girl, baby girl, princess, pet, toy, belonging' }
                         ]
                     },
                     {
                         type: 'commands',
                         title: 'Commands & Absolute Rules',
                         fields: [
-                            { label: 'Command 1', type: 'textarea', value: '' },
-                            { label: 'Command 2', type: 'textarea', value: '' },
-                            { label: 'Command 3', type: 'textarea', value: '' }
+                            { label: 'Command 1', type: 'textarea', value: 'The submissive must obey all commands immediately and without hesitation' },
+                            { label: 'Command 2', type: 'textarea', value: 'The submissive belongs completely to the Dominant and exists for His pleasure' },
+                            { label: 'Command 3', type: 'textarea', value: 'The submissive must always address the Dominant with respect and proper titles' }
                         ]
                     },
                     {
                         type: 'duties',
                         title: 'Required Duties & Service',
                         fields: [
-                            { label: 'Daily Requirements', type: 'list', items: ['', '', ''] },
-                            { label: 'Weekly Tasks', type: 'list', items: ['', ''] },
-                            { label: 'Service Expectations', type: 'textarea', value: '' }
+                            { label: 'Daily Requirements', type: 'list', items: ['Morning greeting and check-in', 'Evening report of daily activities', 'Maintain personal presentation'] },
+                            { label: 'Ongoing Expectations', type: 'list', items: ['Respectful communication at all times', 'Prompt responses to messages'] },
+                            { label: 'Service Expectations', type: 'textarea', value: 'The submissive is expected to serve with devotion and eagerness, anticipating needs and seeking to please' }
                         ]
                     },
                     {
                         type: 'boundaries',
                         title: 'Boundaries',
                         fields: [
-                            { label: 'Hard Limits', type: 'list', items: ['', '', ''] },
-                            { label: 'Soft Limits', type: 'list', items: ['', ''] },
-                            { label: 'Safewords', type: 'textarea', value: '' }
+                            { label: 'Hard Limits (Absolute No)', type: 'list', items: ['Anything illegal', 'Permanent marks or modifications without consent', 'Involvement of others without prior discussion'] },
+                            { label: 'Soft Limits (Requires Discussion)', type: 'list', items: ['Public display beyond agreed comfort levels', 'Extended time constraints'] },
+                            { label: 'Safe Words & Signals', type: 'list', items: ['Red - Stop immediately', 'Yellow - Slow down/check in', 'Green - All is well'] }
                         ]
                     },
                     {
                         type: 'discipline',
                         title: 'Discipline & Correction',
                         fields: [
-                            { label: 'Punishments', type: 'list', items: ['', '', ''] },
-                            { label: 'Rewards', type: 'list', items: ['', ''] }
+                            { label: 'Rewards for Obedience & Service', type: 'list', items: ['Praise and affection', 'Special privileges', 'Quality time and attention'] },
+                            { label: 'Punishments for Disobedience & Failure', type: 'list', items: ['Loss of privileges', 'Corner time or reflection', 'Physical correction as appropriate'] }
                         ]
                     },
                     {
                         type: 'terms',
                         title: 'Terms of Ownership',
                         fields: [
-                            { label: 'Contract Duration', type: 'text', value: '' },
-                            { label: 'Renegotiation Terms', type: 'textarea', value: '' },
-                            { label: 'Termination Conditions', type: 'textarea', value: '' }
+                            { label: 'Effective Date', type: 'text', value: new Date().toISOString().split('T')[0] },
+                            { label: 'Duration of Control', type: 'textarea', value: 'Ongoing and indefinite, subject to review at Dominant\'s discretion' },
+                            { label: 'Review Schedule', type: 'textarea', value: 'Contract terms may be reviewed and modified by the Dominant as needed' },
+                            { label: 'Release Clause', type: 'textarea', value: 'Either party may terminate this agreement with proper communication. The Dominant retains final authority over the terms of separation' }
                         ]
                     }
                 ];
@@ -1918,8 +1952,24 @@
 
         function renderPreview() {
             const sections = currentContract.data?.sections || [];
-            const title = currentContract.title || 'Untitled Contract';
+            const title = currentContract.title || 'D/s Dynamic Contract';
             const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            // Extract party names from first section if available
+            let domName = 'Matthew';
+            let subName = 'Shailah';
+            if (sections.length > 0 && sections[0].type === 'parties' && sections[0].fields) {
+                const domField = sections[0].fields[0];
+                const subField = sections[0].fields[1];
+                if (domField && domField.value) {
+                    const match = domField.value.match(/^([^-\n]+)/);
+                    if (match) domName = match[1].trim();
+                }
+                if (subField && subField.value) {
+                    const match = subField.value.match(/^([^-\n]+)/);
+                    if (match) subName = match[1].trim();
+                }
+            }
 
             let html = `
                 <div class="preview-bow preview-bow-top-left">🎀</div>
@@ -1927,6 +1977,7 @@
                 <div class="preview-bow preview-bow-bottom-left">🎀</div>
                 <div class="preview-bow preview-bow-bottom-right">🎀</div>
                 <h1>${escapeHtml(title)}</h1>
+                <p class="preview-subtitle">Between Dom ${escapeHtml(domName)} and his sub ${escapeHtml(subName)}</p>
             `;
 
             sections.forEach((section, index) => {
