@@ -1916,7 +1916,7 @@
                         ${(f.items || []).map((item, itemIndex) => `
                             <div class="list-item" draggable="true" data-item-index="${itemIndex}">
                                 <span class="drag-handle">🎀</span>
-                                <input type="text" value="${item}" data-item-index="${itemIndex}">
+                                <input type="text" value="${item || ''}" data-item-index="${itemIndex}">
                                 <button class="remove-btn" onclick="removeListItem(${sectionIndex}, ${fieldIndex}, ${itemIndex})">✕</button>
                             </div>
                         `).join('')}
@@ -2211,8 +2211,8 @@
                         field.value = valueEl.value;
                     }
 
-                    // Update list items
-                    const listItems = fieldEl.querySelectorAll('[data-item-index]');
+                    // Update list items - only select input elements to avoid selecting parent divs
+                    const listItems = fieldEl.querySelectorAll('input[data-item-index]');
                     if (listItems.length > 0) {
                         // Replace the array entirely to avoid stale items
                         field.items = Array.from(listItems).map(item => item.value);
