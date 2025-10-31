@@ -2534,6 +2534,27 @@
             const subSig = document.getElementById('submissive-signature')?.value || '';
             const subDate = document.getElementById('submissive-signature-date')?.value || null;
 
+            // Fetch the current state from database for change detection (before we update it)
+            const { data: currentDbState } = await supabaseClient
+                .from('contracts')
+                .select('title, data, owner_signature, submissive_signature')
+                .eq('id', currentContract.id)
+                .single();
+
+            // Build previous contract state for comparison
+            const previousContract = currentDbState || null;
+
+            // Build new contract state for comparison
+            const newContract = {
+                title: currentContract.title,
+                data: currentContract.data,
+                owner_signature: ownerSig,
+                submissive_signature: subSig
+            };
+
+            // Generate change description
+            const changeDescription = generateChangeDescription(previousContract, newContract);
+
             const { error } = await supabaseClient
                 .from('contracts')
                 .update({
@@ -2558,8 +2579,8 @@
                 currentContract.submissive_signature_date = subDate;
 
                 updateSyncStatus('synced');
-                // Track change in history
-                await trackChange('updated', 'Contract saved');
+                // Track change in history with meaningful description
+                await trackChange('updated', changeDescription);
             }
 
             isSyncing = false;
@@ -2911,6 +2932,162 @@
         // HISTORY TRACKING
         // ============================================
 
+        /**
+         * Generate human-friendly description of changes between two contract snapshots
+         */
+        function generateChangeDescription(oldContract, newContract) {
+            const changes = [];
+
+            // Check title change
+            if (oldContract?.title !== newContract.title) {
+                if (!oldContract?.title) {
+                    changes.push(`Set contract title to "${newContract.title}"`);
+                } else {
+                    changes.push(`Changed contract title from "${oldContract.title}" to "${newContract.title}"`);
+                }
+            }
+
+            // Check signature changes
+            if (oldContract?.owner_signature !== newContract.owner_signature) {
+                if (newContract.owner_signature && !oldContract?.owner_signature) {
+                    changes.push('Owner signed the contract');
+                } else if (!newContract.owner_signature && oldContract?.owner_signature) {
+                    changes.push('Owner signature removed');
+                }
+            }
+            if (oldContract?.submissive_signature !== newContract.submissive_signature) {
+                if (newContract.submissive_signature && !oldContract?.submissive_signature) {
+                    changes.push('Submissive signed the contract');
+                } else if (!newContract.submissive_signature && oldContract?.submissive_signature) {
+                    changes.push('Submissive signature removed');
+                }
+            }
+
+            // Compare sections
+            const oldSections = oldContract?.data?.sections || [];
+            const newSections = newContract.data?.sections || [];
+
+            // Detect section additions
+            if (newSections.length > oldSections.length) {
+                const addedCount = newSections.length - oldSections.length;
+                const newSectionTitles = newSections.slice(oldSections.length).map(s => s.title).filter(Boolean);
+                if (newSectionTitles.length > 0) {
+                    changes.push(`Added section${addedCount > 1 ? 's' : ''}: ${newSectionTitles.join(', ')}`);
+                } else {
+                    changes.push(`Added ${addedCount} new section${addedCount > 1 ? 's' : ''}`);
+                }
+            }
+
+            // Detect section removals
+            if (newSections.length < oldSections.length) {
+                const removedCount = oldSections.length - newSections.length;
+                changes.push(`Removed ${removedCount} section${removedCount > 1 ? 's' : ''}`);
+            }
+
+            // Compare existing sections for modifications
+            const minLength = Math.min(oldSections.length, newSections.length);
+            for (let i = 0; i < minLength; i++) {
+                const oldSection = oldSections[i];
+                const newSection = newSections[i];
+
+                // Check section title change
+                if (oldSection.title !== newSection.title) {
+                    changes.push(`Renamed section "${oldSection.title}" to "${newSection.title}"`);
+                }
+
+                // Compare fields within section
+                const oldFields = oldSection.fields || [];
+                const newFields = newSection.fields || [];
+                const sectionName = newSection.title || oldSection.title || 'Untitled Section';
+
+                // Detect field additions
+                if (newFields.length > oldFields.length) {
+                    const addedCount = newFields.length - oldFields.length;
+                    changes.push(`Added ${addedCount} field${addedCount > 1 ? 's' : ''} to "${sectionName}"`);
+                }
+
+                // Detect field removals
+                if (newFields.length < oldFields.length) {
+                    const removedCount = oldFields.length - newFields.length;
+                    changes.push(`Removed ${removedCount} field${removedCount > 1 ? 's' : ''} from "${sectionName}"`);
+                }
+
+                // Compare existing fields for value changes
+                const minFieldLength = Math.min(oldFields.length, newFields.length);
+                for (let j = 0; j < minFieldLength; j++) {
+                    const oldField = oldFields[j];
+                    const newField = newFields[j];
+
+                    // Check field label change
+                    if (oldField.label !== newField.label && oldField.label && newField.label) {
+                        changes.push(`Renamed field "${oldField.label}" to "${newField.label}" in "${sectionName}"`);
+                    }
+
+                    // Check field value changes (for text/textarea fields)
+                    if (oldField.type !== 'list' && newField.type !== 'list') {
+                        const oldValue = oldField.value || '';
+                        const newValue = newField.value || '';
+
+                        if (oldValue !== newValue) {
+                            const fieldLabel = newField.label || oldField.label || 'field';
+                            if (!oldValue && newValue) {
+                                changes.push(`Added content to "${fieldLabel}"`);
+                            } else if (oldValue && !newValue) {
+                                changes.push(`Cleared "${fieldLabel}"`);
+                            } else {
+                                changes.push(`Updated "${fieldLabel}"`);
+                            }
+                        }
+                    }
+
+                    // Check list item changes
+                    if (newField.type === 'list') {
+                        const oldItems = (oldField.items || []).filter(item => item && item.trim());
+                        const newItems = (newField.items || []).filter(item => item && item.trim());
+                        const fieldLabel = newField.label || oldField.label || 'list';
+
+                        if (newItems.length > oldItems.length) {
+                            const addedCount = newItems.length - oldItems.length;
+                            const newItemsAdded = newItems.slice(oldItems.length);
+                            if (newItemsAdded.length === 1 && newItemsAdded[0]) {
+                                changes.push(`Added "${newItemsAdded[0]}" to ${fieldLabel}`);
+                            } else {
+                                changes.push(`Added ${addedCount} item${addedCount > 1 ? 's' : ''} to ${fieldLabel}`);
+                            }
+                        } else if (newItems.length < oldItems.length) {
+                            const removedCount = oldItems.length - newItems.length;
+                            changes.push(`Removed ${removedCount} item${removedCount > 1 ? 's' : ''} from ${fieldLabel}`);
+                        } else if (newItems.length === oldItems.length) {
+                            // Check if any items were modified
+                            let modifiedCount = 0;
+                            for (let k = 0; k < newItems.length; k++) {
+                                if (oldItems[k] !== newItems[k]) {
+                                    modifiedCount++;
+                                }
+                            }
+                            if (modifiedCount > 0) {
+                                changes.push(`Modified ${modifiedCount} item${modifiedCount > 1 ? 's' : ''} in ${fieldLabel}`);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Return formatted description
+            if (changes.length === 0) {
+                return 'Contract updated';
+            } else if (changes.length === 1) {
+                return changes[0];
+            } else if (changes.length <= 3) {
+                return changes.join('; ');
+            } else {
+                // For many changes, show first 3 and count the rest
+                const first3 = changes.slice(0, 3).join('; ');
+                const remaining = changes.length - 3;
+                return `${first3}; and ${remaining} more change${remaining > 1 ? 's' : ''}`;
+            }
+        }
+
         async function trackChange(changeType, description) {
             // Skip history tracking for public editors
             if (currentUser?.isPublicEditor) {
@@ -3071,6 +3248,7 @@
         });
 
         async function loadHistory() {
+            // Fetch history entries
             const { data, error } = await supabaseClient
                 .from('history')
                 .select('*')
@@ -3083,10 +3261,25 @@
                 return;
             }
 
-            renderHistory(data);
+            // Fetch user profiles for all users who made changes
+            const userIds = [...new Set(data.map(item => item.user_id))];
+            const { data: profiles } = await supabaseClient
+                .from('user_profiles')
+                .select('id, display_name')
+                .in('id', userIds);
+
+            // Create a map of user_id to display name
+            const userMap = {};
+            if (profiles) {
+                profiles.forEach(profile => {
+                    userMap[profile.id] = profile.display_name;
+                });
+            }
+
+            renderHistory(data, userMap);
         }
 
-        function renderHistory(items) {
+        function renderHistory(items, userMap = {}) {
             const timeline = document.getElementById('history-timeline');
 
             if (items.length === 0) {
@@ -3098,11 +3291,25 @@
                 const date = new Date(item.created_at);
                 const timeStr = date.toLocaleString();
 
+                // Get user display name
+                let userName = 'User';
+                if (item.user_id === currentUser?.id) {
+                    userName = 'You';
+                } else if (userMap[item.user_id]) {
+                    userName = userMap[item.user_id];
+                } else {
+                    // Show truncated user ID as fallback
+                    userName = `User (${item.user_id.substring(0, 8)}...)`;
+                }
+
                 return `
                     <div class="history-item">
                         <div class="timestamp">${timeStr}</div>
                         <div class="change">
-                            <span class="user">${item.user_id}</span> ${item.description}
+                            ${item.description}
+                        </div>
+                        <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
+                            by <span class="user">${userName}</span>
                         </div>
                         ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
                     </div>
