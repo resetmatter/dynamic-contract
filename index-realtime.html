@@ -3599,8 +3599,8 @@
                 list: (f) => `
                     <div class="list-container">
                         ${(f.items || []).map((item, itemIndex) => `
-                            <div class="list-item" draggable="true" data-item-index="${itemIndex}">
-                                <span class="drag-handle">🎀</span>
+                            <div class="list-item" data-item-index="${itemIndex}">
+                                <span class="drag-handle" draggable="true">🎀</span>
                                 <input type="text" value="${item || ''}" data-item-index="${itemIndex}">
                                 <button class="remove-btn" onclick="removeListItem(${sectionIndex}, ${fieldIndex}, ${itemIndex})">✕</button>
                             </div>
@@ -3624,10 +3624,10 @@
                 `;
             }
 
-            // For non-list fields, show bow and make draggable
+            // For non-list fields, show bow and make only the drag handle draggable
             return `
-                <div class="field-group" data-field-index="${fieldIndex}" draggable="true">
-                    <span class="drag-handle">🎀</span>
+                <div class="field-group" data-field-index="${fieldIndex}">
+                    <span class="drag-handle" draggable="true">🎀</span>
                     <label contenteditable="true" data-field-label>${field.label || 'Field'}</label>
                     ${renderFunc(field)}
                     <button class="remove-btn" onclick="removeField(${sectionIndex}, ${fieldIndex})" style="margin-top: 10px;">Remove Field</button>
@@ -3735,12 +3735,13 @@
             const editor = document.getElementById('contract-sections');
 
             editor.addEventListener('dragstart', (e) => {
-                const fieldGroup = e.target.closest('.field-group');
-                if (fieldGroup && e.target.classList.contains('drag-handle')) {
+                // Only allow dragging if the drag handle itself is being dragged
+                if (!e.target.classList.contains('drag-handle')) {
                     e.preventDefault();
                     return;
                 }
 
+                const fieldGroup = e.target.closest('.field-group');
                 if (fieldGroup) {
                     draggedFieldElement = fieldGroup;
                     const section = fieldGroup.closest('.contract-section');
@@ -3798,14 +3799,14 @@
             const editor = document.getElementById('contract-sections');
 
             editor.addEventListener('dragstart', (e) => {
+                // Only allow dragging if the drag handle itself is being dragged
+                if (!e.target.classList.contains('drag-handle')) {
+                    e.preventDefault();
+                    return;
+                }
+
                 const listItem = e.target.closest('.list-item');
                 if (listItem) {
-                    // Don't drag if clicking the drag handle itself
-                    if (e.target.classList.contains('drag-handle')) {
-                        e.preventDefault();
-                        return;
-                    }
-
                     draggedListItem = listItem;
                     draggedListContainer = listItem.closest('.list-container');
                     listItem.classList.add('dragging');
