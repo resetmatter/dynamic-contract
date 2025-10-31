@@ -4392,32 +4392,52 @@
             console.log('   Focused element:', focusedElement?.tagName, focusedElement?.id);
             console.log('   Preserve focus:', preserveFocus);
 
-            // Update title if changed and not focused
+            // Update title if changed
             const titleInput = document.getElementById('contract-title');
-            if (titleInput &&
-                newContract.title !== oldContract.title &&
-                document.activeElement !== titleInput) {
+            if (titleInput && newContract.title !== oldContract.title) {
                 console.log('   Updating title:', oldContract.title, '→', newContract.title);
+                const isFocused = document.activeElement === titleInput;
+                const cursorStart = isFocused ? titleInput.selectionStart : null;
+                const cursorEnd = isFocused ? titleInput.selectionEnd : null;
+
                 titleInput.value = newContract.title || '';
                 document.getElementById('contract-display-title').textContent = newContract.title || 'D/s Dynamic Contract';
+
+                if (isFocused && cursorStart !== null) {
+                    titleInput.setSelectionRange(cursorStart, cursorEnd);
+                }
             }
 
-            // Update dominant name if changed and not focused (only if field exists in DB)
+            // Update dominant name if changed (only if field exists in DB)
             const dominantInput = document.getElementById('dominant-name');
             if (dominantInput &&
                 'dominant_name' in newContract && 'dominant_name' in oldContract &&
-                newContract.dominant_name !== oldContract.dominant_name &&
-                document.activeElement !== dominantInput) {
+                newContract.dominant_name !== oldContract.dominant_name) {
+                const isFocused = document.activeElement === dominantInput;
+                const cursorStart = isFocused ? dominantInput.selectionStart : null;
+                const cursorEnd = isFocused ? dominantInput.selectionEnd : null;
+
                 dominantInput.value = newContract.dominant_name || '';
+
+                if (isFocused && cursorStart !== null) {
+                    dominantInput.setSelectionRange(cursorStart, cursorEnd);
+                }
             }
 
-            // Update submissive name if changed and not focused (only if field exists in DB)
+            // Update submissive name if changed (only if field exists in DB)
             const submissiveInput = document.getElementById('submissive-name');
             if (submissiveInput &&
                 'submissive_name' in newContract && 'submissive_name' in oldContract &&
-                newContract.submissive_name !== oldContract.submissive_name &&
-                document.activeElement !== submissiveInput) {
+                newContract.submissive_name !== oldContract.submissive_name) {
+                const isFocused = document.activeElement === submissiveInput;
+                const cursorStart = isFocused ? submissiveInput.selectionStart : null;
+                const cursorEnd = isFocused ? submissiveInput.selectionEnd : null;
+
                 submissiveInput.value = newContract.submissive_name || '';
+
+                if (isFocused && cursorStart !== null) {
+                    submissiveInput.setSelectionRange(cursorStart, cursorEnd);
+                }
             }
 
             // Check if sections structure changed (added/removed sections or fields)
@@ -4500,11 +4520,21 @@
                             if (item !== oldListItems[itemIndex]) {
                                 console.log(`      List item [${sectionIndex}][${fieldIndex}][${itemIndex}] changed:`, oldListItems[itemIndex], '→', item, 'Found element:', !!itemInput);
                             }
-                            if (itemInput &&
-                                item !== oldListItems[itemIndex] &&
-                                document.activeElement !== itemInput) {
+                            if (itemInput && item !== oldListItems[itemIndex]) {
+                                // Save cursor position if this field is focused
+                                const isFocused = document.activeElement === itemInput;
+                                const cursorStart = isFocused ? itemInput.selectionStart : null;
+                                const cursorEnd = isFocused ? itemInput.selectionEnd : null;
+
+                                // Update the value
                                 itemInput.value = item || '';
                                 fieldsUpdated++;
+                                console.log(`      ✅ Updated list item [${sectionIndex}][${fieldIndex}][${itemIndex}]${isFocused ? ' (focused, cursor restored)' : ''}`);
+
+                                // Restore cursor position if it was focused
+                                if (isFocused && cursorStart !== null) {
+                                    itemInput.setSelectionRange(cursorStart, cursorEnd);
+                                }
                             }
                         });
                     } else {
@@ -4515,15 +4545,22 @@
                         if (field.value !== oldField.value) {
                             console.log(`      Field [${sectionIndex}][${fieldIndex}] changed:`, oldField.value?.substring(0, 50), '→', field.value?.substring(0, 50), 'Found element:', !!fieldInput);
                         }
-                        if (fieldInput &&
-                            field.value !== oldField.value &&
-                            document.activeElement !== fieldInput) {
-                            if (fieldInput.tagName === 'INPUT') {
+                        if (fieldInput && field.value !== oldField.value) {
+                            // Save cursor position if this field is focused
+                            const isFocused = document.activeElement === fieldInput;
+                            const cursorStart = isFocused ? fieldInput.selectionStart : null;
+                            const cursorEnd = isFocused ? fieldInput.selectionEnd : null;
+
+                            // Update the value
+                            if (fieldInput.tagName === 'INPUT' || fieldInput.tagName === 'TEXTAREA') {
                                 fieldInput.value = field.value || '';
                                 fieldsUpdated++;
-                            } else if (fieldInput.tagName === 'TEXTAREA') {
-                                fieldInput.value = field.value || '';
-                                fieldsUpdated++;
+                                console.log(`      ✅ Updated field [${sectionIndex}][${fieldIndex}]${isFocused ? ' (focused, cursor restored)' : ''}`);
+                            }
+
+                            // Restore cursor position if it was focused
+                            if (isFocused && cursorStart !== null) {
+                                fieldInput.setSelectionRange(cursorStart, cursorEnd);
                             }
                         }
                     }
