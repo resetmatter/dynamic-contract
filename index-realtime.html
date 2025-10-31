@@ -1800,22 +1800,33 @@
             /* Preview Mode - Mobile */
             .preview-header {
                 padding: 12px;
-                flex-direction: column;
+                display: flex;
+                flex-wrap: wrap;
                 gap: 10px;
-                align-items: stretch;
+                align-items: center;
+                justify-content: space-between;
             }
 
             .preview-header h3 {
                 text-align: center;
                 font-size: 1.1em;
                 margin: 0;
+                order: 3;
+                width: 100%;
+                flex-basis: 100%;
+            }
+
+            .preview-presence-section {
+                order: 1;
             }
 
             .preview-actions {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 6px;
-                width: 100%;
+                order: 2;
+                flex: 1;
+                min-width: 200px;
             }
 
             .preview-actions .btn {
@@ -2117,13 +2128,23 @@
             /* Preview Mode - Phones */
             .preview-header {
                 padding: 15px;
-                flex-direction: column;
+                display: flex;
+                flex-wrap: wrap;
                 gap: 12px;
+                align-items: center;
+                justify-content: space-between;
             }
 
             .preview-header h3 {
                 text-align: center;
                 font-size: 1.2em;
+                order: 3;
+                width: 100%;
+                flex-basis: 100%;
+            }
+
+            .preview-presence-section {
+                order: 1;
             }
 
             .preview-actions {
@@ -2131,6 +2152,8 @@
                 flex-wrap: wrap;
                 gap: 8px;
                 justify-content: center;
+                order: 2;
+                flex: 1;
             }
 
             .preview-actions .btn {
