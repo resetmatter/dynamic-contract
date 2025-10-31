@@ -1237,6 +1237,17 @@
             }
         }
 
+        @keyframes fadeInSlideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
         /* Print Styles */
         @media print {
             .app-header,
@@ -1540,6 +1551,7 @@
         let currentContract = null;
         let realtimeChannel = null;
         let presenceChannel = null;
+        let historyChannel = null;
         let saveTimeout = null;
         let isSyncing = false;
         let pollingInterval = null;
@@ -1938,6 +1950,12 @@
             if (presenceChannel) {
                 supabaseClient.removeChannel(presenceChannel);
                 presenceChannel = null;
+            }
+
+            // Clean up history channel
+            if (historyChannel) {
+                supabaseClient.removeChannel(historyChannel);
+                historyChannel = null;
             }
 
             // Remove presence UI elements
@@ -3446,14 +3464,128 @@
         // HISTORY TRACKING
         // ============================================
 
+        let currentHistoryUserMap = {}; // Store user map for realtime updates
+
         document.getElementById('history-btn').addEventListener('click', async () => {
             document.getElementById('history-panel').classList.add('open');
             await loadHistory();
+            setupHistoryRealtime();
         });
 
         document.getElementById('close-history-btn').addEventListener('click', () => {
             document.getElementById('history-panel').classList.remove('open');
+            cleanupHistoryRealtime();
         });
+
+        function setupHistoryRealtime() {
+            // Clean up existing channel
+            if (historyChannel) {
+                supabaseClient.removeChannel(historyChannel);
+            }
+
+            // Subscribe to history INSERT events
+            historyChannel = supabaseClient
+                .channel(`history:${currentContract.id}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'history',
+                        filter: `contract_id=eq.${currentContract.id}`
+                    },
+                    async (payload) => {
+                        console.log('New history entry received:', payload);
+                        await handleNewHistoryEntry(payload.new);
+                    }
+                )
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        console.log('✅ History realtime enabled');
+                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                        console.warn('⚠️ History realtime connection failed:', status);
+                    }
+                });
+        }
+
+        function cleanupHistoryRealtime() {
+            if (historyChannel) {
+                supabaseClient.removeChannel(historyChannel);
+                historyChannel = null;
+            }
+        }
+
+        async function handleNewHistoryEntry(newEntry) {
+            // Fetch user profile if not already in map
+            if (!currentHistoryUserMap[newEntry.user_id]) {
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, display_name')
+                    .eq('id', newEntry.user_id)
+                    .single();
+
+                if (profile) {
+                    currentHistoryUserMap[profile.id] = profile.display_name;
+                }
+            }
+
+            // Prepend the new entry to the timeline
+            const timeline = document.getElementById('history-timeline');
+            const newEntryHtml = renderHistoryItem(newEntry, currentHistoryUserMap);
+
+            // Create a temporary container to parse the HTML
+            const temp = document.createElement('div');
+            temp.innerHTML = newEntryHtml;
+            const newElement = temp.firstElementChild;
+
+            // Add animation class
+            newElement.style.animation = 'fadeInSlideDown 0.3s ease-out';
+
+            // Prepend to timeline
+            if (timeline.firstChild && timeline.firstChild.tagName !== 'P') {
+                timeline.insertBefore(newElement, timeline.firstChild);
+            } else {
+                // If timeline is empty or has "No history yet" message, replace it
+                timeline.innerHTML = newEntryHtml;
+            }
+        }
+
+        function renderHistoryItem(item, userMap) {
+            const date = new Date(item.created_at);
+            const timeStr = date.toLocaleString();
+
+            // Get user display name
+            let userName = 'User';
+            if (item.user_id === currentUser?.id) {
+                userName = 'You';
+            } else if (userMap[item.user_id]) {
+                userName = userMap[item.user_id];
+            } else {
+                // Show truncated user ID as fallback
+                userName = `User (${item.user_id.substring(0, 8)}...)`;
+            }
+
+            // Format multi-line descriptions
+            const changes = item.description.split('\n').filter(line => line.trim());
+            const changeHtml = changes.length > 1
+                ? '<ul style="margin: 10px 0; padding-left: 20px; list-style: none;">' +
+                  changes.map(change => `<li style="margin: 5px 0;">• ${change}</li>`).join('') +
+                  '</ul>'
+                : `<div style="margin: 5px 0;">${item.description}</div>`;
+
+            return `
+                <div class="history-item">
+                    <div class="timestamp">${timeStr}</div>
+                    <div class="change">
+                        ${changeHtml}
+                    </div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
+                        by <span class="user">${userName}</span>
+                    </div>
+                    ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
+                </div>
+            `;
+        }
 
         async function loadHistory() {
             // Fetch history entries
@@ -3476,15 +3608,15 @@
                 .select('id, display_name')
                 .in('id', userIds);
 
-            // Create a map of user_id to display name
-            const userMap = {};
+            // Create a map of user_id to display name and store globally for realtime updates
+            currentHistoryUserMap = {};
             if (profiles) {
                 profiles.forEach(profile => {
-                    userMap[profile.id] = profile.display_name;
+                    currentHistoryUserMap[profile.id] = profile.display_name;
                 });
             }
 
-            renderHistory(data, userMap);
+            renderHistory(data, currentHistoryUserMap);
         }
 
         function renderHistory(items, userMap = {}) {
@@ -3495,42 +3627,7 @@
                 return;
             }
 
-            timeline.innerHTML = items.map(item => {
-                const date = new Date(item.created_at);
-                const timeStr = date.toLocaleString();
-
-                // Get user display name
-                let userName = 'User';
-                if (item.user_id === currentUser?.id) {
-                    userName = 'You';
-                } else if (userMap[item.user_id]) {
-                    userName = userMap[item.user_id];
-                } else {
-                    // Show truncated user ID as fallback
-                    userName = `User (${item.user_id.substring(0, 8)}...)`;
-                }
-
-                // Format multi-line descriptions
-                const changes = item.description.split('\n').filter(line => line.trim());
-                const changeHtml = changes.length > 1
-                    ? '<ul style="margin: 10px 0; padding-left: 20px; list-style: none;">' +
-                      changes.map(change => `<li style="margin: 5px 0;">• ${change}</li>`).join('') +
-                      '</ul>'
-                    : `<div style="margin: 5px 0;">${item.description}</div>`;
-
-                return `
-                    <div class="history-item">
-                        <div class="timestamp">${timeStr}</div>
-                        <div class="change">
-                            ${changeHtml}
-                        </div>
-                        <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
-                            by <span class="user">${userName}</span>
-                        </div>
-                        ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
-                    </div>
-                `;
-            }).join('');
+            timeline.innerHTML = items.map(item => renderHistoryItem(item, userMap)).join('');
         }
 
         document.getElementById('save-snapshot-btn').addEventListener('click', async () => {
