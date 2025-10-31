@@ -1300,6 +1300,11 @@
         <div class="preview-header">
             <h3>📄 Contract Preview</h3>
             <div class="preview-actions">
+                <!-- Presence indicator for viewers -->
+                <div class="presence-indicator" id="preview-presence-indicator" style="margin-right: 15px;">
+                    <span class="presence-dot"></span>
+                    <span id="preview-presence-text">You are online</span>
+                </div>
                 <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
                 <button class="btn" id="close-preview-btn">✕ Close</button>
             </div>
@@ -2214,10 +2219,10 @@
             const viewers = users.filter(u => u.mode === 'viewing');
             const otherEditors = editors.filter(u => u.user !== currentUserEmail);
 
-            // Update presence indicator
-            const text = document.getElementById('presence-text');
+            // Build presence text
+            let presenceText;
             if (otherUsers.length === 0) {
-                text.textContent = 'You are online';
+                presenceText = 'You are online';
             } else {
                 const parts = [];
                 if (otherEditors.length > 0) {
@@ -2226,19 +2231,28 @@
                 if (viewers.length > 0) {
                     parts.push(`${viewers.length} viewing`);
                 }
-                text.textContent = `${users.length} online: ${parts.join(', ')}`;
+                presenceText = `${users.length} online: ${parts.join(', ')}`;
             }
 
-            // Show warning if multiple editors
+            // Update presence indicator (for editors)
+            const text = document.getElementById('presence-text');
+            if (text) text.textContent = presenceText;
+
+            // Update preview presence indicator (for viewers)
+            const previewText = document.getElementById('preview-presence-text');
+            if (previewText) previewText.textContent = presenceText;
+
+            // Show warning if multiple editors (for both editors and viewers)
             showMultiEditorWarning(otherEditors);
 
-            // Update detailed presence list
+            // Update detailed presence list (for both editors and viewers)
             updatePresenceList(users);
         }
 
         function showMultiEditorWarning(otherEditors) {
             let warningEl = document.getElementById('multi-editor-warning');
 
+            // Show warning to everyone (both editors and viewers) when multiple editors are active
             if (otherEditors.length > 0) {
                 if (!warningEl) {
                     warningEl = document.createElement('div');
@@ -2259,6 +2273,9 @@
                         align-items: center;
                         gap: 10px;
                         animation: slideDown 0.3s ease-out;
+                        max-width: 90%;
+                        flex-wrap: wrap;
+                        justify-content: center;
                     `;
                     document.body.appendChild(warningEl);
                 }
@@ -2268,9 +2285,14 @@
                     return e.user.split('@')[0];
                 }).join(', ');
 
+                const isViewer = currentUser.isPublicViewer || currentUser.mode === 'viewing';
+                const message = isViewer
+                    ? `${otherEditors.length} ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}`
+                    : `${otherEditors.length} other ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}`;
+
                 warningEl.innerHTML = `
                     <span style="font-size: 20px;">⚠️</span>
-                    <span>${otherEditors.length} other ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}</span>
+                    <span>${message}</span>
                     <span style="font-size: 16px;">💾</span>
                     <span style="font-size: 0.9em; opacity: 0.9;">Changes save automatically</span>
                 `;
