@@ -2820,6 +2820,7 @@
         .preview-readonly-textarea {
             min-height: 80px;
             resize: none;
+            overflow: hidden;
         }
 
         .preview-list-container {
@@ -6514,6 +6515,20 @@
             html += `<div class="preview-date">Contract date: ${date}</div>`;
 
             document.getElementById('preview-content').innerHTML = html;
+
+            // Auto-expand all textareas to fit content
+            autoExpandTextareas();
+        }
+
+        function autoExpandTextareas() {
+            // Get all preview textareas and auto-expand them to fit content
+            const textareas = document.querySelectorAll('.preview-readonly-textarea');
+            textareas.forEach(textarea => {
+                // Reset height to get accurate scrollHeight
+                textarea.style.height = 'auto';
+                // Set height to scrollHeight to fit all content
+                textarea.style.height = textarea.scrollHeight + 'px';
+            });
         }
 
         function escapeHtml(text) {
