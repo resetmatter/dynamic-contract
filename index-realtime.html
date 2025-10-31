@@ -1073,6 +1073,125 @@
             }
         }
 
+        /* Settings Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 4000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.98), rgba(30, 15, 15, 0.98));
+            border: 2px solid var(--primary-light);
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-header {
+            padding: 25px;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-pink);
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--accent-light-pink);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-pink);
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .settings-section {
+            margin-bottom: 25px;
+        }
+
+        .settings-section label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: #dc143c;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(139, 0, 0, 0.6);
+            border-radius: 6px;
+            color: var(--accent-light-pink);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+        }
+
+        .help-text {
+            margin-top: 8px;
+            font-size: 13px;
+            color: rgba(255, 182, 193, 0.6);
+            font-style: italic;
+        }
+
+        .read-only-value {
+            color: var(--accent-light-pink);
+            font-size: 16px;
+            padding: 10px 0;
+        }
+
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 2px solid rgba(139, 0, 0, 0.6);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
         /* Animations for Presence Notifications */
         @keyframes slideDown {
             from {
@@ -1217,6 +1336,7 @@
                 <button class="btn btn-secondary" id="user-menu-btn">
                     <span id="user-email"></span>
                 </button>
+                <button class="btn btn-secondary" id="settings-btn">⚙️ Settings</button>
                 <button class="btn" id="logout-btn">Logout</button>
             </div>
         </header>
@@ -1363,6 +1483,31 @@
         </div>
     </div>
 
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>⚙️ Account Settings</h2>
+                <button class="modal-close" id="close-settings-btn">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <label for="display-name-input">Display Name</label>
+                    <input type="text" id="display-name-input" class="form-input" placeholder="Enter your display name" maxlength="50">
+                    <p class="help-text">This name will be shown to others when you're online</p>
+                </div>
+                <div class="settings-section">
+                    <label>Email</label>
+                    <p id="settings-email" class="read-only-value"></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-settings-btn">Cancel</button>
+                <button class="btn" id="save-settings-btn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Supabase Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -1380,6 +1525,7 @@
         // APPLICATION STATE
         // ============================================
         let currentUser = null;
+        let currentUserProfile = null;
         let currentContract = null;
         let realtimeChannel = null;
         let presenceChannel = null;
@@ -1620,6 +1766,45 @@
             }
         });
 
+        // Settings Modal
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            // Populate form with current values
+            document.getElementById('display-name-input').value = currentUserProfile?.display_name || '';
+            document.getElementById('settings-email').textContent = currentUser.email;
+
+            // Show modal
+            document.getElementById('settings-modal').classList.add('open');
+        });
+
+        document.getElementById('close-settings-btn').addEventListener('click', () => {
+            document.getElementById('settings-modal').classList.remove('open');
+        });
+
+        document.getElementById('cancel-settings-btn').addEventListener('click', () => {
+            document.getElementById('settings-modal').classList.remove('open');
+        });
+
+        document.getElementById('save-settings-btn').addEventListener('click', async () => {
+            const displayName = document.getElementById('display-name-input').value.trim();
+
+            const saveBtn = document.getElementById('save-settings-btn');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Saving...';
+            saveBtn.disabled = true;
+
+            const success = await updateUserProfile(displayName || null);
+
+            if (success) {
+                document.getElementById('settings-modal').classList.remove('open');
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            } else {
+                alert('Failed to save settings. Please try again.');
+                saveBtn.textContent = originalText;
+                saveBtn.disabled = false;
+            }
+        });
+
         // Helper functions for auth UI
         function showAuthLoading(show) {
             const btns = document.querySelectorAll('.auth-button');
@@ -1648,13 +1833,80 @@
         }
 
         // ============================================
+        // USER PROFILE MANAGEMENT
+        // ============================================
+
+        async function loadUserProfile() {
+            if (!currentUser) return;
+
+            const { data, error } = await supabaseClient
+                .from('user_profiles')
+                .select('*')
+                .eq('id', currentUser.id)
+                .single();
+
+            if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+                console.error('Error loading user profile:', error);
+                return;
+            }
+
+            if (data) {
+                currentUserProfile = data;
+            } else {
+                // Create profile if it doesn't exist
+                const { data: newProfile, error: createError } = await supabaseClient
+                    .from('user_profiles')
+                    .insert({ id: currentUser.id, display_name: null })
+                    .select()
+                    .single();
+
+                if (createError) {
+                    console.error('Error creating user profile:', createError);
+                } else {
+                    currentUserProfile = newProfile;
+                }
+            }
+        }
+
+        async function updateUserProfile(displayName) {
+            if (!currentUser) return false;
+
+            const { data, error } = await supabaseClient
+                .from('user_profiles')
+                .update({ display_name: displayName })
+                .eq('id', currentUser.id)
+                .select()
+                .single();
+
+            if (error) {
+                console.error('Error updating user profile:', error);
+                return false;
+            }
+
+            currentUserProfile = data;
+
+            // Update display in header
+            const displayText = currentUserProfile?.display_name || currentUser.email;
+            document.getElementById('user-email').textContent = displayText;
+
+            return true;
+        }
+
+        // ============================================
         // APP NAVIGATION
         // ============================================
 
-        function showApp() {
+        async function showApp() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('app-screen').style.display = 'block';
-            document.getElementById('user-email').textContent = currentUser.email;
+
+            // Load user profile
+            await loadUserProfile();
+
+            // Display user email or display name
+            const displayText = currentUserProfile?.display_name || currentUser.email;
+            document.getElementById('user-email').textContent = displayText;
+
             loadContracts();
             // Don't setup presence here - wait until a contract is opened
         }
@@ -2457,6 +2709,7 @@
                     if (status === 'SUBSCRIBED') {
                         await presenceChannel.track({
                             user: currentUser.email,
+                            display_name: currentUserProfile?.display_name || null,
                             mode: isEditor ? 'editing' : 'viewing',
                             isPublicUser: currentUser.isPublicEditor || false,
                             online_at: new Date().toISOString()
@@ -2538,7 +2791,7 @@
 
                 const editorNames = otherEditors.map(e => {
                     if (e.isPublicUser) return 'Public User';
-                    return e.user.split('@')[0];
+                    return e.display_name || e.user.split('@')[0];
                 }).join(', ');
 
                 const isViewer = currentUser.isPublicViewer || currentUser.mode === 'viewing';
@@ -2585,7 +2838,7 @@
                 </div>
                 ${users.map(u => {
                     const isYou = u.user === currentUserEmail;
-                    const name = u.isPublicUser ? 'Public User' : u.user.split('@')[0];
+                    const name = u.isPublicUser ? 'Public User' : (u.display_name || u.user.split('@')[0]);
                     const modeIcon = u.mode === 'editing' ? '✏️' : '👁️';
                     const modeText = u.mode === 'editing' ? 'Editing' : 'Viewing';
                     const modeColor = u.mode === 'editing' ? '#ff6b9d' : '#d4768f';
@@ -2616,7 +2869,7 @@
         }
 
         function showJoinNotification(user) {
-            const name = user.isPublicUser ? 'A public user' : user.user.split('@')[0];
+            const name = user.isPublicUser ? 'A public user' : (user.display_name || user.user.split('@')[0]);
             const mode = user.mode === 'editing' ? 'editing' : 'viewing';
             const icon = user.mode === 'editing' ? '✏️' : '👁️';
 

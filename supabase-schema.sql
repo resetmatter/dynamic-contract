@@ -62,13 +62,29 @@ CREATE INDEX IF NOT EXISTS history_created_at_idx ON history(created_at DESC);
 CREATE INDEX IF NOT EXISTS history_snapshots_idx ON history(contract_id, is_snapshot) WHERE is_snapshot = TRUE;
 
 -- ============================================
--- 4. ROW LEVEL SECURITY POLICIES
+-- 4. USER PROFILES TABLE
+-- ============================================
+-- Stores user display names and preferences
+
+CREATE TABLE IF NOT EXISTS user_profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    display_name TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Index for faster lookups
+CREATE INDEX IF NOT EXISTS user_profiles_id_idx ON user_profiles(id);
+
+-- ============================================
+-- 5. ROW LEVEL SECURITY POLICIES
 -- ============================================
 -- Enable RLS on all tables
 
 ALTER TABLE contracts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE contract_shares ENABLE ROW LEVEL SECURITY;
 ALTER TABLE history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
 -- ============================================
 -- CONTRACTS POLICIES
@@ -201,6 +217,30 @@ CREATE POLICY "Users can create history for editable contracts"
     );
 
 -- ============================================
+-- USER PROFILES POLICIES
+-- ============================================
+
+-- Users can view all profiles (for presence/display names)
+CREATE POLICY "Anyone can view profiles"
+    ON user_profiles FOR SELECT
+    USING (true);
+
+-- Users can only insert their own profile
+CREATE POLICY "Users can create own profile"
+    ON user_profiles FOR INSERT
+    WITH CHECK (auth.uid() = id);
+
+-- Users can only update their own profile
+CREATE POLICY "Users can update own profile"
+    ON user_profiles FOR UPDATE
+    USING (auth.uid() = id);
+
+-- Users can only delete their own profile
+CREATE POLICY "Users can delete own profile"
+    ON user_profiles FOR DELETE
+    USING (auth.uid() = id);
+
+-- ============================================
 -- 5. FUNCTIONS & TRIGGERS
 -- ============================================
 
@@ -220,13 +260,20 @@ CREATE TRIGGER update_contracts_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+-- Trigger to auto-update updated_at on user_profiles
+DROP TRIGGER IF EXISTS update_user_profiles_updated_at ON user_profiles;
+CREATE TRIGGER update_user_profiles_updated_at
+    BEFORE UPDATE ON user_profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 -- ============================================
 -- 6. REALTIME PUBLICATION
 -- ============================================
 -- Enable realtime for all tables
 
 -- Note: You still need to enable Realtime in the Supabase dashboard:
--- Go to Database > Replication > Enable for: contracts, contract_shares, history
+-- Go to Database > Replication > Enable for: contracts, contract_shares, history, user_profiles
 
 -- This comment serves as a reminder to complete that step
 
