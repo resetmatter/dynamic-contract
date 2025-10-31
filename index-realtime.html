@@ -360,7 +360,103 @@
             font-weight: 700;
         }
 
-        .editor-subtitle {
+        /* Contract Content Area */
+        .contract-content-area {
+            position: relative;
+            background:
+                linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98)),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 0, 0, 0.02) 2px,
+                    rgba(139, 0, 0, 0.02) 4px
+                );
+            border: 3px solid #8b0000;
+            border-radius: 5px;
+            padding: 60px;
+            margin-top: 20px;
+            box-shadow:
+                0 0 0 1px rgba(255, 105, 180, 0.3),
+                0 0 30px rgba(139, 0, 0, 0.6),
+                inset 0 0 100px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Leather texture overlay */
+        .contract-content-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 1px,
+                rgba(0, 0, 0, 0.03) 1px,
+                rgba(0, 0, 0, 0.03) 2px
+            );
+            pointer-events: none;
+            border-radius: 5px;
+        }
+
+        /* Corner bows */
+        .content-bow {
+            position: absolute;
+            font-size: 35px;
+            filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.8));
+            z-index: 10;
+        }
+
+        .bow-top-left {
+            top: -15px;
+            left: -15px;
+            transform: rotate(-15deg);
+        }
+
+        .bow-top-right {
+            top: -15px;
+            right: -15px;
+            transform: rotate(15deg);
+        }
+
+        .bow-bottom-left {
+            bottom: -15px;
+            left: -15px;
+            transform: rotate(-15deg);
+        }
+
+        .bow-bottom-right {
+            bottom: -15px;
+            right: -15px;
+            transform: rotate(15deg);
+        }
+
+        /* Contract Header */
+        .contract-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .contract-display-title {
+            font-family: 'Cinzel', serif;
+            font-size: 44px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b0000, #ff69b4, #8b0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .contract-subtitle {
             text-align: center;
             font-size: 16px;
             color: var(--dusty-pink);
@@ -435,6 +531,7 @@
             padding: 30px;
             margin-bottom: 30px;
             position: relative;
+            z-index: 1;
         }
 
         .section-header {
@@ -1550,12 +1647,6 @@
             <div class="editor-header">
                 <div class="editor-title">
                     <input type="text" id="contract-title" placeholder="Contract Title">
-                    <div class="editor-subtitle">
-                        Between Dom
-                        <input type="text" id="dominant-name" placeholder="Name" class="inline-name-input">
-                        and his sub
-                        <input type="text" id="submissive-name" placeholder="Name" class="inline-name-input">
-                    </div>
                 </div>
                 <div class="editor-actions">
                     <div class="sync-status">
@@ -1570,9 +1661,29 @@
                 </div>
             </div>
 
-            <!-- Contract Sections -->
-            <div id="contract-sections">
-                <!-- Sections will be dynamically loaded here -->
+            <!-- Contract Content Area -->
+            <div class="contract-content-area">
+                <!-- Pink bows in corners -->
+                <div class="content-bow bow-top-left">🎀</div>
+                <div class="content-bow bow-top-right">🎀</div>
+                <div class="content-bow bow-bottom-left">🎀</div>
+                <div class="content-bow bow-bottom-right">🎀</div>
+
+                <!-- Contract Header -->
+                <div class="contract-header">
+                    <h1 class="contract-display-title" id="contract-display-title">D/s Dynamic Contract</h1>
+                    <div class="contract-subtitle">
+                        Between Dom
+                        <input type="text" id="dominant-name" placeholder="Name" class="inline-name-input">
+                        and his sub
+                        <input type="text" id="submissive-name" placeholder="Name" class="inline-name-input">
+                    </div>
+                </div>
+
+                <!-- Contract Sections -->
+                <div id="contract-sections">
+                    <!-- Sections will be dynamically loaded here -->
+                </div>
             </div>
 
             <button class="btn" id="add-section-btn" style="width: 100%; margin-top: 20px;">+ Add Section</button>
@@ -1839,6 +1950,7 @@
 
                     // Set contract title and names
                     document.getElementById('contract-title').value = currentContract.title;
+                    document.getElementById('contract-display-title').textContent = currentContract.title || 'D/s Dynamic Contract';
                     document.getElementById('dominant-name').value = currentContract.dominant_name || 'Matthew';
                     document.getElementById('submissive-name').value = currentContract.submissive_name || 'Shailah';
 
@@ -2356,6 +2468,7 @@
 
         function renderContractEditor() {
             document.getElementById('contract-title').value = currentContract.title || '';
+            document.getElementById('contract-display-title').textContent = currentContract.title || 'D/s Dynamic Contract';
             document.getElementById('dominant-name').value = currentContract.dominant_name || 'Matthew';
             document.getElementById('submissive-name').value = currentContract.submissive_name || 'Shailah';
 
@@ -2697,6 +2810,11 @@
 
         document.getElementById('contract-title').addEventListener('input', (e) => {
             currentContract.title = e.target.value;
+            // Update the display title
+            const displayTitle = document.getElementById('contract-display-title');
+            if (displayTitle) {
+                displayTitle.textContent = e.target.value || 'D/s Dynamic Contract';
+            }
             debouncedSave();
         });
 
