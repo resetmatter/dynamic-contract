@@ -1026,6 +1026,40 @@
             }
         }
 
+        /* Animations for Presence Notifications */
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -20px);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
         /* Print Styles */
         @media print {
             .app-header,
@@ -1387,7 +1421,7 @@
 
                     renderContractEditor();
                     setupRealtimeSync();
-                    // Don't setup presence for public users
+                    setupPresence(); // Enable presence for public editors
 
                     // Add indicator that this is public editing
                     const editorActions = document.querySelector('.editor-actions');
@@ -1398,9 +1432,17 @@
                         editorActions.insertBefore(indicator, editorActions.firstChild);
                     }
                 } else {
+                    // Viewers also get presence (but read-only)
+                    currentUser = {
+                        id: `viewer-${Date.now()}`,
+                        email: 'public-viewer@guest',
+                        isPublicViewer: true
+                    };
+
                     // Show preview for viewers
                     renderPreview();
                     document.getElementById('preview-overlay').classList.add('open');
+                    setupPresence(); // Enable presence for viewers too
 
                     // Add message to preview
                     const previewHeader = document.querySelector('.preview-header h3');
@@ -2133,13 +2175,19 @@
                 supabaseClient.removeChannel(presenceChannel);
             }
 
-            presenceChannel = supabaseClient.channel('presence')
+            // Determine user's role in this contract
+            const isEditor = currentUser.isPublicEditor ||
+                            currentContract.user_id === currentUser.id ||
+                            currentContract.public_share_role === 'editor';
+
+            presenceChannel = supabaseClient.channel(`presence-${currentContract.id}`)
                 .on('presence', { event: 'sync' }, () => {
                     const state = presenceChannel.presenceState();
                     updatePresenceUI(state);
                 })
                 .on('presence', { event: 'join' }, ({ key, newPresences }) => {
                     console.log('User joined:', newPresences);
+                    showJoinNotification(newPresences[0]);
                 })
                 .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
                     console.log('User left:', leftPresences);
@@ -2148,6 +2196,8 @@
                     if (status === 'SUBSCRIBED') {
                         await presenceChannel.track({
                             user: currentUser.email,
+                            mode: isEditor ? 'editing' : 'viewing',
+                            isPublicUser: currentUser.isPublicEditor || false,
                             online_at: new Date().toISOString()
                         });
                     }
@@ -2156,14 +2206,172 @@
 
         function updatePresenceUI(state) {
             const users = Object.values(state).flat();
-            const otherUsers = users.filter(u => u.user !== currentUser.email);
+            const currentUserEmail = currentUser.email;
+            const otherUsers = users.filter(u => u.user !== currentUserEmail);
 
+            // Count editors and viewers
+            const editors = users.filter(u => u.mode === 'editing');
+            const viewers = users.filter(u => u.mode === 'viewing');
+            const otherEditors = editors.filter(u => u.user !== currentUserEmail);
+
+            // Update presence indicator
             const text = document.getElementById('presence-text');
             if (otherUsers.length === 0) {
                 text.textContent = 'You are online';
             } else {
-                text.textContent = `${otherUsers.length + 1} online`;
+                const parts = [];
+                if (otherEditors.length > 0) {
+                    parts.push(`${otherEditors.length} editing`);
+                }
+                if (viewers.length > 0) {
+                    parts.push(`${viewers.length} viewing`);
+                }
+                text.textContent = `${users.length} online: ${parts.join(', ')}`;
             }
+
+            // Show warning if multiple editors
+            showMultiEditorWarning(otherEditors);
+
+            // Update detailed presence list
+            updatePresenceList(users);
+        }
+
+        function showMultiEditorWarning(otherEditors) {
+            let warningEl = document.getElementById('multi-editor-warning');
+
+            if (otherEditors.length > 0) {
+                if (!warningEl) {
+                    warningEl = document.createElement('div');
+                    warningEl.id = 'multi-editor-warning';
+                    warningEl.style.cssText = `
+                        position: fixed;
+                        top: 70px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: linear-gradient(135deg, #dc143c, #ff1744);
+                        color: white;
+                        padding: 12px 24px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
+                        z-index: 9999;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        animation: slideDown 0.3s ease-out;
+                    `;
+                    document.body.appendChild(warningEl);
+                }
+
+                const editorNames = otherEditors.map(e => {
+                    if (e.isPublicUser) return 'Public User';
+                    return e.user.split('@')[0];
+                }).join(', ');
+
+                warningEl.innerHTML = `
+                    <span style="font-size: 20px;">⚠️</span>
+                    <span>${otherEditors.length} other ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}</span>
+                    <span style="font-size: 16px;">💾</span>
+                    <span style="font-size: 0.9em; opacity: 0.9;">Changes save automatically</span>
+                `;
+            } else if (warningEl) {
+                warningEl.remove();
+            }
+        }
+
+        function updatePresenceList(users) {
+            let listEl = document.getElementById('presence-detail-list');
+
+            if (!listEl) {
+                listEl = document.createElement('div');
+                listEl.id = 'presence-detail-list';
+                listEl.style.cssText = `
+                    position: fixed;
+                    top: 140px;
+                    right: 20px;
+                    background: rgba(20, 10, 10, 0.95);
+                    border: 2px solid var(--accent-pink);
+                    border-radius: 8px;
+                    padding: 15px;
+                    max-width: 250px;
+                    z-index: 9998;
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                `;
+                document.body.appendChild(listEl);
+            }
+
+            const currentUserEmail = currentUser.email;
+            const html = `
+                <div style="font-size: 14px; font-weight: 600; color: var(--accent-pink); margin-bottom: 10px;">
+                    👥 ${users.length} Online
+                </div>
+                ${users.map(u => {
+                    const isYou = u.user === currentUserEmail;
+                    const name = u.isPublicUser ? 'Public User' : u.user.split('@')[0];
+                    const modeIcon = u.mode === 'editing' ? '✏️' : '👁️';
+                    const modeText = u.mode === 'editing' ? 'Editing' : 'Viewing';
+                    const modeColor = u.mode === 'editing' ? '#ff6b9d' : '#d4768f';
+
+                    return `
+                        <div style="
+                            padding: 8px;
+                            margin: 5px 0;
+                            background: rgba(0, 0, 0, 0.3);
+                            border-radius: 4px;
+                            border-left: 3px solid ${modeColor};
+                        ">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: #ffb6c1; font-weight: ${isYou ? '700' : '400'};">
+                                    ${name}${isYou ? ' (You)' : ''}
+                                </span>
+                                <span style="font-size: 16px;">${modeIcon}</span>
+                            </div>
+                            <div style="font-size: 11px; color: ${modeColor}; margin-top: 2px;">
+                                ${modeText}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+
+            listEl.innerHTML = html;
+        }
+
+        function showJoinNotification(user) {
+            const name = user.isPublicUser ? 'A public user' : user.user.split('@')[0];
+            const mode = user.mode === 'editing' ? 'editing' : 'viewing';
+            const icon = user.mode === 'editing' ? '✏️' : '👁️';
+
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(220, 20, 60, 0.95));
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                animation: slideInRight 0.3s ease-out;
+                border: 1px solid var(--accent-pink);
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">${icon}</span>
+                    <div>
+                        <div style="font-weight: 600;">${name} joined</div>
+                        <div style="font-size: 12px; opacity: 0.9;">Now ${mode}</div>
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
         // ============================================
