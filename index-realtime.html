@@ -774,6 +774,8 @@
         .section-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .section-content {
@@ -909,34 +911,50 @@
             background: rgba(220, 20, 60, 0.3);
             border: 1px solid var(--primary-light);
             color: var(--accent-light-pink);
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 12px;
+            font-family: 'Cinzel', serif;
+            white-space: nowrap;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .remove-btn:hover {
             background: var(--primary-light);
-            transform: scale(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
         }
 
         .add-item-btn {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: rgba(255, 105, 180, 0.2);
-            border: 1px dashed var(--accent-pink);
-            border-radius: 8px;
+            margin-top: 12px;
+            padding: 12px 18px;
+            background: rgba(255, 105, 180, 0.15);
+            border: 2px dashed var(--accent-pink);
+            border-radius: 10px;
             color: var(--accent-pink);
             font-family: 'Cinzel', serif;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
+            font-size: 13px;
+            font-weight: 500;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .add-item-btn:hover {
             background: rgba(255, 105, 180, 0.3);
             border-style: solid;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
         }
 
         /* History Panel */
@@ -1289,15 +1307,74 @@
             }
 
             .section {
-                padding: 20px 15px;
+                padding: 20px 12px;
             }
 
             .section h2 {
-                font-size: 1.5em;
+                font-size: 1.4em;
+                margin-bottom: 12px;
+            }
+
+            .section-actions {
+                flex-direction: column;
+                gap: 8px;
+                margin-top: 15px;
+            }
+
+            .section-actions .btn {
+                width: 100%;
+                padding: 11px 14px;
+                font-size: 12px;
+            }
+
+            .field-group {
+                padding-left: 0;
+                gap: 10px;
+            }
+
+            .field-group label {
+                font-size: 14px;
+            }
+
+            .field-group input,
+            .field-group textarea,
+            .field-group select {
+                font-size: 15px;
+                padding: 12px;
+            }
+
+            .list-item {
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .list-item input {
+                width: 100%;
+            }
+
+            .remove-btn {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 11px;
+                margin-top: 8px;
+            }
+
+            .add-item-btn {
+                margin-top: 10px;
+                padding: 11px 14px;
+                font-size: 12px;
+                min-height: 44px;
+            }
+
+            .drag-handle {
+                font-size: 18px;
+                margin-right: 0;
+                margin-bottom: 8px;
             }
 
             .form-group label {
-                font-size: 15px;
+                font-size: 14px;
             }
 
             .form-group input,
@@ -1478,8 +1555,53 @@
             }
 
             .contract-content-area {
-                padding: 30px 20px;
-                margin: 0 12px;
+                padding: 25px 15px;
+                margin: 0 10px;
+            }
+
+            .section {
+                padding: 18px 12px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .section-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .section-actions .btn {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 120px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .field-group {
+                padding-left: 25px;
+            }
+
+            .list-item {
+                flex-wrap: wrap;
+                padding: 12px;
+            }
+
+            .list-item input {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .remove-btn {
+                padding: 9px 12px;
+                font-size: 11px;
+            }
+
+            .add-item-btn {
+                padding: 11px 16px;
+                font-size: 12px;
             }
 
             .history-panel {
@@ -1595,6 +1717,34 @@
                 font-size: 1.8em;
             }
 
+            .section-actions {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .section-actions .btn {
+                flex: 1 1 auto;
+                min-width: 140px;
+            }
+
+            .field-group {
+                padding-left: 30px;
+            }
+
+            .list-item {
+                flex-wrap: nowrap;
+            }
+
+            .remove-btn {
+                padding: 9px 14px;
+                font-size: 12px;
+            }
+
+            .add-item-btn {
+                padding: 12px 18px;
+                font-size: 13px;
+            }
+
             /* Preview Mode - Tablets */
             .preview-header {
                 padding: 16px 20px;
@@ -1625,9 +1775,53 @@
                 min-width: 44px;
             }
 
+            /* Add/Remove button touch improvements */
+            .add-item-btn {
+                min-height: 44px;
+                font-size: 13px;
+            }
+
+            .remove-btn {
+                min-height: 40px;
+                min-width: 40px;
+                touch-action: manipulation;
+            }
+
+            /* Section actions touch friendly */
+            .section-actions {
+                margin-top: 15px;
+            }
+
+            .section-actions .btn {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
             /* Better spacing for form elements */
             .form-group {
-                margin-bottom: 20px;
+                margin-bottom: 18px;
+            }
+
+            .field-group {
+                margin-bottom: 15px;
+            }
+
+            /* List items touch friendly */
+            .list-item {
+                padding: 14px;
+                margin-bottom: 12px;
+            }
+
+            .list-item input {
+                min-height: 44px;
+                font-size: 16px;
+            }
+
+            /* Drag handle touch friendly */
+            .drag-handle {
+                touch-action: none;
+                padding: 8px;
+                margin: -8px 8px -8px -8px;
             }
 
             /* Improved readability */
