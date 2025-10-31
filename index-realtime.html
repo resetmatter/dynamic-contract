@@ -2213,10 +2213,12 @@
 
                     // Update list items
                     const listItems = fieldEl.querySelectorAll('[data-item-index]');
-                    if (listItems.length > 0 && field.items) {
-                        listItems.forEach((item, idx) => {
-                            field.items[idx] = item.value;
-                        });
+                    if (listItems.length > 0) {
+                        // Replace the array entirely to avoid stale items
+                        field.items = Array.from(listItems).map(item => item.value);
+                    } else if (field.type === 'list') {
+                        // If it's a list field but has no items, ensure it's an empty array
+                        field.items = [];
                     }
                 });
 
