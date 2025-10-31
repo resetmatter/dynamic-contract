@@ -347,7 +347,7 @@
             flex: 1;
         }
 
-        .editor-title input {
+        .editor-title > input {
             width: 100%;
             max-width: 500px;
             padding: 12px;
@@ -358,6 +358,149 @@
             font-family: 'Cinzel', serif;
             font-size: 1.5em;
             font-weight: 700;
+        }
+
+        /* Contract Content Area */
+        .contract-content-area {
+            position: relative;
+            background:
+                linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98)),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 0, 0, 0.02) 2px,
+                    rgba(139, 0, 0, 0.02) 4px
+                );
+            border: 3px solid #8b0000;
+            border-radius: 5px;
+            padding: 60px;
+            margin-top: 20px;
+            box-shadow:
+                0 0 0 1px rgba(255, 105, 180, 0.3),
+                0 0 30px rgba(139, 0, 0, 0.6),
+                inset 0 0 100px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Leather texture overlay */
+        .contract-content-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 1px,
+                rgba(0, 0, 0, 0.03) 1px,
+                rgba(0, 0, 0, 0.03) 2px
+            );
+            pointer-events: none;
+            border-radius: 5px;
+        }
+
+        /* Corner bows */
+        .content-bow {
+            position: absolute;
+            font-size: 35px;
+            filter: drop-shadow(0 0 10px rgba(255, 105, 180, 0.8));
+            z-index: 10;
+        }
+
+        .bow-top-left {
+            top: -15px;
+            left: -15px;
+            transform: rotate(-15deg);
+        }
+
+        .bow-top-right {
+            top: -15px;
+            right: -15px;
+            transform: rotate(15deg);
+        }
+
+        .bow-bottom-left {
+            bottom: -15px;
+            left: -15px;
+            transform: rotate(-15deg);
+        }
+
+        .bow-bottom-right {
+            bottom: -15px;
+            right: -15px;
+            transform: rotate(15deg);
+        }
+
+        /* Contract Header */
+        .contract-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            position: relative;
+            z-index: 1;
+        }
+
+        .contract-header::after {
+            content: '⛓️ 🎀 ⛓️';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98));
+            padding: 0 20px;
+        }
+
+        .contract-display-title {
+            font-family: 'Cinzel', serif;
+            font-size: 44px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8b0000, #ff69b4, #8b0000);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .contract-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: var(--dusty-pink);
+            font-style: italic;
+            margin-top: 15px;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .inline-name-input {
+            border: none;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            font-style: italic;
+            color: var(--pink-text);
+            text-align: center;
+            padding: 5px 12px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .inline-name-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent-pink);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
+        }
+
+        .inline-name-input::placeholder {
+            color: rgba(212, 118, 143, 0.5);
         }
 
         .editor-actions {
@@ -401,6 +544,7 @@
             padding: 30px;
             margin-bottom: 30px;
             position: relative;
+            z-index: 1;
         }
 
         .section-header {
@@ -967,6 +1111,7 @@
             padding-bottom: 30px;
             border-bottom: 2px solid rgba(139, 0, 0, 0.6);
             position: relative;
+            font-family: 'Crimson Text', serif;
         }
 
         .preview-subtitle::after {
@@ -980,6 +1125,24 @@
             padding: 0 20px;
         }
 
+        .preview-inline-name-input {
+            border: none;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            font-style: italic;
+            color: #ff6b9d;
+            text-align: center;
+            padding: 5px 12px;
+            min-width: 120px;
+            cursor: default;
+        }
+
+        .preview-inline-name-input:focus {
+            outline: none;
+        }
+
         .preview-divider {
             text-align: center;
             font-size: 24px;
@@ -991,6 +1154,10 @@
         .preview-content p {
             margin-bottom: 15px;
             text-align: justify;
+        }
+
+        .preview-content .preview-subtitle {
+            text-align: center !important;
         }
 
         .preview-content ul {
@@ -1103,6 +1270,92 @@
                 grid-template-columns: 1fr;
                 gap: 50px;
             }
+        }
+
+        /* Preview Readonly Field Styles */
+        .preview-field-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            border: 1px solid rgba(139, 0, 0, 0.2);
+        }
+
+        .preview-field-label {
+            display: block;
+            font-family: 'Crimson Text', serif;
+            font-size: 13px;
+            color: #d4768f;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        .preview-readonly-input,
+        .preview-readonly-textarea {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(139, 0, 0, 0.3);
+            border-radius: 3px;
+            padding: 10px;
+            color: #ffb6c1;
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            line-height: 1.6;
+            cursor: default;
+            opacity: 0.95;
+        }
+
+        .preview-readonly-input:focus,
+        .preview-readonly-textarea:focus {
+            outline: none;
+            border-color: rgba(139, 0, 0, 0.5);
+        }
+
+        .preview-readonly-textarea {
+            min-height: 80px;
+            resize: none;
+        }
+
+        .preview-list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .preview-list-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .preview-list-bow {
+            font-size: 16px;
+            filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.5));
+            flex-shrink: 0;
+        }
+
+        .preview-list-item .preview-readonly-input {
+            flex: 1;
+        }
+
+        .preview-signature-input {
+            font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+            font-size: 22px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.15);
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
+            border-radius: 0;
+            padding: 15px 10px;
+        }
+
+        .preview-date-input {
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 8px;
         }
 
         /* Settings Modal */
@@ -1425,9 +1678,29 @@
                 </div>
             </div>
 
-            <!-- Contract Sections -->
-            <div id="contract-sections">
-                <!-- Sections will be dynamically loaded here -->
+            <!-- Contract Content Area -->
+            <div class="contract-content-area">
+                <!-- Pink bows in corners -->
+                <div class="content-bow bow-top-left">🎀</div>
+                <div class="content-bow bow-top-right">🎀</div>
+                <div class="content-bow bow-bottom-left">🎀</div>
+                <div class="content-bow bow-bottom-right">🎀</div>
+
+                <!-- Contract Header -->
+                <div class="contract-header">
+                    <h1 class="contract-display-title" id="contract-display-title">D/s Dynamic Contract</h1>
+                    <div class="contract-subtitle">
+                        Between Dom
+                        <input type="text" id="dominant-name" placeholder="Name" class="inline-name-input">
+                        and his sub
+                        <input type="text" id="submissive-name" placeholder="Name" class="inline-name-input">
+                    </div>
+                </div>
+
+                <!-- Contract Sections -->
+                <div id="contract-sections">
+                    <!-- Sections will be dynamically loaded here -->
+                </div>
             </div>
 
             <button class="btn" id="add-section-btn" style="width: 100%; margin-top: 20px;">+ Add Section</button>
@@ -1692,8 +1965,11 @@
                     if (contractList) contractList.style.display = 'none';
                     if (contractEditor) contractEditor.style.display = 'block';
 
-                    // Set contract title
+                    // Set contract title and names
                     document.getElementById('contract-title').value = currentContract.title;
+                    document.getElementById('contract-display-title').textContent = currentContract.title || 'D/s Dynamic Contract';
+                    document.getElementById('dominant-name').value = currentContract.dominant_name || 'Matthew';
+                    document.getElementById('submissive-name').value = currentContract.submissive_name || 'Shailah';
 
                     // Load signatures
                     document.getElementById('owner-signature').value = currentContract.owner_signature || '';
@@ -2209,6 +2485,9 @@
 
         function renderContractEditor() {
             document.getElementById('contract-title').value = currentContract.title || '';
+            document.getElementById('contract-display-title').textContent = currentContract.title || 'D/s Dynamic Contract';
+            document.getElementById('dominant-name').value = currentContract.dominant_name || 'Matthew';
+            document.getElementById('submissive-name').value = currentContract.submissive_name || 'Shailah';
 
             const sectionsContainer = document.getElementById('contract-sections');
             const sections = currentContract.data?.sections || [];
@@ -2548,6 +2827,22 @@
 
         document.getElementById('contract-title').addEventListener('input', (e) => {
             currentContract.title = e.target.value;
+            // Update the display title
+            const displayTitle = document.getElementById('contract-display-title');
+            if (displayTitle) {
+                displayTitle.textContent = e.target.value || 'D/s Dynamic Contract';
+            }
+            debouncedSave();
+        });
+
+        // Name field event listeners
+        document.getElementById('dominant-name').addEventListener('input', (e) => {
+            currentContract.dominant_name = e.target.value;
+            debouncedSave();
+        });
+
+        document.getElementById('submissive-name').addEventListener('input', (e) => {
+            currentContract.submissive_name = e.target.value;
             debouncedSave();
         });
 
@@ -2634,7 +2929,7 @@
             // Fetch the current state from database for change detection (before we update it)
             const { data: currentDbState } = await supabaseClient
                 .from('contracts')
-                .select('title, data, owner_signature, submissive_signature')
+                .select('title, data, owner_signature, submissive_signature, dominant_name, submissive_name')
                 .eq('id', currentContract.id)
                 .single();
 
@@ -2646,7 +2941,9 @@
                 title: currentContract.title,
                 data: currentContract.data,
                 owner_signature: ownerSig,
-                submissive_signature: subSig
+                submissive_signature: subSig,
+                dominant_name: currentContract.dominant_name,
+                submissive_name: currentContract.submissive_name
             };
 
             // Generate change description
@@ -2657,6 +2954,8 @@
                 .update({
                     title: currentContract.title,
                     data: currentContract.data,
+                    dominant_name: currentContract.dominant_name,
+                    submissive_name: currentContract.submissive_name,
                     owner_signature: ownerSig,
                     owner_signature_date: ownerDate,
                     submissive_signature: subSig,
@@ -3433,21 +3732,9 @@
             const title = currentContract.title || 'D/s Dynamic Contract';
             const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Extract party names from first section if available
-            let domName = 'Matthew';
-            let subName = 'Shailah';
-            if (sections.length > 0 && sections[0].type === 'parties' && sections[0].fields) {
-                const domField = sections[0].fields[0];
-                const subField = sections[0].fields[1];
-                if (domField && domField.value) {
-                    const match = domField.value.match(/^([^-\n]+)/);
-                    if (match) domName = match[1].trim();
-                }
-                if (subField && subField.value) {
-                    const match = subField.value.match(/^([^-\n]+)/);
-                    if (match) subName = match[1].trim();
-                }
-            }
+            // Get party names from contract data
+            const domName = currentContract.dominant_name || 'Matthew';
+            const subName = currentContract.submissive_name || 'Shailah';
 
             let html = `
                 <div class="preview-bow preview-bow-top-left">🎀</div>
@@ -3455,7 +3742,12 @@
                 <div class="preview-bow preview-bow-bottom-left">🎀</div>
                 <div class="preview-bow preview-bow-bottom-right">🎀</div>
                 <h1>${escapeHtml(title)}</h1>
-                <p class="preview-subtitle">Between Dom ${escapeHtml(domName)} and his sub ${escapeHtml(subName)}</p>
+                <p class="preview-subtitle">
+                    Between Dom
+                    <input type="text" class="preview-inline-name-input" value="${escapeHtml(domName)}" readonly>
+                    and his sub
+                    <input type="text" class="preview-inline-name-input" value="${escapeHtml(subName)}" readonly>
+                </p>
 
                 <div class="preview-terms-notice">
                     This contract establishes a Total Power Exchange (TPE) dynamic where the submissive willingly surrenders complete control and authority to the Dominant. The submissive acknowledges the Dominant's absolute authority in all matters and agrees to obey without question. All activities remain bound by established safe words and hard limits. Either party may terminate this agreement, though renegotiation requires the Dominant's approval.
@@ -3478,51 +3770,64 @@
                 }
 
                 section.fields.forEach(field => {
-                    if (!field || (!field.label && !field.value)) return;
+                    if (!field || (!field.label && !field.value && (!field.items || field.items.length === 0))) return;
 
-                    html += `<h3>${escapeHtml(field.label || 'Field')}</h3>`;
+                    html += `<div class="preview-field-group">`;
+                    html += `<label class="preview-field-label">${escapeHtml(field.label || 'Field')}</label>`;
 
-                    if (field.type === 'list' && field.items && Array.isArray(field.items) && field.items.length > 0) {
-                        html += '<ul>';
-                        field.items.forEach(item => {
-                            // Safety check: ensure item exists and is a string
-                            if (item && typeof item === 'string' && item.trim()) {
-                                html += `<li>${escapeHtml(item)}</li>`;
-                            }
-                        });
-                        html += '</ul>';
-                    } else if (field.value && typeof field.value === 'string' && field.value.trim()) {
-                        // Convert newlines to paragraphs
-                        const paragraphs = field.value.split('\n').filter(p => p.trim());
-                        paragraphs.forEach(para => {
-                            html += `<p>${escapeHtml(para)}</p>`;
-                        });
+                    if (field.type === 'list') {
+                        // Render list items as readonly inputs
+                        html += `<div class="preview-list-container">`;
+                        if (field.items && Array.isArray(field.items) && field.items.length > 0) {
+                            field.items.forEach(item => {
+                                if (item && typeof item === 'string' && item.trim()) {
+                                    html += `
+                                        <div class="preview-list-item">
+                                            <span class="preview-list-bow">🎀</span>
+                                            <input type="text" class="preview-readonly-input" value="${escapeHtml(item)}" readonly>
+                                        </div>
+                                    `;
+                                }
+                            });
+                        } else {
+                            html += `<p class="preview-empty">[No items]</p>`;
+                        }
+                        html += `</div>`;
+                    } else if (field.type === 'text') {
+                        // Render text input as readonly
+                        const value = field.value || '';
+                        html += `<input type="text" class="preview-readonly-input" value="${escapeHtml(value)}" readonly>`;
                     } else {
-                        html += `<p class="preview-empty">[Not specified]</p>`;
+                        // Render textarea as readonly
+                        const value = field.value || '';
+                        html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
                     }
+
+                    html += `</div>`;
                 });
             });
 
-            // Add signature section matching index.html exactly
+            // Add signature section with readonly inputs
             const ownerSig = currentContract.owner_signature || '';
             const ownerDate = currentContract.owner_signature_date || '';
             const subSig = currentContract.submissive_signature || '';
             const subDate = currentContract.submissive_signature_date || '';
 
-            const ownerDateFormatted = ownerDate ? new Date(ownerDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '';
-            const subDateFormatted = subDate ? new Date(subDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : '';
+            const ownerDateFormatted = ownerDate ? new Date(ownerDate).toISOString().split('T')[0] : '';
+            const subDateFormatted = subDate ? new Date(subDate).toISOString().split('T')[0] : '';
 
             html += `
+                <div class="preview-divider" style="margin-top: 50px;">⛓️ 🎀 ⛓️</div>
                 <div class="preview-signature-section">
                     <div class="preview-signature-box">
-                        <label>Owner's Signature</label>
-                        <div class="preview-signature-value">${escapeHtml(ownerSig)}</div>
-                        <div class="preview-signature-date">${ownerDateFormatted}</div>
+                        <label class="preview-field-label">Owner's Signature</label>
+                        <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(ownerSig)}" readonly placeholder="Not signed">
+                        <input type="date" class="preview-readonly-input preview-date-input" value="${ownerDateFormatted}" readonly>
                     </div>
                     <div class="preview-signature-box">
-                        <label>Submissive's Acceptance</label>
-                        <div class="preview-signature-value">${escapeHtml(subSig)}</div>
-                        <div class="preview-signature-date">${subDateFormatted}</div>
+                        <label class="preview-field-label">Submissive's Acceptance</label>
+                        <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(subSig)}" readonly placeholder="Not signed">
+                        <input type="date" class="preview-readonly-input preview-date-input" value="${subDateFormatted}" readonly>
                     </div>
                 </div>
             `;
