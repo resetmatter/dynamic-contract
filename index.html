@@ -3691,18 +3691,36 @@
 
             // Helper to restore list items
             const restoreListItems = (containerId, data, addFunction) => {
-                if (data && data.length > 0) {
-                    const textareas = document.querySelectorAll(`#${containerId} .list-item textarea`);
-                    data.forEach((value, index) => {
-                        if (index >= textareas.length) {
-                            addFunction();
+                const container = document.getElementById(containerId);
+                if (!container) return;
+
+                const currentItems = container.querySelectorAll('.list-item');
+                const currentCount = currentItems.length;
+                const targetCount = (data && data.length > 0) ? data.length : 0;
+
+                // Remove excess fields if we have more than needed
+                if (currentCount > targetCount) {
+                    for (let i = currentCount - 1; i >= targetCount; i--) {
+                        if (currentItems[i]) {
+                            currentItems[i].remove();
                         }
-                    });
-                    const updatedTextareas = document.querySelectorAll(`#${containerId} .list-item textarea`);
+                    }
+                }
+
+                // Add new fields if we need more
+                if (targetCount > currentCount) {
+                    for (let i = currentCount; i < targetCount; i++) {
+                        addFunction();
+                    }
+                }
+
+                // Populate all fields with data
+                if (data && data.length > 0) {
+                    const textareas = container.querySelectorAll('.list-item textarea');
                     data.forEach((value, index) => {
-                        if (updatedTextareas[index]) {
-                            updatedTextareas[index].value = value;
-                            autoResizeTextarea(updatedTextareas[index]);
+                        if (textareas[index]) {
+                            textareas[index].value = value || '';
+                            autoResizeTextarea(textareas[index]);
                         }
                     });
                 }
@@ -3717,20 +3735,38 @@
             restoreListItems('expectations-container', contractData.expectations, addExpectation);
 
             // Restore rules/commands
-            if (contractData.rules && contractData.rules.length > 0) {
-                const rulesTextareas = document.querySelectorAll('#rules-container textarea');
-                contractData.rules.forEach((value, index) => {
-                    if (index >= rulesTextareas.length) {
+            const rulesContainer = document.getElementById('rules-container');
+            if (rulesContainer) {
+                const currentRuleItems = rulesContainer.querySelectorAll('.command-item');
+                const currentRuleCount = currentRuleItems.length;
+                const targetRuleCount = (contractData.rules && contractData.rules.length > 0) ? contractData.rules.length : 0;
+
+                // Remove excess rule fields if we have more than needed
+                if (currentRuleCount > targetRuleCount) {
+                    for (let i = currentRuleCount - 1; i >= targetRuleCount; i--) {
+                        if (currentRuleItems[i]) {
+                            currentRuleItems[i].remove();
+                        }
+                    }
+                }
+
+                // Add new rule fields if we need more
+                if (targetRuleCount > currentRuleCount) {
+                    for (let i = currentRuleCount; i < targetRuleCount; i++) {
                         addRule();
                     }
-                });
-                const updatedTextareas = document.querySelectorAll('#rules-container textarea');
-                contractData.rules.forEach((value, index) => {
-                    if (updatedTextareas[index]) {
-                        updatedTextareas[index].value = value;
-                        autoResizeTextarea(updatedTextareas[index]);
-                    }
-                });
+                }
+
+                // Populate all rule fields with data
+                if (contractData.rules && contractData.rules.length > 0) {
+                    const rulesTextareas = rulesContainer.querySelectorAll('textarea');
+                    contractData.rules.forEach((value, index) => {
+                        if (rulesTextareas[index]) {
+                            rulesTextareas[index].value = value || '';
+                            autoResizeTextarea(rulesTextareas[index]);
+                        }
+                    });
+                }
             }
 
             // Restore other fields
