@@ -1409,6 +1409,10 @@
             if (session) {
                 currentUser = session.user;
                 showApp();
+            } else {
+                // No session - ensure auth screen is visible
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app-screen').style.display = 'none';
             }
         }
 
@@ -1575,8 +1579,33 @@
 
         // Logout
         document.getElementById('logout-btn').addEventListener('click', async () => {
-            await supabaseClient.auth.signOut();
-            location.reload();
+            try {
+                // Clean up realtime connections
+                if (realtimeChannel) {
+                    await supabaseClient.removeChannel(realtimeChannel);
+                }
+                if (presenceChannel) {
+                    await supabaseClient.removeChannel(presenceChannel);
+                }
+
+                // Sign out from Supabase
+                await supabaseClient.auth.signOut();
+
+                // Clear current user state
+                currentUser = null;
+                currentContract = null;
+
+                // Hide app screen and show auth screen
+                document.getElementById('app-screen').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
+
+                // Reload the page to ensure clean state
+                setTimeout(() => location.reload(), 100);
+            } catch (error) {
+                console.error('Error during logout:', error);
+                // Force reload even if there's an error
+                location.reload();
+            }
         });
 
         // Helper functions for auth UI
