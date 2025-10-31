@@ -15,6 +15,7 @@
             --background: #1a0000;
             --text-light: #fff5f5;
             --border-accent: #ff1493;
+            --app-header-height: 70px;
         }
 
         * {
@@ -279,6 +280,17 @@
             }
         }
 
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
         .presence-dropdown-header {
             font-size: 14px;
             font-weight: 600;
@@ -533,9 +545,20 @@
             margin-bottom: 25px;
             gap: 20px;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
-            border: 1px solid rgba(255, 105, 180, 0.1);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            position: sticky;
+            top: calc(var(--app-header-height) - 1px);
+            z-index: 90;
+            transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
+        }
+
+        .editor-header.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+            border-color: rgba(255, 105, 180, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 105, 180, 0.3);
         }
 
         .editor-title {
@@ -1099,6 +1122,126 @@
             display: none;
         }
 
+        /* Undo/Redo Controls */
+        .undo-redo-group {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 105, 180, 0.2);
+        }
+
+        .undo-redo-btn {
+            padding: 8px 12px;
+            background: rgba(255, 105, 180, 0.1);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            border-radius: 6px;
+            color: var(--text-light);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .undo-redo-btn:hover:not(:disabled) {
+            background: rgba(255, 105, 180, 0.25);
+            border-color: var(--accent-pink);
+            transform: translateY(-1px);
+        }
+
+        .undo-redo-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .undo-redo-btn .shortcut-hint {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: var(--accent-light-pink);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+
+        .undo-redo-btn:hover .shortcut-hint {
+            opacity: 1;
+        }
+
+        /* Undo History Dropdown */
+        .undo-history-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 0;
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.98), rgba(30, 15, 15, 0.98));
+            border: 2px solid var(--accent-pink);
+            border-radius: 8px;
+            padding: 10px;
+            min-width: 280px;
+            max-width: 350px;
+            max-height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        }
+
+        .undo-history-dropdown.show {
+            display: block;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        .undo-history-header {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-pink);
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 105, 180, 0.2);
+        }
+
+        .undo-history-item {
+            padding: 8px 10px;
+            margin: 4px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-pink);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .undo-history-item:hover {
+            background: rgba(255, 105, 180, 0.2);
+            transform: translateX(3px);
+        }
+
+        .undo-history-item.current {
+            background: rgba(255, 105, 180, 0.3);
+            border-left-color: #00ff00;
+            font-weight: 600;
+        }
+
+        .undo-history-item .action-desc {
+            color: var(--text-light);
+            margin-bottom: 3px;
+        }
+
+        .undo-history-item .action-time {
+            color: var(--accent-light-pink);
+            font-size: 11px;
+        }
+
         /* Share Dialog */
         .dialog-overlay {
             display: none;
@@ -1291,6 +1434,10 @@
                 padding: 12px;
                 gap: 10px;
                 margin-bottom: 15px;
+                position: sticky;
+                top: calc(var(--app-header-height) - 1px);
+                z-index: 90;
+                border-radius: 8px;
             }
 
             .editor-title {
@@ -2776,6 +2923,25 @@
                         <span class="sync-dot" id="sync-dot"></span>
                         <span id="sync-text">Synced</span>
                     </div>
+                    <div class="undo-redo-group" style="position: relative;">
+                        <button class="undo-redo-btn" id="undo-btn" title="Undo" disabled>
+                            ↶
+                            <span class="shortcut-hint">Ctrl+Z</span>
+                        </button>
+                        <button class="undo-redo-btn" id="redo-btn" title="Redo" disabled>
+                            ↷
+                            <span class="shortcut-hint">Ctrl+Y</span>
+                        </button>
+                        <button class="undo-redo-btn" id="undo-history-toggle" title="Undo History" disabled>
+                            ⋮
+                        </button>
+                        <div class="undo-history-dropdown" id="undo-history-dropdown">
+                            <div class="undo-history-header">Undo History</div>
+                            <div id="undo-history-list">
+                                <!-- History items will be populated here -->
+                            </div>
+                        </div>
+                    </div>
                     <button class="btn" id="preview-btn">👁️ Preview</button>
                     <button class="btn btn-secondary" id="history-btn">📜 History</button>
                     <button class="btn btn-secondary" id="share-btn">🔗 Share</button>
@@ -3012,6 +3178,344 @@
         let usePolling = false;
 
         // ============================================
+        // UNDO/REDO SYSTEM
+        // ============================================
+        let undoStack = []; // Array of previous states
+        let redoStack = []; // Array of undone states
+        let currentStateIndex = -1; // Current position in history
+        let isUndoRedoAction = false; // Flag to prevent undo/redo from being added to stack
+        let lastCapturedState = null; // Last state we captured (for deduplication)
+        const MAX_UNDO_STACK_SIZE = 50; // Maximum number of undo states to keep
+
+        // Capture current state for undo/redo
+        function captureStateForUndo(description = 'Edit') {
+            if (!currentContract || isUndoRedoAction || isApplyingRemoteUpdate) {
+                return;
+            }
+
+            // Collect current form data before capturing
+            collectFormData();
+
+            // Create a deep copy of the contract state
+            const state = {
+                contractData: JSON.parse(JSON.stringify(currentContract)),
+                description: description,
+                timestamp: Date.now()
+            };
+
+            // Check if this state is different from the last captured state
+            // (to avoid capturing duplicate states from multiple events)
+            if (lastCapturedState &&
+                JSON.stringify(state.contractData.data) === JSON.stringify(lastCapturedState.data)) {
+                return;
+            }
+
+            lastCapturedState = state.contractData.data;
+
+            // Clear redo stack when new action is performed
+            redoStack = [];
+
+            // Add to undo stack
+            undoStack.push(state);
+
+            // Limit stack size
+            if (undoStack.length > MAX_UNDO_STACK_SIZE) {
+                undoStack.shift();
+            }
+
+            currentStateIndex = undoStack.length - 1;
+
+            console.log(`📝 Captured state: ${description} (stack size: ${undoStack.length})`);
+            updateUndoRedoUI();
+        }
+
+        // Perform undo
+        function performUndo() {
+            if (undoStack.length === 0) {
+                console.log('⏮️ Nothing to undo');
+                return;
+            }
+
+            isUndoRedoAction = true;
+
+            // Capture current state before undo (for redo)
+            collectFormData();
+            const currentState = {
+                contractData: JSON.parse(JSON.stringify(currentContract)),
+                description: 'Current state',
+                timestamp: Date.now()
+            };
+
+            // Add current state to redo stack
+            redoStack.push(currentState);
+
+            // Get previous state
+            const previousState = undoStack.pop();
+            currentStateIndex = undoStack.length - 1;
+
+            // Restore the previous state
+            restoreState(previousState.contractData);
+
+            console.log(`⏮️ Undo: ${previousState.description}`);
+            updateUndoRedoUI();
+            showUndoNotification(`Undone: ${previousState.description}`);
+
+            // Save to database
+            setTimeout(() => {
+                saveContract();
+                isUndoRedoAction = false;
+            }, 100);
+        }
+
+        // Perform redo
+        function performRedo() {
+            if (redoStack.length === 0) {
+                console.log('⏭️ Nothing to redo');
+                return;
+            }
+
+            isUndoRedoAction = true;
+
+            // Capture current state before redo (for undo)
+            collectFormData();
+            const currentState = {
+                contractData: JSON.parse(JSON.stringify(currentContract)),
+                description: 'Previous state',
+                timestamp: Date.now()
+            };
+
+            // Add current state back to undo stack
+            undoStack.push(currentState);
+
+            // Get redo state
+            const redoState = redoStack.pop();
+            currentStateIndex = undoStack.length - 1;
+
+            // Restore the redo state
+            restoreState(redoState.contractData);
+
+            console.log(`⏭️ Redo: ${redoState.description}`);
+            updateUndoRedoUI();
+            showUndoNotification(`Redone: ${redoState.description}`);
+
+            // Save to database
+            setTimeout(() => {
+                saveContract();
+                isUndoRedoAction = false;
+            }, 100);
+        }
+
+        // Restore a saved state
+        function restoreState(contractData) {
+            // Update current contract
+            currentContract = JSON.parse(JSON.stringify(contractData));
+
+            // Update the UI
+            document.getElementById('contract-title').value = currentContract.title || '';
+            document.getElementById('contract-display-title').textContent = currentContract.title || 'D/s Dynamic Contract';
+            document.getElementById('dominant-name').value = currentContract.dominant_name || '';
+            document.getElementById('submissive-name').value = currentContract.submissive_name || '';
+            document.getElementById('owner-signature').value = currentContract.owner_signature || '';
+            document.getElementById('owner-signature-date').value = currentContract.owner_signature_date || '';
+            document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
+            document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
+
+            // Re-render the contract editor
+            renderContractEditor();
+        }
+
+        // Update undo/redo button states
+        function updateUndoRedoUI() {
+            const undoBtn = document.getElementById('undo-btn');
+            const redoBtn = document.getElementById('redo-btn');
+            const historyToggle = document.getElementById('undo-history-toggle');
+
+            if (undoBtn) {
+                undoBtn.disabled = undoStack.length === 0;
+            }
+            if (redoBtn) {
+                redoBtn.disabled = redoStack.length === 0;
+            }
+            if (historyToggle) {
+                historyToggle.disabled = undoStack.length === 0;
+            }
+
+            // Update history dropdown
+            updateUndoHistoryDropdown();
+        }
+
+        // Update the undo history dropdown
+        function updateUndoHistoryDropdown() {
+            const historyList = document.getElementById('undo-history-list');
+            if (!historyList) return;
+
+            historyList.innerHTML = '';
+
+            if (undoStack.length === 0) {
+                historyList.innerHTML = '<div style="padding: 10px; color: var(--accent-light-pink); text-align: center;">No history available</div>';
+                return;
+            }
+
+            // Show last 20 items
+            const recentStates = undoStack.slice(-20).reverse();
+
+            recentStates.forEach((state, index) => {
+                const actualIndex = undoStack.length - 1 - index;
+                const isCurrent = actualIndex === currentStateIndex;
+
+                const item = document.createElement('div');
+                item.className = `undo-history-item${isCurrent ? ' current' : ''}`;
+                item.innerHTML = `
+                    <div class="action-desc">${state.description}</div>
+                    <div class="action-time">${formatTimestamp(state.timestamp)}</div>
+                `;
+
+                item.addEventListener('click', () => {
+                    jumpToHistoryState(actualIndex);
+                    toggleUndoHistoryDropdown(false);
+                });
+
+                historyList.appendChild(item);
+            });
+        }
+
+        // Jump to a specific state in history
+        function jumpToHistoryState(targetIndex) {
+            if (targetIndex < 0 || targetIndex >= undoStack.length) return;
+
+            isUndoRedoAction = true;
+
+            // Get the target state
+            const targetState = undoStack[targetIndex];
+
+            // Move states between undo and redo stacks as needed
+            if (targetIndex < currentStateIndex) {
+                // Moving backward - perform multiple undos
+                while (currentStateIndex > targetIndex && undoStack.length > 0) {
+                    performUndo();
+                }
+            } else if (targetIndex > currentStateIndex) {
+                // Moving forward - perform multiple redos
+                while (currentStateIndex < targetIndex && redoStack.length > 0) {
+                    performRedo();
+                }
+            }
+
+            isUndoRedoAction = false;
+        }
+
+        // Format timestamp for display
+        function formatTimestamp(timestamp) {
+            const now = Date.now();
+            const diff = now - timestamp;
+
+            if (diff < 1000) return 'just now';
+            if (diff < 60000) return Math.floor(diff / 1000) + 's ago';
+            if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+
+            const date = new Date(timestamp);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Show undo notification
+        function showUndoNotification(message) {
+            // Reuse existing sync notification system
+            const existingNotification = document.querySelector('.undo-notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'undo-notification';
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(220, 20, 60, 0.95));
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                border: 2px solid var(--accent-pink);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                z-index: 10000;
+                font-size: 14px;
+                animation: slideUp 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideDown 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
+        }
+
+        // Toggle undo history dropdown
+        function toggleUndoHistoryDropdown(show) {
+            const dropdown = document.getElementById('undo-history-dropdown');
+            if (!dropdown) return;
+
+            if (show === undefined) {
+                dropdown.classList.toggle('show');
+            } else if (show) {
+                dropdown.classList.add('show');
+                updateUndoHistoryDropdown();
+            } else {
+                dropdown.classList.remove('show');
+            }
+        }
+
+        // Setup keyboard shortcuts for undo/redo
+        function setupUndoRedoKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Ctrl+Z or Cmd+Z for undo
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    performUndo();
+                }
+                // Ctrl+Y or Cmd+Y or Ctrl+Shift+Z for redo
+                else if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                    e.preventDefault();
+                    performRedo();
+                }
+            });
+        }
+
+        // Initialize undo/redo system
+        function initUndoRedoSystem() {
+            // Setup button click handlers
+            const undoBtn = document.getElementById('undo-btn');
+            const redoBtn = document.getElementById('redo-btn');
+            const historyToggle = document.getElementById('undo-history-toggle');
+
+            if (undoBtn) {
+                undoBtn.addEventListener('click', performUndo);
+            }
+            if (redoBtn) {
+                redoBtn.addEventListener('click', performRedo);
+            }
+            if (historyToggle) {
+                historyToggle.addEventListener('click', () => toggleUndoHistoryDropdown());
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('undo-history-dropdown');
+                const toggle = document.getElementById('undo-history-toggle');
+                if (dropdown && !dropdown.contains(e.target) && e.target !== toggle) {
+                    toggleUndoHistoryDropdown(false);
+                }
+            });
+
+            // Setup keyboard shortcuts
+            setupUndoRedoKeyboardShortcuts();
+
+            console.log('✅ Undo/Redo system initialized');
+        }
+
+        // ============================================
         // AUTHENTICATION
         // ============================================
 
@@ -3058,6 +3562,13 @@
                 // Set as current contract
                 currentContract = data;
                 const isEditor = data.public_share_role === 'editor';
+
+                // Reset undo/redo stacks for new contract
+                undoStack = [];
+                redoStack = [];
+                currentStateIndex = -1;
+                lastCapturedState = null;
+                updateUndoRedoUI();
 
                 // Hide auth screen and show main app
                 document.getElementById('auth-screen').style.display = 'none';
@@ -3588,6 +4099,13 @@
 
             currentContract = data;
 
+            // Reset undo/redo stacks for new contract
+            undoStack = [];
+            redoStack = [];
+            currentStateIndex = -1;
+            lastCapturedState = null;
+            updateUndoRedoUI();
+
             // Load signatures into form
             document.getElementById('owner-signature').value = currentContract.owner_signature || '';
             document.getElementById('owner-signature-date').value = currentContract.owner_signature_date || '';
@@ -3598,6 +4116,11 @@
             setupRealtimeSync();
             setupPresence(); // Setup presence when opening contract
             showContractEditor();
+
+            // Capture initial state after contract is loaded
+            setTimeout(() => {
+                captureStateForUndo('Initial state');
+            }, 500);
         };
 
         window.deleteContract = async function(contractId) {
@@ -3763,6 +4286,7 @@
 
         // Field management functions
         window.addField = function(sectionIndex) {
+            captureStateForUndo('Add field');
             collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             sections[sectionIndex].fields.push({
@@ -3775,6 +4299,7 @@
         };
 
         window.removeField = function(sectionIndex, fieldIndex) {
+            captureStateForUndo('Remove field');
             collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             sections[sectionIndex].fields.splice(fieldIndex, 1);
@@ -3783,6 +4308,7 @@
         };
 
         window.addListItem = function(sectionIndex, fieldIndex) {
+            captureStateForUndo('Add list item');
             collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             const field = sections[sectionIndex].fields[fieldIndex];
@@ -3793,6 +4319,7 @@
         };
 
         window.removeListItem = function(sectionIndex, fieldIndex, itemIndex) {
+            captureStateForUndo('Remove list item');
             collectFormData(); // Capture any unsaved changes first
             const sections = currentContract.data.sections;
             const field = sections[sectionIndex].fields[fieldIndex];
@@ -3803,6 +4330,7 @@
 
         window.removeSection = function(sectionIndex) {
             if (!confirm('Remove this section?')) return;
+            captureStateForUndo('Remove section');
             collectFormData(); // Capture any unsaved changes first
             currentContract.data.sections.splice(sectionIndex, 1);
             saveContract();
@@ -3810,6 +4338,7 @@
         };
 
         document.getElementById('add-section-btn').addEventListener('click', () => {
+            captureStateForUndo('Add section');
             collectFormData(); // Capture any unsaved changes first
             currentContract.data.sections.push({
                 type: 'custom',
@@ -3832,16 +4361,31 @@
 
             const editor = document.getElementById('contract-sections');
 
+            // Debounced state capture for text edits (longer delay than save)
+            let textEditTimeout = null;
+            let hasUncapturedEdits = false;
+
             editor.addEventListener('input', (e) => {
                 const target = e.target;
 
                 if (target.hasAttribute('contenteditable')) {
                     // Handle contenteditable fields (titles, labels)
                     debouncedSave();
+                    hasUncapturedEdits = true;
                 } else if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
                     // Handle regular input fields
                     debouncedSave();
+                    hasUncapturedEdits = true;
                 }
+
+                // Capture state after user stops typing for 2 seconds
+                clearTimeout(textEditTimeout);
+                textEditTimeout = setTimeout(() => {
+                    if (hasUncapturedEdits) {
+                        captureStateForUndo('Text edit');
+                        hasUncapturedEdits = false;
+                    }
+                }, 2000);
             });
 
             // Setup drag-and-drop for fields
@@ -3911,6 +4455,9 @@
                 e.preventDefault();
                 if (!draggedFieldElement) return;
 
+                // Capture state before reorder
+                captureStateForUndo('Reorder fields');
+
                 // Collect the new order and save
                 collectFormData();
                 saveContract();
@@ -3970,6 +4517,9 @@
             editor.addEventListener('drop', (e) => {
                 e.preventDefault();
                 if (!draggedListItem) return;
+
+                // Capture state before reorder
+                captureStateForUndo('Reorder list items');
 
                 // Collect the new order and save
                 collectFormData();
@@ -6122,9 +6672,55 @@
         }
 
         // ============================================
+        // STICKY HEADER ENHANCEMENT
+        // ============================================
+
+        function setupStickyHeaderEffect() {
+            const editorHeader = document.querySelector('.editor-header');
+            const appHeader = document.querySelector('.app-header');
+            if (!editorHeader) return;
+
+            let ticking = false;
+            const appHeaderHeight = appHeader ? appHeader.offsetHeight : 70;
+
+            function updateHeaderState() {
+                const headerRect = editorHeader.getBoundingClientRect();
+
+                // Check if the editor header is stuck (positioned at the app header height)
+                // This means we've scrolled enough for it to be in its sticky position
+                if (headerRect.top <= appHeaderHeight + 5) {
+                    editorHeader.classList.add('scrolled');
+                } else {
+                    editorHeader.classList.remove('scrolled');
+                }
+
+                ticking = false;
+            }
+
+            function onScroll() {
+                if (!ticking) {
+                    window.requestAnimationFrame(updateHeaderState);
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            // Initial check
+            updateHeaderState();
+        }
+
+        // ============================================
         // INITIALIZATION
         // ============================================
 
+        // Initialize undo/redo system
+        initUndoRedoSystem();
+
+        // Setup sticky header enhancement
+        setupStickyHeaderEffect();
+
+        // Check authentication
         checkAuth();
     </script>
 </body>
