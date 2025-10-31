@@ -1727,7 +1727,7 @@
                 const updatedDate = new Date(contract.updated_at).toLocaleDateString();
 
                 return `
-                    <div class="contract-card">
+                    <div class="contract-card" onclick="openContract('${contract.id}')">
                         ${isShared ? '<span class="shared-badge">Shared</span>' : ''}
                         <h3>${contract.title || 'Untitled Contract'}</h3>
                         <div class="meta">
@@ -1735,8 +1735,8 @@
                             ${isShared ? `<br>Shared with ${contract.contract_shares.length} partner(s)` : ''}
                         </div>
                         <div class="actions">
-                            <button class="btn" onclick="openContract('${contract.id}')">Open</button>
-                            <button class="btn btn-secondary" onclick="deleteContract('${contract.id}')">Delete</button>
+                            <button class="btn" onclick="event.stopPropagation(); openContract('${contract.id}')">Open</button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); deleteContract('${contract.id}')">Delete</button>
                         </div>
                     </div>
                 `;
