@@ -14,7 +14,7 @@
             --accent-light-pink: #ffb6c1;
             --background: #1a0000;
             --text-light: #fff5f5;
-            --border-gold: #ffd700;
+            --border-accent: #ff1493;
         }
 
         * {
@@ -42,7 +42,7 @@
 
         .auth-container {
             background: rgba(139, 0, 0, 0.3);
-            border: 2px solid var(--border-gold);
+            border: 2px solid var(--border-accent);
             border-radius: 15px;
             padding: 40px;
             max-width: 450px;
@@ -86,7 +86,7 @@
 
         .auth-tab.active {
             background: var(--primary-light);
-            border-color: var(--border-gold);
+            border-color: var(--border-accent);
             box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
         }
 
@@ -175,75 +175,267 @@
             display: none;
         }
 
-        /* Header */
+        /* Header - Modern Redesign */
         .app-header {
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: space-between;
+            padding: 18px 30px;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.6);
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+            gap: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .app-header h1 {
             font-family: 'Cinzel', serif;
             color: var(--accent-pink);
-            font-size: 1.8em;
+            font-size: 1.6em;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        /* Presence Section in Header */
+        .header-presence-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            position: relative;
+        }
+
+        .presence-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .presence-badge:hover {
+            background: rgba(0, 0, 0, 0.6);
+            border-color: var(--accent-pink);
+            box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2);
+        }
+
+        .presence-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 8px #00ff00;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.1); }
+        }
+
+        .presence-count {
+            font-weight: 600;
+            color: var(--accent-pink);
+        }
+
+        /* Presence Dropdown */
+        .presence-dropdown {
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.98), rgba(30, 15, 15, 0.98));
+            border: 2px solid var(--accent-pink);
+            border-radius: 12px;
+            padding: 15px;
+            min-width: 280px;
+            max-width: 320px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .presence-dropdown.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .presence-dropdown-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--accent-pink);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 105, 180, 0.2);
+        }
+
+        .presence-user-item {
+            padding: 10px;
+            margin: 6px 0;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            border-left: 3px solid;
+            transition: all 0.2s;
+        }
+
+        .presence-user-item:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .presence-user-item.editing {
+            border-left-color: #ff6b9d;
+        }
+
+        .presence-user-item.viewing {
+            border-left-color: #d4768f;
+        }
+
+        .presence-user-name {
+            color: #ffb6c1;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .presence-user-name.you {
+            font-weight: 700;
+        }
+
+        .presence-user-mode {
+            font-size: 11px;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .presence-user-mode.editing {
+            color: #ff6b9d;
+        }
+
+        .presence-user-mode.viewing {
+            color: #d4768f;
+        }
+
+        .multi-editor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #dc143c, #ff1744);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            animation: gentlePulse 2s infinite;
+        }
+
+        @keyframes gentlePulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(220, 20, 60, 0.4); }
+            50% { box-shadow: 0 0 12px rgba(220, 20, 60, 0.6); }
         }
 
         .header-controls {
             display: flex;
             gap: 10px;
             align-items: center;
-            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
-        .presence-indicator {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid var(--accent-pink);
-        }
-
-        .presence-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #00ff00;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .header-controls .btn {
+            white-space: nowrap;
         }
 
         .btn {
-            padding: 10px 20px;
+            padding: 10px 18px;
             background: var(--primary-light);
-            border: 1px solid var(--border-gold);
-            border-radius: 8px;
+            border: 1px solid var(--border-accent);
+            border-radius: 10px;
             color: white;
             font-family: 'Cinzel', serif;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
         .btn:hover {
             background: var(--accent-pink);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+            border-color: var(--accent-pink);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(255, 105, 180, 0.3);
         }
 
         .btn-secondary {
-            background: rgba(255, 105, 180, 0.2);
-            border-color: var(--accent-pink);
+            background: rgba(255, 105, 180, 0.15);
+            border-color: rgba(255, 105, 180, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 105, 180, 0.3);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn-icon {
+            padding: 10px 14px;
         }
 
         /* Contract List */
@@ -335,29 +527,46 @@
         }
 
         .editor-header {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto;
             align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 15px;
+            margin-bottom: 25px;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 105, 180, 0.1);
         }
 
         .editor-title {
-            flex: 1;
+            min-width: 0;
         }
 
         .editor-title > input {
             width: 100%;
-            max-width: 500px;
-            padding: 12px;
+            max-width: 600px;
+            padding: 14px 18px;
             background: rgba(0, 0, 0, 0.4);
             border: 2px solid var(--primary-light);
-            border-radius: 8px;
+            border-radius: 10px;
             color: var(--accent-pink);
             font-family: 'Cinzel', serif;
-            font-size: 1.5em;
+            font-size: 1.4em;
             font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .editor-title > input:focus {
+            outline: none;
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 0 3px rgba(255, 105, 180, 0.1);
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         /* Contract Content Area */
@@ -565,6 +774,8 @@
         .section-actions {
             display: flex;
             gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .section-content {
@@ -700,34 +911,50 @@
             background: rgba(220, 20, 60, 0.3);
             border: 1px solid var(--primary-light);
             color: var(--accent-light-pink);
-            padding: 8px 12px;
-            border-radius: 6px;
+            padding: 8px 14px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
             font-size: 12px;
+            font-family: 'Cinzel', serif;
+            white-space: nowrap;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .remove-btn:hover {
             background: var(--primary-light);
-            transform: scale(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
         }
 
         .add-item-btn {
-            margin-top: 15px;
-            padding: 10px 20px;
-            background: rgba(255, 105, 180, 0.2);
-            border: 1px dashed var(--accent-pink);
-            border-radius: 8px;
+            margin-top: 12px;
+            padding: 12px 18px;
+            background: rgba(255, 105, 180, 0.15);
+            border: 2px dashed var(--accent-pink);
+            border-radius: 10px;
             color: var(--accent-pink);
             font-family: 'Cinzel', serif;
             cursor: pointer;
             transition: all 0.3s;
             width: 100%;
+            font-size: 13px;
+            font-weight: 500;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .add-item-btn:hover {
             background: rgba(255, 105, 180, 0.3);
             border-style: solid;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.3);
         }
 
         /* History Panel */
@@ -738,7 +965,7 @@
             width: 400px;
             height: 100vh;
             background: linear-gradient(135deg, var(--primary-dark) 0%, #000 100%);
-            border-left: 2px solid var(--border-gold);
+            border-left: 2px solid var(--border-accent);
             box-shadow: -5px 0 30px rgba(0, 0, 0, 0.7);
             transition: right 0.3s;
             z-index: 1000;
@@ -854,7 +1081,7 @@
 
         .dialog {
             background: linear-gradient(135deg, var(--primary-dark) 0%, #000 100%);
-            border: 2px solid var(--border-gold);
+            border: 2px solid var(--border-accent);
             border-radius: 15px;
             padding: 30px;
             max-width: 500px;
@@ -879,20 +1106,194 @@
             flex: 1;
         }
 
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
+        /* Responsive Design - Mobile First Approach */
+
+        /* Small Phones */
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 20px 15px;
+                border-radius: 10px;
+                width: 95%;
+            }
+
+            .auth-container h1 {
+                font-size: 1.4em;
+            }
+
+            .btn {
+                padding: 11px 14px;
+                font-size: 13px;
+                min-height: 44px;
+                white-space: nowrap;
+            }
+
+            /* Fixed Mobile Header - No Grid Overlap */
             .app-header {
+                display: flex;
                 flex-direction: column;
-                align-items: flex-start;
+                padding: 12px;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .app-header h1 {
+                font-size: 1.2em;
+                text-align: center;
+                margin: 0;
+                padding: 5px 0;
+            }
+
+            .header-presence-section {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                gap: 8px;
+                padding: 0;
+            }
+
+            .presence-badge {
+                font-size: 11px;
+                padding: 6px 12px;
+                white-space: nowrap;
+            }
+
+            .multi-editor-badge {
+                font-size: 10px;
+                padding: 4px 8px;
+                white-space: nowrap;
+            }
+
+            .presence-dropdown {
+                left: 5px;
+                right: 5px;
+                transform: none;
+                max-width: none;
+                width: auto;
             }
 
             .header-controls {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 width: 100%;
-                justify-content: space-between;
+                gap: 6px;
+                margin: 0;
+            }
+
+            .header-controls .btn {
+                padding: 10px 8px;
+                font-size: 11px;
+                min-height: 44px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #user-menu-btn {
+                grid-column: 1 / 2;
+            }
+
+            #settings-btn {
+                grid-column: 2 / 3;
+            }
+
+            #logout-btn {
+                grid-column: 1 / -1;
+            }
+
+            #user-email {
+                max-width: 70px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: inline-block;
+            }
+
+            .contract-list-screen {
+                margin: 15px 0;
+                padding: 12px;
+            }
+
+            .contract-list-header {
+                flex-direction: column;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .contract-list-header h2 {
+                font-size: 1.4em;
+                text-align: center;
+                margin: 0;
+            }
+
+            .contract-list-header .btn {
+                width: 100%;
+                max-width: none;
             }
 
             .contracts-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 0;
+            }
+
+            .contract-card {
+                padding: 15px;
+                margin: 0;
+            }
+
+            .contract-editor {
+                margin: 0;
+                padding: 0;
+            }
+
+            .editor-header {
+                display: flex;
+                flex-direction: column;
+                padding: 12px;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+
+            .editor-title {
+                width: 100%;
+            }
+
+            .editor-title input {
+                width: 100%;
+                max-width: 100%;
+                font-size: 1.1em;
+                padding: 12px;
+            }
+
+            .editor-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                width: 100%;
+                gap: 6px;
+            }
+
+            .editor-actions .btn {
+                padding: 10px 8px;
+                font-size: 11px;
+                min-height: 44px;
+                white-space: nowrap;
+            }
+
+            .editor-actions .sync-status {
+                grid-column: 1 / -1;
+                justify-self: center;
+                margin-bottom: 5px;
+            }
+
+            #back-to-list-btn {
+                grid-column: 1 / -1;
+            }
+
+            .contract-content-area {
+                padding: 20px 12px;
+                border-width: 2px;
+                margin: 0 10px;
             }
 
             .history-panel {
@@ -900,13 +1301,550 @@
                 right: -100%;
             }
 
-            .editor-header {
+            .history-panel .btn {
+                padding: 10px 14px;
+                font-size: 13px;
+            }
+
+            .section {
+                padding: 20px 12px;
+            }
+
+            .section h2 {
+                font-size: 1.4em;
+                margin-bottom: 12px;
+            }
+
+            .section-actions {
                 flex-direction: column;
-                align-items: flex-start;
+                gap: 8px;
+                margin-top: 15px;
+            }
+
+            .section-actions .btn {
+                width: 100%;
+                padding: 11px 14px;
+                font-size: 12px;
+            }
+
+            .field-group {
+                padding-left: 0;
+                gap: 10px;
+            }
+
+            .field-group label {
+                font-size: 14px;
+            }
+
+            .field-group input,
+            .field-group textarea,
+            .field-group select {
+                font-size: 15px;
+                padding: 12px;
+            }
+
+            .list-item {
+                flex-direction: column;
+                gap: 10px;
+                padding: 12px;
+            }
+
+            .list-item input {
+                width: 100%;
+            }
+
+            .remove-btn {
+                width: 100%;
+                padding: 10px 12px;
+                font-size: 11px;
+                margin-top: 8px;
+            }
+
+            .add-item-btn {
+                margin-top: 10px;
+                padding: 11px 14px;
+                font-size: 12px;
+                min-height: 44px;
+            }
+
+            .drag-handle {
+                font-size: 18px;
+                margin-right: 0;
+                margin-bottom: 8px;
+            }
+
+            .form-group label {
+                font-size: 14px;
+            }
+
+            .form-group input,
+            .form-group textarea {
+                font-size: 15px;
+                padding: 12px;
+            }
+
+            .dialog {
+                padding: 20px;
+                max-width: 95%;
+            }
+
+            .dialog h3 {
+                font-size: 1.3em;
+            }
+
+            /* Preview Mode - Mobile */
+            .preview-header {
+                padding: 12px;
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+
+            .preview-header h3 {
+                text-align: center;
+                font-size: 1.1em;
+                margin: 0;
+            }
+
+            .preview-actions {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+                width: 100%;
+            }
+
+            .preview-actions .btn {
+                padding: 10px 8px;
+                font-size: 11px;
+            }
+
+            #close-preview-btn {
+                grid-column: 1 / -1;
+            }
+
+            .preview-container {
+                padding: 20px 12px;
+                margin: 10px;
+                border-width: 2px;
+            }
+
+            .preview-content {
+                margin-top: 0;
+            }
+
+            .preview-container h1 {
+                font-size: 1.6em;
+            }
+
+            .preview-container h2 {
+                font-size: 1.2em;
+            }
+
+            .preview-bow {
+                font-size: 35px;
+            }
+        }
+
+        /* Phones and Large Phones */
+        @media (min-width: 481px) and (max-width: 767px) {
+            .auth-container {
+                padding: 30px;
+            }
+
+            .btn {
+                min-height: 44px;
+            }
+
+            .app-header {
+                display: flex;
+                flex-direction: column;
+                padding: 15px 18px;
+                gap: 12px;
+            }
+
+            .app-header h1 {
+                font-size: 1.4em;
+                text-align: center;
+                margin: 0;
+            }
+
+            .header-presence-section {
+                flex-direction: row;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .presence-dropdown {
+                left: 15px;
+                right: 15px;
+                transform: none;
+                max-width: none;
+            }
+
+            .header-controls {
+                display: flex;
+                width: 100%;
+                justify-content: center;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .header-controls .btn {
+                flex: 1 1 auto;
+                min-width: 110px;
+                max-width: 200px;
+            }
+
+            .contract-list-screen {
+                margin: 20px 0;
+                padding: 18px;
+            }
+
+            .contract-list-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .contract-list-header .btn {
+                width: 100%;
+                max-width: 350px;
+                margin: 0 auto;
+            }
+
+            .contracts-grid {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+
+            .contract-editor {
+                margin: 0;
+                padding: 15px;
+            }
+
+            .editor-header {
+                display: flex;
+                flex-direction: column;
+                padding: 16px;
+                gap: 12px;
             }
 
             .editor-title input {
                 max-width: 100%;
+                width: 100%;
+            }
+
+            .editor-actions {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                width: 100%;
+                gap: 8px;
+            }
+
+            .editor-actions .btn {
+                padding: 11px 12px;
+                font-size: 12px;
+            }
+
+            .editor-actions .sync-status {
+                grid-column: 1 / -1;
+                justify-self: center;
+            }
+
+            #back-to-list-btn {
+                grid-column: 1 / -1;
+            }
+
+            .contract-content-area {
+                padding: 25px 15px;
+                margin: 0 10px;
+            }
+
+            .section {
+                padding: 18px 12px;
+            }
+
+            .section h2 {
+                font-size: 1.5em;
+            }
+
+            .section-actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .section-actions .btn {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 120px;
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+
+            .field-group {
+                padding-left: 25px;
+            }
+
+            .list-item {
+                flex-wrap: wrap;
+                padding: 12px;
+            }
+
+            .list-item input {
+                flex: 1;
+                min-width: 200px;
+            }
+
+            .remove-btn {
+                padding: 9px 12px;
+                font-size: 11px;
+            }
+
+            .add-item-btn {
+                padding: 11px 16px;
+                font-size: 12px;
+            }
+
+            .history-panel {
+                width: 100%;
+                right: -100%;
+            }
+
+            /* Preview Mode - Phones */
+            .preview-header {
+                padding: 15px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .preview-header h3 {
+                text-align: center;
+                font-size: 1.2em;
+            }
+
+            .preview-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                justify-content: center;
+            }
+
+            .preview-actions .btn {
+                flex: 1 1 calc(50% - 4px);
+                min-width: 120px;
+            }
+
+            .preview-container {
+                padding: 30px 20px;
+                margin: 15px;
+            }
+
+            .preview-content {
+                margin-top: 0;
+            }
+        }
+
+        /* Tablets */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .app-header {
+                display: grid;
+                grid-template-columns: 1fr auto;
+                gap: 15px;
+                padding: 16px 20px;
+            }
+
+            .app-header h1 {
+                font-size: 1.5em;
+                grid-column: 1 / -1;
+                text-align: center;
+            }
+
+            .header-presence-section {
+                grid-column: 1 / -1;
+                justify-content: center;
+            }
+
+            .header-controls {
+                grid-column: 1 / -1;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .contract-list-screen {
+                padding: 25px;
+            }
+
+            .contracts-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .contract-card {
+                padding: 20px;
+            }
+
+            .contract-editor {
+                padding: 25px;
+            }
+
+            .editor-header {
+                padding: 18px;
+                gap: 15px;
+            }
+
+            .editor-title input {
+                font-size: 1.3em;
+            }
+
+            .editor-actions {
+                gap: 10px;
+            }
+
+            .contract-content-area {
+                padding: 50px 40px;
+            }
+
+            .history-panel {
+                width: 350px;
+                right: -350px;
+            }
+
+            .section {
+                padding: 30px 25px;
+            }
+
+            .section h2 {
+                font-size: 1.8em;
+            }
+
+            .section-actions {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .section-actions .btn {
+                flex: 1 1 auto;
+                min-width: 140px;
+            }
+
+            .field-group {
+                padding-left: 30px;
+            }
+
+            .list-item {
+                flex-wrap: nowrap;
+            }
+
+            .remove-btn {
+                padding: 9px 14px;
+                font-size: 12px;
+            }
+
+            .add-item-btn {
+                padding: 12px 18px;
+                font-size: 13px;
+            }
+
+            /* Preview Mode - Tablets */
+            .preview-header {
+                padding: 16px 20px;
+            }
+
+            .preview-container {
+                padding: 50px 40px;
+                margin: 20px;
+            }
+
+            .preview-container h1 {
+                font-size: 2.5em;
+            }
+
+            .preview-content {
+                margin-top: 0;
+            }
+        }
+
+        /* Touch Device Improvements - All Mobile/Tablet */
+        @media (max-width: 1023px) {
+            /* Larger touch targets */
+            button,
+            .btn,
+            input[type="button"],
+            input[type="submit"] {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            /* Add/Remove button touch improvements */
+            .add-item-btn {
+                min-height: 44px;
+                font-size: 13px;
+            }
+
+            .remove-btn {
+                min-height: 40px;
+                min-width: 40px;
+                touch-action: manipulation;
+            }
+
+            /* Section actions touch friendly */
+            .section-actions {
+                margin-top: 15px;
+            }
+
+            .section-actions .btn {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            /* Better spacing for form elements */
+            .form-group {
+                margin-bottom: 18px;
+            }
+
+            .field-group {
+                margin-bottom: 15px;
+            }
+
+            /* List items touch friendly */
+            .list-item {
+                padding: 14px;
+                margin-bottom: 12px;
+            }
+
+            .list-item input {
+                min-height: 44px;
+                font-size: 16px;
+            }
+
+            /* Drag handle touch friendly */
+            .drag-handle {
+                touch-action: none;
+                padding: 8px;
+                margin: -8px 8px -8px -8px;
+            }
+
+            /* Improved readability */
+            body {
+                font-size: 16px;
+                line-height: 1.7;
+            }
+
+            /* Better modal behavior */
+            .dialog {
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+
+            /* History panel improvements */
+            .history-panel {
+                box-shadow: -10px 0 40px rgba(0, 0, 0, 0.9);
+            }
+
+            /* Presence indicator adjustments */
+            .presence-list {
+                flex-wrap: wrap;
+                gap: 8px;
             }
         }
 
@@ -1019,24 +1957,45 @@
             top: 0;
             left: 0;
             right: 0;
-            background: var(--primary-dark);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+            padding: 15px 25px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
             align-items: center;
+            gap: 20px;
             z-index: 3001;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.6);
         }
 
         .preview-header h3 {
             color: var(--accent-pink);
             font-family: 'Cinzel', serif;
             margin: 0;
+            font-size: 1.3em;
+        }
+
+        .preview-presence-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .preview-presence-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            font-size: 12px;
         }
 
         .preview-actions {
             display: flex;
             gap: 10px;
+            justify-content: flex-end;
         }
 
         .preview-content {
@@ -1635,15 +2594,36 @@
         <!-- Header -->
         <header class="app-header">
             <h1>⛓️ D/s Dynamic Contract 🎀</h1>
-            <div class="header-controls">
-                <div class="presence-indicator" id="presence-indicator" style="display: none;">
+
+            <!-- Presence Section (Centered) -->
+            <div class="header-presence-section" id="header-presence-section" style="display: none;">
+                <div class="presence-badge" id="presence-badge">
                     <span class="presence-dot"></span>
-                    <span id="presence-text">You are online</span>
+                    <span id="presence-count" class="presence-count">1 online</span>
                 </div>
+                <div class="multi-editor-badge" id="multi-editor-badge" style="display: none;">
+                    <span>⚠️</span>
+                    <span id="multi-editor-text">Multiple editors</span>
+                </div>
+
+                <!-- Presence Dropdown -->
+                <div class="presence-dropdown" id="presence-dropdown">
+                    <div class="presence-dropdown-header">
+                        <span>👥</span>
+                        <span id="presence-dropdown-title">People Online</span>
+                    </div>
+                    <div id="presence-user-list">
+                        <!-- Users will be listed here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Controls (Right) -->
+            <div class="header-controls">
                 <button class="btn btn-secondary" id="user-menu-btn">
                     <span id="user-email"></span>
                 </button>
-                <button class="btn btn-secondary" id="settings-btn">⚙️ Settings</button>
+                <button class="btn btn-secondary btn-icon" id="settings-btn" title="Settings">⚙️</button>
                 <button class="btn" id="logout-btn">Logout</button>
             </div>
         </header>
@@ -1829,12 +2809,17 @@
     <div class="preview-overlay" id="preview-overlay">
         <div class="preview-header">
             <h3>📄 Contract Preview</h3>
-            <div class="preview-actions">
-                <!-- Presence indicator for viewers -->
-                <div class="presence-indicator" id="preview-presence-indicator" style="margin-right: 15px;">
+
+            <!-- Presence Section (Centered) -->
+            <div class="preview-presence-section" id="preview-presence-section" style="display: none;">
+                <div class="preview-presence-badge">
                     <span class="presence-dot"></span>
-                    <span id="preview-presence-text">You are online</span>
+                    <span id="preview-presence-count">1 online</span>
                 </div>
+            </div>
+
+            <!-- Preview Actions (Right) -->
+            <div class="preview-actions">
                 <button class="btn btn-secondary" onclick="window.print()">🖨️ Print</button>
                 <button class="btn" id="close-preview-btn">✕ Close</button>
             </div>
@@ -1895,6 +2880,8 @@
         let historyChannel = null;
         let saveTimeout = null;
         let isSyncing = false;
+        let isApplyingRemoteUpdate = false; // Flag to prevent save during sync updates
+        let lastSaveTimestamp = 0;
         let pollingInterval = null;
         let usePolling = false;
 
@@ -2172,6 +3159,33 @@
             }
         });
 
+        // ============================================
+        // PRESENCE DROPDOWN TOGGLE
+        // ============================================
+
+        // Toggle presence dropdown
+        const presenceBadge = document.getElementById('presence-badge');
+        const presenceDropdown = document.getElementById('presence-dropdown');
+
+        if (presenceBadge && presenceDropdown) {
+            presenceBadge.addEventListener('click', (e) => {
+                e.stopPropagation();
+                presenceDropdown.classList.toggle('show');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!presenceDropdown.contains(e.target) && !presenceBadge.contains(e.target)) {
+                    presenceDropdown.classList.remove('show');
+                }
+            });
+
+            // Prevent dropdown from closing when clicking inside it
+            presenceDropdown.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
         // Helper functions for auth UI
         function showAuthLoading(show) {
             const btns = document.querySelectorAll('.auth-button');
@@ -2284,10 +3298,10 @@
             document.getElementById('contract-list').style.display = 'block';
             document.getElementById('contract-editor').style.display = 'none';
 
-            // Hide presence indicator when not viewing a contract
-            const presenceIndicator = document.getElementById('presence-indicator');
-            if (presenceIndicator) {
-                presenceIndicator.style.display = 'none';
+            // Hide presence section when not viewing a contract
+            const presenceSection = document.getElementById('header-presence-section');
+            if (presenceSection) {
+                presenceSection.style.display = 'none';
             }
 
             // Clean up presence channel
@@ -2302,11 +3316,11 @@
                 historyChannel = null;
             }
 
-            // Remove presence UI elements
-            const warningEl = document.getElementById('multi-editor-warning');
-            const listEl = document.getElementById('presence-detail-list');
-            if (warningEl) warningEl.remove();
-            if (listEl) listEl.remove();
+            // Clean up any old presence UI elements that might exist
+            const oldWarning = document.getElementById('multi-editor-warning');
+            const oldList = document.getElementById('presence-detail-list');
+            if (oldWarning) oldWarning.remove();
+            if (oldList) oldList.remove();
 
             // Clean up sync connections
             if (realtimeChannel) {
@@ -2325,10 +3339,10 @@
             document.getElementById('contract-list').style.display = 'none';
             document.getElementById('contract-editor').style.display = 'block';
 
-            // Show presence indicator in header
-            const presenceIndicator = document.getElementById('presence-indicator');
-            if (presenceIndicator) {
-                presenceIndicator.style.display = 'flex';
+            // Show presence section in header
+            const presenceSection = document.getElementById('header-presence-section');
+            if (presenceSection) {
+                presenceSection.style.display = 'flex';
             }
         }
 
@@ -2681,7 +3695,15 @@
         });
 
         // Setup input listeners for auto-save
+        let sectionListenersSetup = false; // Track if listeners are already set up
+
         function setupSectionListeners() {
+            // Only set up listeners once to avoid duplicates
+            if (sectionListenersSetup) {
+                console.log('⏭️ Section listeners already set up, skipping');
+                return;
+            }
+
             const editor = document.getElementById('contract-sections');
 
             editor.addEventListener('input', (e) => {
@@ -2700,6 +3722,9 @@
             setupFieldDragDrop();
             // Setup drag-and-drop for list items
             setupListItemDragDrop();
+
+            sectionListenersSetup = true;
+            console.log('✅ Section listeners set up');
         }
 
         // Drag and drop for fields
@@ -2853,13 +3878,19 @@
 
         // Debounced save function
         function debouncedSave() {
+            // Don't save if we're currently applying a remote update
+            if (isApplyingRemoteUpdate) {
+                console.log('⏭️ Skipping save - applying remote update');
+                return;
+            }
+
             clearTimeout(saveTimeout);
             updateSyncStatus('syncing');
 
             saveTimeout = setTimeout(() => {
                 collectFormData();
                 saveContract();
-            }, 500);
+            }, 600); // 600ms gives users time to finish fast typing before saving
         }
 
         // Collect form data from DOM
@@ -2917,8 +3948,17 @@
 
         // Save contract to database
         async function saveContract() {
-            if (isSyncing) return;
+            if (isSyncing) {
+                console.log('⏭️ Save already in progress, skipping...');
+                return;
+            }
             isSyncing = true;
+            lastSaveTimestamp = Date.now();
+
+            console.log('💾 Starting save to database...', {
+                contractId: currentContract.id,
+                timestamp: new Date(lastSaveTimestamp).toLocaleTimeString()
+            });
 
             // Collect signature data
             const ownerSig = document.getElementById('owner-signature')?.value || '';
@@ -2927,52 +3967,93 @@
             const subDate = document.getElementById('submissive-signature-date')?.value || null;
 
             // Fetch the current state from database for change detection (before we update it)
-            const { data: currentDbState } = await supabaseClient
+            // Use * to fetch all columns, avoiding issues with missing columns
+            const { data: currentDbState, error: fetchError } = await supabaseClient
                 .from('contracts')
-                .select('title, data, owner_signature, submissive_signature, dominant_name, submissive_name')
+                .select('*')
                 .eq('id', currentContract.id)
                 .single();
+
+            if (fetchError) {
+                console.warn('⚠️ Could not fetch current state for change tracking:', fetchError);
+            }
 
             // Build previous contract state for comparison
             const previousContract = currentDbState || null;
 
-            // Build new contract state for comparison
+            // Build new contract state for comparison (only include what we're comparing)
             const newContract = {
                 title: currentContract.title,
                 data: currentContract.data,
                 owner_signature: ownerSig,
-                submissive_signature: subSig,
-                dominant_name: currentContract.dominant_name,
-                submissive_name: currentContract.submissive_name
+                submissive_signature: subSig
             };
+
+            // Include name fields only if they exist in the database schema
+            if (currentDbState && 'dominant_name' in currentDbState) {
+                newContract.dominant_name = currentContract.dominant_name;
+                newContract.submissive_name = currentContract.submissive_name;
+            }
 
             // Generate change description
             const changeDescription = generateChangeDescription(previousContract, newContract);
 
-            const { error } = await supabaseClient
+            // Build update object - only include fields that exist in database
+            const updateData = {
+                title: currentContract.title,
+                data: currentContract.data,
+                owner_signature: ownerSig,
+                owner_signature_date: ownerDate,
+                submissive_signature: subSig,
+                submissive_signature_date: subDate
+                // Don't set updated_at manually - let the DB trigger handle it
+            };
+
+            // Include name fields only if they exist in the database schema
+            if (currentDbState && 'dominant_name' in currentDbState) {
+                updateData.dominant_name = currentContract.dominant_name;
+                updateData.submissive_name = currentContract.submissive_name;
+            }
+
+            const { data: updatedData, error } = await supabaseClient
                 .from('contracts')
-                .update({
-                    title: currentContract.title,
-                    data: currentContract.data,
-                    dominant_name: currentContract.dominant_name,
-                    submissive_name: currentContract.submissive_name,
-                    owner_signature: ownerSig,
-                    owner_signature_date: ownerDate,
-                    submissive_signature: subSig,
-                    submissive_signature_date: subDate,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('id', currentContract.id);
+                .update(updateData)
+                .eq('id', currentContract.id)
+                .select()
+                .single();
 
             if (error) {
-                console.error('Error saving contract:', error);
+                console.error('❌ Error saving contract:', error);
                 updateSyncStatus('error');
             } else {
-                // Update local copy with signatures
+                console.log('✅ Save completed successfully - UPDATE sent to database');
+
+                // Update local copy with signatures and updated_at from the DB response
                 currentContract.owner_signature = ownerSig;
                 currentContract.owner_signature_date = ownerDate;
                 currentContract.submissive_signature = subSig;
                 currentContract.submissive_signature_date = subDate;
+                const newUpdatedAt = updatedData.updated_at;
+                currentContract.updated_at = newUpdatedAt;
+
+                // Wait 150ms before broadcasting to ensure DB commit completes
+                // This prevents race conditions where broadcast arrives before DB is ready
+                await new Promise(resolve => setTimeout(resolve, 150));
+
+                // Broadcast update to other clients
+                if (realtimeChannel) {
+                    console.log('📡 Broadcasting update to other clients...');
+                    await realtimeChannel.send({
+                        type: 'broadcast',
+                        event: 'contract-updated',
+                        payload: {
+                            userId: currentUser?.id,
+                            timestamp: Date.now(),
+                            updatedAt: newUpdatedAt // Send expected updated_at for validation
+                        }
+                    });
+                    console.log('📡 Broadcast sent successfully');
+                }
 
                 updateSyncStatus('synced');
                 // Track change in history with meaningful description
@@ -2980,6 +4061,7 @@
             }
 
             isSyncing = false;
+            console.log('💾 Save process complete, isSyncing reset to false');
         }
 
         // ============================================
@@ -2987,36 +4069,44 @@
         // ============================================
 
         function setupRealtimeSync() {
+            console.log('🔧 Setting up realtime sync for contract:', currentContract.id);
+
             // Clean up existing connections
             if (realtimeChannel) {
+                console.log('🧹 Cleaning up existing realtime channel');
                 supabaseClient.removeChannel(realtimeChannel);
             }
             if (pollingInterval) {
+                console.log('🧹 Cleaning up existing polling interval');
                 clearInterval(pollingInterval);
                 pollingInterval = null;
             }
 
-            // Try Realtime first (WebSocket-based)
+            // Use Broadcast channel (doesn't require database replication to be enabled)
+            // This works even when Realtime replication is restricted/beta
             realtimeChannel = supabaseClient
-                .channel(`contract:${currentContract.id}`)
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'contracts',
-                        filter: `id=eq.${currentContract.id}`
-                    },
-                    handleRealtimeUpdate
-                )
+                .channel(`contract-sync:${currentContract.id}`)
+                .on('broadcast', { event: 'contract-updated' }, async (payload) => {
+                    console.log('📡 Broadcast received:', payload);
+                    console.log('   Channel state:', realtimeChannel?.state);
+                    console.log('   Channel topic:', realtimeChannel?.topic);
+                    await handleBroadcastUpdate(payload);
+                })
                 .subscribe((status, err) => {
+                    console.log('📡 Broadcast channel status:', status);
+                    if (err) console.error('📡 Broadcast channel error:', err);
+
                     if (status === 'SUBSCRIBED') {
-                        console.log('✅ Realtime sync enabled (WebSocket)');
+                        console.log('✅ Broadcast sync enabled - listening for updates to contract:', currentContract.id);
+                        console.log('   Channel ID:', realtimeChannel?.topic);
+                        console.log('   Channel state:', realtimeChannel?.state);
                         usePolling = false;
                     } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                        console.log('⚠️ Realtime not available, using polling fallback');
+                        console.log('⚠️ Broadcast not available, using polling fallback');
                         usePolling = true;
                         setupPollingSync();
+                    } else {
+                        console.log('📡 Channel status changed to:', status);
                     }
                 });
 
@@ -3035,7 +4125,8 @@
 
             // Poll every 3 seconds for changes
             pollingInterval = setInterval(async () => {
-                if (isSyncing) return; // Don't poll while we're saving
+                // Don't skip polling - we need to catch updates even during saves
+                // The timestamp-based echo detection will prevent infinite loops
 
                 try {
                     const { data, error } = await supabaseClient
@@ -3049,12 +4140,33 @@
                         return;
                     }
 
-                    // Check if data changed
-                    if (data && JSON.stringify(data.data) !== JSON.stringify(currentContract.data)) {
+                    // Check if data changed (any field)
+                    const dataChanged = data && JSON.stringify(data.data) !== JSON.stringify(currentContract.data);
+                    const titleChanged = data && data.title !== currentContract.title;
+                    // Only check name fields if they exist in the database
+                    const dominantChanged = data && ('dominant_name' in data) &&
+                                           data.dominant_name !== currentContract.dominant_name;
+                    const submissiveChanged = data && ('submissive_name' in data) &&
+                                             data.submissive_name !== currentContract.submissive_name;
+
+                    if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                         console.log('📥 Polling detected changes');
-                        currentContract = data;
-                        renderContractEditor();
-                        updateSyncStatus('synced');
+
+                        // Set flag to prevent auto-save during update
+                        isApplyingRemoteUpdate = true;
+
+                        try {
+                            // Update contract data with selective updates
+                            const oldContract = JSON.parse(JSON.stringify(currentContract));
+                            currentContract = data;
+                            updateFieldsSelectively(oldContract, data);
+                            updateSyncStatus('synced');
+
+                            // Show notification
+                            showSyncNotification('Contract updated by another user');
+                        } finally {
+                            isApplyingRemoteUpdate = false;
+                        }
                     }
                 } catch (err) {
                     console.error('Polling failed:', err);
@@ -3064,17 +4176,540 @@
             console.log('🔄 Polling sync active (checking every 3 seconds)');
         }
 
+        // Handle broadcast updates (client-to-client messaging)
+        async function handleBroadcastUpdate(payload) {
+            try {
+                console.log('🔔 Broadcast update received!', {
+                    timestamp: new Date().toLocaleTimeString(),
+                    payload: payload.payload
+                });
+
+                const { userId, timestamp: updateTimestamp, updatedAt: expectedUpdatedAt } = payload.payload || {};
+
+                // Ignore our own broadcasts
+                if (userId === currentUser?.id) {
+                    console.log('📤 Ignoring our own broadcast');
+                    return;
+                }
+
+                // Ignore if we just saved recently (within 500ms)
+                const timeSinceLastSave = Date.now() - lastSaveTimestamp;
+                if (timeSinceLastSave < 500) {
+                    console.log('📤 Ignoring broadcast - just saved', { timeSinceLastSave: timeSinceLastSave + 'ms' });
+                    return;
+                }
+
+                console.log('📥 Fetching latest contract data from database...');
+
+            // Fetch with retry logic (max 3 attempts with exponential backoff)
+            let latestData = null;
+            let attempts = 0;
+            const maxAttempts = 3;
+
+            while (attempts < maxAttempts) {
+                attempts++;
+
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('contracts')
+                        .select('*')
+                        .eq('id', currentContract.id)
+                        .single();
+
+                    if (error) {
+                        console.error(`❌ Error fetching contract (attempt ${attempts}/${maxAttempts}):`, error);
+                        if (attempts < maxAttempts) {
+                            const delay = Math.pow(2, attempts) * 100; // 200ms, 400ms, 800ms
+                            console.log(`⏳ Retrying in ${delay}ms...`);
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            continue;
+                        }
+                        return;
+                    }
+
+                    // Check if we got the expected update (by updated_at timestamp)
+                    // Allow for slight timing differences (within 1 second) due to clock skew
+                    const isExpectedUpdate = !expectedUpdatedAt ||
+                                            Math.abs(new Date(data.updated_at) - new Date(expectedUpdatedAt)) < 1000;
+
+                    if (!isExpectedUpdate && attempts < maxAttempts) {
+                        console.log(`⏳ Data seems stale (expected: ${expectedUpdatedAt}, got: ${data.updated_at}, diff: ${new Date(data.updated_at) - new Date(expectedUpdatedAt)}ms), retrying...`);
+                        const delay = Math.pow(2, attempts) * 100;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+
+                    latestData = data;
+                    break;
+
+                } catch (err) {
+                    console.error(`❌ Fetch error (attempt ${attempts}/${maxAttempts}):`, err);
+                    if (attempts < maxAttempts) {
+                        const delay = Math.pow(2, attempts) * 100;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        continue;
+                    }
+                    return;
+                }
+            }
+
+            if (!latestData) {
+                console.error('❌ Failed to fetch latest contract after all retries');
+                return;
+            }
+
+            // Check if data actually changed
+            const dataChanged = JSON.stringify(latestData.data) !== JSON.stringify(currentContract.data);
+            const titleChanged = latestData.title !== currentContract.title;
+            // Only check name fields if they exist in the database
+            const dominantChanged = ('dominant_name' in latestData) &&
+                                   latestData.dominant_name !== currentContract.dominant_name;
+            const submissiveChanged = ('submissive_name' in latestData) &&
+                                     latestData.submissive_name !== currentContract.submissive_name;
+
+            console.log('🔍 Checking for changes:', {
+                dataChanged,
+                titleChanged,
+                dominantChanged,
+                submissiveChanged,
+                attempts: attempts,
+                updatedAt: latestData.updated_at
+            });
+
+            if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
+                console.log('📥 APPLYING UPDATE from another user/device');
+
+                // Set flag to prevent auto-save during update
+                isApplyingRemoteUpdate = true;
+
+                try {
+                    // Update contract data
+                    const oldContract = JSON.parse(JSON.stringify(currentContract));
+                    currentContract = latestData;
+
+                    // Smart selective update that preserves focus
+                    updateFieldsSelectively(oldContract, latestData);
+
+                    updateSyncStatus('synced');
+
+                    // Show notification that data was updated
+                    showSyncNotification('Contract updated by another user');
+                } finally {
+                    // Always reset flag, even if error occurs
+                    isApplyingRemoteUpdate = false;
+                    console.log('✅ Remote update applied, auto-save re-enabled');
+                }
+            } else {
+                console.log('⏭️ No changes detected after', attempts, 'attempts');
+            }
+            } catch (error) {
+                console.error('❌ Error in handleBroadcastUpdate:', error);
+                console.error('   Error stack:', error.stack);
+                // Don't throw - we want the channel to stay alive for future updates
+            }
+        }
+
         function handleRealtimeUpdate(payload) {
-            if (isSyncing) return; // Don't update if we're the one saving
+            console.log('🔔 Realtime update received!', {
+                event: payload.eventType,
+                timestamp: new Date().toLocaleTimeString()
+            });
 
             const newData = payload.new;
 
-            // Check if data actually changed
-            if (JSON.stringify(newData.data) !== JSON.stringify(currentContract.data)) {
-                currentContract = newData;
-                renderContractEditor();
-                updateSyncStatus('synced');
+            // Only ignore if this is our own update echoing back within 2 seconds
+            const timeSinceLastSave = Date.now() - lastSaveTimestamp;
+            const isOurOwnUpdate = isSyncing && timeSinceLastSave < 2000 &&
+                                  JSON.stringify(newData.data) === JSON.stringify(currentContract.data);
+
+            if (isOurOwnUpdate) {
+                console.log('📤 Ignoring our own update echo', {
+                    timeSinceLastSave: timeSinceLastSave + 'ms',
+                    isSyncing
+                });
+                return;
             }
+
+            // Check if data actually changed
+            const dataChanged = JSON.stringify(newData.data) !== JSON.stringify(currentContract.data);
+            const titleChanged = newData.title !== currentContract.title;
+            // Only check name fields if they exist in the database
+            const dominantChanged = ('dominant_name' in newData) &&
+                                   newData.dominant_name !== currentContract.dominant_name;
+            const submissiveChanged = ('submissive_name' in newData) &&
+                                     newData.submissive_name !== currentContract.submissive_name;
+
+            console.log('🔍 Checking for changes:', {
+                dataChanged,
+                titleChanged,
+                dominantChanged,
+                submissiveChanged,
+                timeSinceLastSave: timeSinceLastSave + 'ms',
+                isSyncing
+            });
+
+            if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
+                console.log('📥 APPLYING UPDATE from another user/device');
+
+                // Set flag to prevent auto-save during update
+                isApplyingRemoteUpdate = true;
+
+                try {
+                    // Update contract data
+                    const oldContract = JSON.parse(JSON.stringify(currentContract));
+                    currentContract = newData;
+
+                    // Smart selective update that preserves focus
+                    updateFieldsSelectively(oldContract, newData);
+
+                    updateSyncStatus('synced');
+
+                    // Show notification that data was updated
+                    showSyncNotification('Contract updated by another user');
+                } finally {
+                    isApplyingRemoteUpdate = false;
+                }
+            } else {
+                console.log('⏭️ No changes detected, skipping update');
+            }
+        }
+
+        function updateFieldsSelectively(oldContract, newContract) {
+            console.log('🔧 updateFieldsSelectively called');
+
+            // Get currently focused element to preserve it
+            const focusedElement = document.activeElement;
+            const focusedField = focusedElement?.dataset?.fieldValue !== undefined ||
+                                focusedElement?.dataset?.fieldLabel !== undefined ||
+                                focusedElement?.dataset?.itemIndex !== undefined;
+
+            // If user is typing in a field, don't interrupt them
+            const preserveFocus = focusedField &&
+                                (focusedElement.tagName === 'INPUT' ||
+                                 focusedElement.tagName === 'TEXTAREA' ||
+                                 focusedElement.isContentEditable);
+
+            console.log('   Focused element:', focusedElement?.tagName, focusedElement?.id);
+            console.log('   Preserve focus:', preserveFocus);
+
+            // Update title if changed
+            const titleInput = document.getElementById('contract-title');
+            if (titleInput && newContract.title !== oldContract.title) {
+                const isFocused = document.activeElement === titleInput;
+
+                // If focused, only update if current value matches what we expect
+                if (isFocused && titleInput.value !== oldContract.title) {
+                    console.log('   ⏭️ Skipping title update - user has typed more');
+                } else {
+                    console.log('   Updating title:', oldContract.title, '→', newContract.title);
+                    const cursorStart = isFocused ? titleInput.selectionStart : null;
+                    const cursorEnd = isFocused ? titleInput.selectionEnd : null;
+
+                    titleInput.value = newContract.title || '';
+                    document.getElementById('contract-display-title').textContent = newContract.title || 'D/s Dynamic Contract';
+
+                    if (isFocused && cursorStart !== null) {
+                        titleInput.setSelectionRange(cursorStart, cursorEnd);
+                    }
+                }
+            }
+
+            // Update dominant name if changed (only if field exists in DB)
+            const dominantInput = document.getElementById('dominant-name');
+            if (dominantInput &&
+                'dominant_name' in newContract && 'dominant_name' in oldContract &&
+                newContract.dominant_name !== oldContract.dominant_name) {
+                const isFocused = document.activeElement === dominantInput;
+
+                // If focused, only update if current value matches what we expect
+                if (isFocused && dominantInput.value !== oldContract.dominant_name) {
+                    console.log('   ⏭️ Skipping dominant name update - user has typed more');
+                } else {
+                    const cursorStart = isFocused ? dominantInput.selectionStart : null;
+                    const cursorEnd = isFocused ? dominantInput.selectionEnd : null;
+
+                    dominantInput.value = newContract.dominant_name || '';
+
+                    if (isFocused && cursorStart !== null) {
+                        dominantInput.setSelectionRange(cursorStart, cursorEnd);
+                    }
+                }
+            }
+
+            // Update submissive name if changed (only if field exists in DB)
+            const submissiveInput = document.getElementById('submissive-name');
+            if (submissiveInput &&
+                'submissive_name' in newContract && 'submissive_name' in oldContract &&
+                newContract.submissive_name !== oldContract.submissive_name) {
+                const isFocused = document.activeElement === submissiveInput;
+
+                // If focused, only update if current value matches what we expect
+                if (isFocused && submissiveInput.value !== oldContract.submissive_name) {
+                    console.log('   ⏭️ Skipping submissive name update - user has typed more');
+                } else {
+                    const cursorStart = isFocused ? submissiveInput.selectionStart : null;
+                    const cursorEnd = isFocused ? submissiveInput.selectionEnd : null;
+
+                    submissiveInput.value = newContract.submissive_name || '';
+
+                    if (isFocused && cursorStart !== null) {
+                        submissiveInput.setSelectionRange(cursorStart, cursorEnd);
+                    }
+                }
+            }
+
+            // Check if sections structure changed (added/removed sections or fields)
+            const oldSections = oldContract.data?.sections || [];
+            const newSections = newContract.data?.sections || [];
+
+            const structureChanged = oldSections.length !== newSections.length ||
+                                   oldSections.some((s, i) =>
+                                       !newSections[i] ||
+                                       s.fields.length !== newSections[i].fields.length
+                                   );
+
+            console.log('   Structure changed:', structureChanged);
+            console.log('   Old sections:', oldSections.length, 'New sections:', newSections.length);
+
+            if (structureChanged) {
+                console.log('   ⚠️ Structure changed - doing full re-render');
+                // Full re-render if structure changed, but try to preserve focus
+                const focusPath = preserveFocus ? getFocusPath(focusedElement) : null;
+                renderContractEditor();
+                if (focusPath) {
+                    restoreFocus(focusPath);
+                }
+                return;
+            }
+
+            console.log('   📝 Selectively updating', newSections.length, 'sections');
+
+            // Selectively update field values without full re-render
+            let fieldsUpdated = 0;
+            newSections.forEach((section, sectionIndex) => {
+                const oldSection = oldSections[sectionIndex];
+                if (!oldSection) return;
+
+                // Update section title if changed
+                const sectionHeader = document.querySelector(`[data-section-index="${sectionIndex}"] h2`);
+                if (sectionHeader &&
+                    section.title !== oldSection.title &&
+                    document.activeElement !== sectionHeader) {
+                    sectionHeader.textContent = section.title;
+                }
+
+                // Update fields
+                section.fields.forEach((field, fieldIndex) => {
+                    const oldField = oldSection.fields[fieldIndex];
+                    if (!oldField) return;
+
+                    // Update field label
+                    const labelElement = document.querySelector(
+                        `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] label[data-field-label]`
+                    );
+                    if (labelElement &&
+                        field.label !== oldField.label &&
+                        document.activeElement !== labelElement) {
+                        labelElement.textContent = field.label;
+                    }
+
+                    // Update field value based on type
+                    if (field.type === 'list') {
+                        // Update list items
+                        const listItems = field.items || [];
+                        const oldListItems = oldField.items || [];
+
+                        // If list length changed, re-render the whole section
+                        if (listItems.length !== oldListItems.length) {
+                            console.log('      List length changed, re-rendering');
+                            const focusPath = preserveFocus ? getFocusPath(focusedElement) : null;
+                            renderContractEditor();
+                            if (focusPath) {
+                                restoreFocus(focusPath);
+                            }
+                            return;
+                        }
+
+                        // Update individual list items
+                        listItems.forEach((item, itemIndex) => {
+                            const itemInput = document.querySelector(
+                                `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] input[data-item-index="${itemIndex}"]`
+                            );
+                            if (item !== oldListItems[itemIndex]) {
+                                console.log(`      List item [${sectionIndex}][${fieldIndex}][${itemIndex}] changed:`, oldListItems[itemIndex], '→', item, 'Found element:', !!itemInput);
+                            }
+                            if (itemInput && item !== oldListItems[itemIndex]) {
+                                // Check if this field is focused
+                                const isFocused = document.activeElement === itemInput;
+
+                                // If focused, only update if current value matches what we expect
+                                if (isFocused) {
+                                    const currentValue = itemInput.value;
+                                    const expectedValue = oldListItems[itemIndex] || '';
+                                    if (currentValue !== expectedValue) {
+                                        console.log(`      ⏭️ Skipping focused list item [${sectionIndex}][${fieldIndex}][${itemIndex}] - user has typed more`);
+                                        return; // User has typed more, don't overwrite
+                                    }
+                                }
+
+                                // Save cursor position if this field is focused
+                                const cursorStart = isFocused ? itemInput.selectionStart : null;
+                                const cursorEnd = isFocused ? itemInput.selectionEnd : null;
+
+                                // Update the value
+                                itemInput.value = item || '';
+                                fieldsUpdated++;
+                                console.log(`      ✅ Updated list item [${sectionIndex}][${fieldIndex}][${itemIndex}]${isFocused ? ' (focused, cursor restored)' : ''}`);
+
+                                // Restore cursor position if it was focused
+                                if (isFocused && cursorStart !== null) {
+                                    itemInput.setSelectionRange(cursorStart, cursorEnd);
+                                }
+                            }
+                        });
+                    } else {
+                        // Update text or textarea field
+                        const fieldInput = document.querySelector(
+                            `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] [data-field-value]`
+                        );
+                        if (field.value !== oldField.value) {
+                            console.log(`      Field [${sectionIndex}][${fieldIndex}] changed:`, oldField.value?.substring(0, 50), '→', field.value?.substring(0, 50), 'Found element:', !!fieldInput);
+                        }
+                        if (fieldInput && field.value !== oldField.value) {
+                            // Check if this field is focused
+                            const isFocused = document.activeElement === fieldInput;
+
+                            // If focused, only update if current value matches what we expect (oldField)
+                            // This prevents overwriting if user has typed more since the save
+                            if (isFocused) {
+                                const currentValue = fieldInput.value;
+                                if (currentValue !== oldField.value) {
+                                    console.log(`      ⏭️ Skipping focused field [${sectionIndex}][${fieldIndex}] - user has typed more (expected: "${oldField.value?.substring(0, 30)}", current: "${currentValue?.substring(0, 30)}")`);
+                                    return; // User has typed more, don't overwrite
+                                }
+                            }
+
+                            // Save cursor position if this field is focused
+                            const cursorStart = isFocused ? fieldInput.selectionStart : null;
+                            const cursorEnd = isFocused ? fieldInput.selectionEnd : null;
+
+                            // Update the value
+                            if (fieldInput.tagName === 'INPUT' || fieldInput.tagName === 'TEXTAREA') {
+                                fieldInput.value = field.value || '';
+                                fieldsUpdated++;
+                                console.log(`      ✅ Updated field [${sectionIndex}][${fieldIndex}]${isFocused ? ' (focused, cursor restored)' : ''}`);
+                            }
+
+                            // Restore cursor position if it was focused
+                            if (isFocused && cursorStart !== null) {
+                                fieldInput.setSelectionRange(cursorStart, cursorEnd);
+                            }
+                        }
+                    }
+                });
+            });
+
+            console.log('   ✅ Updated', fieldsUpdated, 'fields');
+        }
+
+        function getFocusPath(element) {
+            if (!element) return null;
+
+            // Find the section and field indices
+            const section = element.closest('[data-section-index]');
+            const field = element.closest('[data-field-index]');
+            const item = element.closest('[data-item-index]');
+
+            if (!section) return null;
+
+            const path = {
+                sectionIndex: section.dataset.sectionIndex,
+                fieldIndex: field?.dataset.fieldIndex,
+                itemIndex: item?.dataset.itemIndex,
+                tagName: element.tagName,
+                selectionStart: element.selectionStart,
+                selectionEnd: element.selectionEnd,
+                isContentEditable: element.isContentEditable
+            };
+
+            return path;
+        }
+
+        function restoreFocus(path) {
+            if (!path) return;
+
+            try {
+                let selector = `[data-section-index="${path.sectionIndex}"]`;
+
+                if (path.fieldIndex !== undefined) {
+                    selector += ` [data-field-index="${path.fieldIndex}"]`;
+                }
+
+                if (path.itemIndex !== undefined) {
+                    selector += ` input[data-item-index="${path.itemIndex}"]`;
+                } else if (path.tagName === 'H2') {
+                    selector += ' h2';
+                } else if (path.tagName === 'LABEL') {
+                    selector += ' label[data-field-label]';
+                } else {
+                    selector += ' [data-field-value]';
+                }
+
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.focus();
+
+                    // Restore cursor position
+                    if (element.setSelectionRange && path.selectionStart !== undefined) {
+                        element.setSelectionRange(path.selectionStart, path.selectionEnd);
+                    }
+                }
+            } catch (err) {
+                console.log('Could not restore focus:', err);
+            }
+        }
+
+        function showSyncNotification(message) {
+            // Create or update sync notification
+            let notification = document.getElementById('sync-notification');
+
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'sync-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #dc143c, #ff1744);
+                    color: white;
+                    padding: 12px 18px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
+                    z-index: 10000;
+                    font-size: 13px;
+                    font-weight: 500;
+                    animation: slideInRight 0.3s ease-out;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                `;
+                document.body.appendChild(notification);
+            }
+
+            notification.innerHTML = `
+                <span style="font-size: 16px;">🔄</span>
+                <span>${message}</span>
+            `;
+            notification.style.display = 'flex';
+
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 3000);
         }
 
         function updateSyncStatus(status) {
@@ -3147,142 +4782,73 @@
             const viewers = users.filter(u => u.mode === 'viewing');
             const otherEditors = editors.filter(u => u.user !== currentUserEmail);
 
-            // Build presence text
-            let presenceText;
-            if (otherUsers.length === 0) {
-                presenceText = 'You are online';
-            } else {
-                const parts = [];
-                if (otherEditors.length > 0) {
-                    parts.push(`${otherEditors.length} editing`);
-                }
-                if (viewers.length > 0) {
-                    parts.push(`${viewers.length} viewing`);
-                }
-                presenceText = `${users.length} online: ${parts.join(', ')}`;
+            // Update presence count in main header
+            const presenceCount = document.getElementById('presence-count');
+            if (presenceCount) {
+                presenceCount.textContent = `${users.length} online`;
             }
 
-            // Update presence indicator (for editors)
-            const text = document.getElementById('presence-text');
-            if (text) text.textContent = presenceText;
+            // Update presence count in preview header
+            const previewPresenceCount = document.getElementById('preview-presence-count');
+            if (previewPresenceCount) {
+                previewPresenceCount.textContent = `${users.length} online`;
+            }
 
-            // Update preview presence indicator (for viewers)
-            const previewText = document.getElementById('preview-presence-text');
-            if (previewText) previewText.textContent = presenceText;
+            // Show presence section in preview if open
+            const previewOverlay = document.getElementById('preview-overlay');
+            const previewPresenceSection = document.getElementById('preview-presence-section');
+            if (previewOverlay && previewOverlay.classList.contains('open') && previewPresenceSection) {
+                previewPresenceSection.style.display = 'flex';
+            }
 
-            // Show warning if multiple editors (for both editors and viewers)
-            showMultiEditorWarning(otherEditors);
-
-            // Update detailed presence list (for both editors and viewers)
-            updatePresenceList(users);
-        }
-
-        function showMultiEditorWarning(otherEditors) {
-            let warningEl = document.getElementById('multi-editor-warning');
-
-            // Show warning to everyone (both editors and viewers) when multiple editors are active
+            // Show/hide multi-editor badge
+            const multiEditorBadge = document.getElementById('multi-editor-badge');
+            const multiEditorText = document.getElementById('multi-editor-text');
             if (otherEditors.length > 0) {
-                if (!warningEl) {
-                    warningEl = document.createElement('div');
-                    warningEl.id = 'multi-editor-warning';
-                    warningEl.style.cssText = `
-                        position: fixed;
-                        top: 70px;
-                        left: 20px;
-                        background: linear-gradient(135deg, #dc143c, #ff1744);
-                        color: white;
-                        padding: 10px 16px;
-                        border-radius: 8px;
-                        box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
-                        z-index: 9999;
-                        font-weight: 600;
-                        font-size: 13px;
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        animation: slideInLeft 0.3s ease-out;
-                        max-width: 350px;
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                    `;
-                    document.body.appendChild(warningEl);
+                if (multiEditorBadge) multiEditorBadge.style.display = 'inline-flex';
+                if (multiEditorText) {
+                    const count = otherEditors.length;
+                    multiEditorText.textContent = `${count} ${count === 1 ? 'editor' : 'editors'}`;
                 }
-
-                const editorNames = otherEditors.map(e => {
-                    if (e.isPublicUser) return 'Public User';
-                    return e.display_name || e.user.split('@')[0];
-                }).join(', ');
-
-                const isViewer = currentUser.isPublicViewer || currentUser.mode === 'viewing';
-                const message = isViewer
-                    ? `${otherEditors.length} ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}`
-                    : `${otherEditors.length} other ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}`;
-
-                warningEl.innerHTML = `
-                    <span style="font-size: 18px;">⚠️</span>
-                    <div style="flex: 1;">
-                        <div>${message}</div>
-                        <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">💾 Changes save automatically</div>
-                    </div>
-                `;
-            } else if (warningEl) {
-                warningEl.remove();
+            } else {
+                if (multiEditorBadge) multiEditorBadge.style.display = 'none';
             }
+
+            // Update presence dropdown user list
+            updatePresenceDropdownList(users);
+
+            // Clean up old overlapping elements if they exist
+            const oldWarning = document.getElementById('multi-editor-warning');
+            if (oldWarning) oldWarning.remove();
+            const oldList = document.getElementById('presence-detail-list');
+            if (oldList) oldList.remove();
         }
 
-        function updatePresenceList(users) {
-            let listEl = document.getElementById('presence-detail-list');
-
-            if (!listEl) {
-                listEl = document.createElement('div');
-                listEl.id = 'presence-detail-list';
-                listEl.style.cssText = `
-                    position: fixed;
-                    top: 145px;
-                    left: 20px;
-                    background: rgba(20, 10, 10, 0.95);
-                    border: 2px solid var(--accent-pink);
-                    border-radius: 8px;
-                    padding: 15px;
-                    max-width: 250px;
-                    z-index: 9998;
-                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-                `;
-                document.body.appendChild(listEl);
-            }
+        function updatePresenceDropdownList(users) {
+            const listEl = document.getElementById('presence-user-list');
+            if (!listEl) return;
 
             const currentUserEmail = currentUser.email;
-            const html = `
-                <div style="font-size: 14px; font-weight: 600; color: var(--accent-pink); margin-bottom: 10px;">
-                    👥 ${users.length} Online
-                </div>
-                ${users.map(u => {
-                    const isYou = u.user === currentUserEmail;
-                    const name = u.isPublicUser ? 'Public User' : (u.display_name || u.user.split('@')[0]);
-                    const modeIcon = u.mode === 'editing' ? '✏️' : '👁️';
-                    const modeText = u.mode === 'editing' ? 'Editing' : 'Viewing';
-                    const modeColor = u.mode === 'editing' ? '#ff6b9d' : '#d4768f';
 
-                    return `
-                        <div style="
-                            padding: 8px;
-                            margin: 5px 0;
-                            background: rgba(0, 0, 0, 0.3);
-                            border-radius: 4px;
-                            border-left: 3px solid ${modeColor};
-                        ">
-                            <div style="display: flex; justify-content: space-between; align-items: center;">
-                                <span style="color: #ffb6c1; font-weight: ${isYou ? '700' : '400'};">
-                                    ${name}${isYou ? ' (You)' : ''}
-                                </span>
-                                <span style="font-size: 16px;">${modeIcon}</span>
-                            </div>
-                            <div style="font-size: 11px; color: ${modeColor}; margin-top: 2px;">
-                                ${modeText}
-                            </div>
+            const html = users.map(u => {
+                const isYou = u.user === currentUserEmail;
+                const name = u.isPublicUser ? 'Public User' : (u.display_name || u.user.split('@')[0]);
+                const modeIcon = u.mode === 'editing' ? '✏️' : '👁️';
+                const modeText = u.mode === 'editing' ? 'Editing' : 'Viewing';
+                const modeClass = u.mode === 'editing' ? 'editing' : 'viewing';
+
+                return `
+                    <div class="presence-user-item ${modeClass}">
+                        <div class="presence-user-name ${isYou ? 'you' : ''}">
+                            ${name}${isYou ? ' (You)' : ''}
+                            <span>${modeIcon}</span>
                         </div>
-                    `;
-                }).join('')}
-            `;
+                        <div class="presence-user-mode ${modeClass}">
+                            ${modeText}
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
             listEl.innerHTML = html;
         }
