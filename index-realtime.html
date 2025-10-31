@@ -1583,28 +1583,40 @@
                 // Clean up realtime connections
                 if (realtimeChannel) {
                     await supabaseClient.removeChannel(realtimeChannel);
+                    realtimeChannel = null;
                 }
                 if (presenceChannel) {
                     await supabaseClient.removeChannel(presenceChannel);
+                    presenceChannel = null;
                 }
 
-                // Sign out from Supabase
-                await supabaseClient.auth.signOut();
+                // Sign out from Supabase - wait for it to complete
+                const { error } = await supabaseClient.auth.signOut();
+                if (error) {
+                    console.error('Signout error:', error);
+                }
 
                 // Clear current user state
                 currentUser = null;
                 currentContract = null;
 
+                // Clear contracts grid
+                const grid = document.getElementById('contracts-grid');
+                if (grid) grid.innerHTML = '';
+
                 // Hide app screen and show auth screen
                 document.getElementById('app-screen').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'flex';
 
-                // Reload the page to ensure clean state
-                setTimeout(() => location.reload(), 100);
+                // Reset auth form
+                document.querySelectorAll('.auth-form input').forEach(input => input.value = '');
+
+                // Don't reload - just stay on auth screen
             } catch (error) {
                 console.error('Error during logout:', error);
-                // Force reload even if there's an error
-                location.reload();
+                // Even on error, show auth screen
+                document.getElementById('app-screen').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
             }
         });
 
