@@ -3542,6 +3542,17 @@
         let isUndoRedoAction = false; // Flag to prevent undo/redo from being added to stack
         let lastCapturedState = null; // Last state we captured (for deduplication)
         const MAX_UNDO_STACK_SIZE = 50; // Maximum number of undo states to keep
+        let textEditTimeout = null; // Timeout for debounced state capture
+        let hasUncapturedEdits = false; // Flag for pending edits that haven't been captured
+
+        // Flush any pending state captures immediately
+        function flushPendingStateCapture() {
+            if (hasUncapturedEdits) {
+                clearTimeout(textEditTimeout);
+                captureStateForUndo('Text edit');
+                hasUncapturedEdits = false;
+            }
+        }
 
         // Capture current state for undo/redo
         function captureStateForUndo(description = 'Edit') {
@@ -3587,6 +3598,9 @@
 
         // Perform undo
         function performUndo() {
+            // Flush any pending state captures first
+            flushPendingStateCapture();
+
             if (undoStack.length === 0) {
                 console.log('⏮️ Nothing to undo');
                 return;
@@ -3625,6 +3639,9 @@
 
         // Perform redo
         function performRedo() {
+            // Flush any pending state captures first
+            flushPendingStateCapture();
+
             if (redoStack.length === 0) {
                 console.log('⏭️ Nothing to redo');
                 return;
@@ -4722,9 +4739,8 @@
 
             const editor = document.getElementById('contract-sections');
 
-            // Debounced state capture for text edits (longer delay than save)
-            let textEditTimeout = null;
-            let hasUncapturedEdits = false;
+            // Note: textEditTimeout and hasUncapturedEdits are now global variables
+            // defined in the UNDO/REDO SYSTEM section
 
             editor.addEventListener('input', (e) => {
                 const target = e.target;
@@ -4739,14 +4755,14 @@
                     hasUncapturedEdits = true;
                 }
 
-                // Capture state after user stops typing for 2 seconds
+                // Capture state after user stops typing for 1 second
                 clearTimeout(textEditTimeout);
                 textEditTimeout = setTimeout(() => {
                     if (hasUncapturedEdits) {
                         captureStateForUndo('Text edit');
                         hasUncapturedEdits = false;
                     }
-                }, 2000);
+                }, 1000);
             });
 
             // Setup drag-and-drop for fields
