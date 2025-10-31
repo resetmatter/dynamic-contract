@@ -1378,10 +1378,32 @@
                 padding: 12px;
             }
 
+            .drag-handle {
+                font-size: 16px;
+                margin-right: 0;
+                padding: 3px 4px;
+                border-width: 1.5px;
+            }
+
+            .field-group {
+                padding-left: 38px;
+            }
+
             .list-item {
                 flex-direction: column;
                 gap: 10px;
                 padding: 12px;
+                padding-left: 38px;
+            }
+
+            .field-group .drag-handle,
+            .list-item .drag-handle {
+                left: 2px;
+            }
+
+            .field-group .drag-handle:hover,
+            .list-item .drag-handle:hover {
+                transform: translateY(-50%) scale(1.02);
             }
 
             .list-item input {
@@ -1400,12 +1422,6 @@
                 padding: 11px 14px;
                 font-size: 12px;
                 min-height: 44px;
-            }
-
-            .drag-handle {
-                font-size: 18px;
-                margin-right: 0;
-                margin-bottom: 8px;
             }
 
             .form-group label {
@@ -1615,13 +1631,24 @@
                 font-size: 12px;
             }
 
+            .drag-handle {
+                font-size: 17px;
+                padding: 3px 5px;
+            }
+
             .field-group {
-                padding-left: 25px;
+                padding-left: 40px;
             }
 
             .list-item {
                 flex-wrap: wrap;
                 padding: 12px;
+                padding-left: 40px;
+            }
+
+            .field-group .drag-handle,
+            .list-item .drag-handle {
+                left: 2px;
             }
 
             .list-item input {
@@ -1762,12 +1789,23 @@
                 min-width: 140px;
             }
 
+            .drag-handle {
+                font-size: 18px;
+                padding: 3px 5px;
+            }
+
             .field-group {
-                padding-left: 30px;
+                padding-left: 42px;
             }
 
             .list-item {
                 flex-wrap: nowrap;
+                padding-left: 42px;
+            }
+
+            .field-group .drag-handle,
+            .list-item .drag-handle {
+                left: 3px;
             }
 
             .remove-btn {
