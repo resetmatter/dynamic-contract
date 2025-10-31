@@ -3949,11 +3949,15 @@
             const subDate = document.getElementById('submissive-signature-date')?.value || null;
 
             // Fetch the current state from database for change detection (before we update it)
-            const { data: currentDbState } = await supabaseClient
+            const { data: currentDbState, error: fetchError } = await supabaseClient
                 .from('contracts')
-                .select('title, data, owner_signature, submissive_signature, dominant_name, submissive_name')
+                .select('title,data,owner_signature,submissive_signature,dominant_name,submissive_name')
                 .eq('id', currentContract.id)
                 .single();
+
+            if (fetchError) {
+                console.warn('⚠️ Could not fetch current state for change tracking:', fetchError);
+            }
 
             // Build previous contract state for comparison
             const previousContract = currentDbState || null;
@@ -3971,7 +3975,7 @@
             // Generate change description
             const changeDescription = generateChangeDescription(previousContract, newContract);
 
-            const { error } = await supabaseClient
+            const { data: updatedData, error } = await supabaseClient
                 .from('contracts')
                 .update({
                     title: currentContract.title,
@@ -3981,10 +3985,12 @@
                     owner_signature: ownerSig,
                     owner_signature_date: ownerDate,
                     submissive_signature: subSig,
-                    submissive_signature_date: subDate,
-                    updated_at: new Date().toISOString()
+                    submissive_signature_date: subDate
+                    // Don't set updated_at manually - let the DB trigger handle it
                 })
-                .eq('id', currentContract.id);
+                .eq('id', currentContract.id)
+                .select()
+                .single();
 
             if (error) {
                 console.error('❌ Error saving contract:', error);
@@ -3992,12 +3998,12 @@
             } else {
                 console.log('✅ Save completed successfully - UPDATE sent to database');
 
-                // Update local copy with signatures and updated_at
+                // Update local copy with signatures and updated_at from the DB response
                 currentContract.owner_signature = ownerSig;
                 currentContract.owner_signature_date = ownerDate;
                 currentContract.submissive_signature = subSig;
                 currentContract.submissive_signature_date = subDate;
-                const newUpdatedAt = new Date().toISOString();
+                const newUpdatedAt = updatedData.updated_at;
                 currentContract.updated_at = newUpdatedAt;
 
                 // Wait 150ms before broadcasting to ensure DB commit completes
@@ -4175,11 +4181,12 @@
                     }
 
                     // Check if we got the expected update (by updated_at timestamp)
+                    // Allow for slight timing differences (within 1 second) due to clock skew
                     const isExpectedUpdate = !expectedUpdatedAt ||
-                                            new Date(data.updated_at) >= new Date(expectedUpdatedAt);
+                                            Math.abs(new Date(data.updated_at) - new Date(expectedUpdatedAt)) < 1000;
 
                     if (!isExpectedUpdate && attempts < maxAttempts) {
-                        console.log(`⏳ Data seems stale (expected: ${expectedUpdatedAt}, got: ${data.updated_at}), retrying...`);
+                        console.log(`⏳ Data seems stale (expected: ${expectedUpdatedAt}, got: ${data.updated_at}, diff: ${new Date(data.updated_at) - new Date(expectedUpdatedAt)}ms), retrying...`);
                         const delay = Math.pow(2, attempts) * 100;
                         await new Promise(resolve => setTimeout(resolve, delay));
                         continue;
