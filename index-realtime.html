@@ -2938,26 +2938,43 @@
         function generateChangeDescription(oldContract, newContract) {
             const changes = [];
 
+            // Helper function to escape HTML and truncate text
+            function formatText(text, maxLength = 60) {
+                if (!text) return '';
+                const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if (escaped.length > maxLength) {
+                    return escaped.substring(0, maxLength) + '...';
+                }
+                return escaped;
+            }
+
+            // Helper to format field value for display
+            function formatValue(value, maxLength = 80) {
+                if (!value) return '(empty)';
+                const singleLine = value.replace(/\n+/g, ' ').trim();
+                return `"${formatText(singleLine, maxLength)}"`;
+            }
+
             // Check title change
             if (oldContract?.title !== newContract.title) {
                 if (!oldContract?.title) {
-                    changes.push(`Set contract title to "${newContract.title}"`);
+                    changes.push(`Set contract title to ${formatValue(newContract.title)}`);
                 } else {
-                    changes.push(`Changed contract title from "${oldContract.title}" to "${newContract.title}"`);
+                    changes.push(`Changed contract title from ${formatValue(oldContract.title)} to ${formatValue(newContract.title)}`);
                 }
             }
 
             // Check signature changes
             if (oldContract?.owner_signature !== newContract.owner_signature) {
                 if (newContract.owner_signature && !oldContract?.owner_signature) {
-                    changes.push('Owner signed the contract');
+                    changes.push(`✍️ Owner signed the contract`);
                 } else if (!newContract.owner_signature && oldContract?.owner_signature) {
                     changes.push('Owner signature removed');
                 }
             }
             if (oldContract?.submissive_signature !== newContract.submissive_signature) {
                 if (newContract.submissive_signature && !oldContract?.submissive_signature) {
-                    changes.push('Submissive signed the contract');
+                    changes.push(`✍️ Submissive signed the contract`);
                 } else if (!newContract.submissive_signature && oldContract?.submissive_signature) {
                     changes.push('Submissive signature removed');
                 }
@@ -2969,19 +2986,22 @@
 
             // Detect section additions
             if (newSections.length > oldSections.length) {
-                const addedCount = newSections.length - oldSections.length;
-                const newSectionTitles = newSections.slice(oldSections.length).map(s => s.title).filter(Boolean);
-                if (newSectionTitles.length > 0) {
-                    changes.push(`Added section${addedCount > 1 ? 's' : ''}: ${newSectionTitles.join(', ')}`);
-                } else {
-                    changes.push(`Added ${addedCount} new section${addedCount > 1 ? 's' : ''}`);
-                }
+                const addedSections = newSections.slice(oldSections.length);
+                addedSections.forEach(section => {
+                    if (section.title) {
+                        changes.push(`➕ Added section: "${formatText(section.title)}"`);
+                    }
+                });
             }
 
             // Detect section removals
             if (newSections.length < oldSections.length) {
-                const removedCount = oldSections.length - newSections.length;
-                changes.push(`Removed ${removedCount} section${removedCount > 1 ? 's' : ''}`);
+                const removedSections = oldSections.slice(newSections.length);
+                removedSections.forEach(section => {
+                    if (section.title) {
+                        changes.push(`➖ Removed section: "${formatText(section.title)}"`);
+                    }
+                });
             }
 
             // Compare existing sections for modifications
@@ -2992,7 +3012,7 @@
 
                 // Check section title change
                 if (oldSection.title !== newSection.title) {
-                    changes.push(`Renamed section "${oldSection.title}" to "${newSection.title}"`);
+                    changes.push(`Renamed section from "${formatText(oldSection.title)}" to "${formatText(newSection.title)}"`);
                 }
 
                 // Compare fields within section
@@ -3002,14 +3022,26 @@
 
                 // Detect field additions
                 if (newFields.length > oldFields.length) {
-                    const addedCount = newFields.length - oldFields.length;
-                    changes.push(`Added ${addedCount} field${addedCount > 1 ? 's' : ''} to "${sectionName}"`);
+                    const addedFields = newFields.slice(oldFields.length);
+                    addedFields.forEach(field => {
+                        const fieldLabel = field.label || 'New field';
+                        if (field.type === 'list' && field.items && field.items.length > 0) {
+                            changes.push(`➕ Added "${formatText(fieldLabel)}" to "${formatText(sectionName)}" with ${field.items.length} item(s)`);
+                        } else if (field.value) {
+                            changes.push(`➕ Added "${formatText(fieldLabel)}" to "${formatText(sectionName)}": ${formatValue(field.value)}`);
+                        } else {
+                            changes.push(`➕ Added field "${formatText(fieldLabel)}" to "${formatText(sectionName)}"`);
+                        }
+                    });
                 }
 
                 // Detect field removals
                 if (newFields.length < oldFields.length) {
-                    const removedCount = oldFields.length - newFields.length;
-                    changes.push(`Removed ${removedCount} field${removedCount > 1 ? 's' : ''} from "${sectionName}"`);
+                    const removedFields = oldFields.slice(newFields.length);
+                    removedFields.forEach(field => {
+                        const fieldLabel = field.label || 'field';
+                        changes.push(`➖ Removed "${formatText(fieldLabel)}" from "${formatText(sectionName)}"`);
+                    });
                 }
 
                 // Compare existing fields for value changes
@@ -3017,10 +3049,11 @@
                 for (let j = 0; j < minFieldLength; j++) {
                     const oldField = oldFields[j];
                     const newField = newFields[j];
+                    const fieldLabel = newField.label || oldField.label || 'field';
 
                     // Check field label change
                     if (oldField.label !== newField.label && oldField.label && newField.label) {
-                        changes.push(`Renamed field "${oldField.label}" to "${newField.label}" in "${sectionName}"`);
+                        changes.push(`Renamed field from "${formatText(oldField.label)}" to "${formatText(newField.label)}" in "${formatText(sectionName)}"`);
                     }
 
                     // Check field value changes (for text/textarea fields)
@@ -3029,13 +3062,13 @@
                         const newValue = newField.value || '';
 
                         if (oldValue !== newValue) {
-                            const fieldLabel = newField.label || oldField.label || 'field';
                             if (!oldValue && newValue) {
-                                changes.push(`Added content to "${fieldLabel}"`);
+                                changes.push(`📝 Set "${formatText(fieldLabel)}" to ${formatValue(newValue)}`);
                             } else if (oldValue && !newValue) {
-                                changes.push(`Cleared "${fieldLabel}"`);
+                                changes.push(`🗑️ Cleared "${formatText(fieldLabel)}" (was ${formatValue(oldValue)})`);
                             } else {
-                                changes.push(`Updated "${fieldLabel}"`);
+                                // Show the actual change
+                                changes.push(`✏️ Updated "${formatText(fieldLabel)}" from ${formatValue(oldValue)} to ${formatValue(newValue)}`);
                             }
                         }
                     }
@@ -3044,48 +3077,41 @@
                     if (newField.type === 'list') {
                         const oldItems = (oldField.items || []).filter(item => item && item.trim());
                         const newItems = (newField.items || []).filter(item => item && item.trim());
-                        const fieldLabel = newField.label || oldField.label || 'list';
 
                         if (newItems.length > oldItems.length) {
-                            const addedCount = newItems.length - oldItems.length;
-                            const newItemsAdded = newItems.slice(oldItems.length);
-                            if (newItemsAdded.length === 1 && newItemsAdded[0]) {
-                                changes.push(`Added "${newItemsAdded[0]}" to ${fieldLabel}`);
-                            } else {
-                                changes.push(`Added ${addedCount} item${addedCount > 1 ? 's' : ''} to ${fieldLabel}`);
-                            }
-                        } else if (newItems.length < oldItems.length) {
-                            const removedCount = oldItems.length - newItems.length;
-                            changes.push(`Removed ${removedCount} item${removedCount > 1 ? 's' : ''} from ${fieldLabel}`);
-                        } else if (newItems.length === oldItems.length) {
-                            // Check if any items were modified
-                            let modifiedCount = 0;
-                            for (let k = 0; k < newItems.length; k++) {
-                                if (oldItems[k] !== newItems[k]) {
-                                    modifiedCount++;
-                                }
-                            }
-                            if (modifiedCount > 0) {
-                                changes.push(`Modified ${modifiedCount} item${modifiedCount > 1 ? 's' : ''} in ${fieldLabel}`);
+                            // Items were added
+                            const addedItems = newItems.slice(oldItems.length);
+                            addedItems.forEach(item => {
+                                changes.push(`➕ Added to ${formatText(fieldLabel)}: ${formatValue(item, 100)}`);
+                            });
+                        }
+
+                        if (newItems.length < oldItems.length) {
+                            // Items were removed
+                            const removedItems = oldItems.slice(newItems.length);
+                            removedItems.forEach(item => {
+                                changes.push(`➖ Removed from ${formatText(fieldLabel)}: ${formatValue(item, 100)}`);
+                            });
+                        }
+
+                        // Check for modifications in existing items
+                        const minItemLength = Math.min(oldItems.length, newItems.length);
+                        for (let k = 0; k < minItemLength; k++) {
+                            if (oldItems[k] !== newItems[k]) {
+                                changes.push(`✏️ Modified in ${formatText(fieldLabel)}: ${formatValue(oldItems[k], 60)} → ${formatValue(newItems[k], 60)}`);
                             }
                         }
                     }
                 }
             }
 
-            // Return formatted description
+            // Return all changes as a formatted list
             if (changes.length === 0) {
-                return 'Contract updated';
-            } else if (changes.length === 1) {
-                return changes[0];
-            } else if (changes.length <= 3) {
-                return changes.join('; ');
-            } else {
-                // For many changes, show first 3 and count the rest
-                const first3 = changes.slice(0, 3).join('; ');
-                const remaining = changes.length - 3;
-                return `${first3}; and ${remaining} more change${remaining > 1 ? 's' : ''}`;
+                return 'No changes detected';
             }
+
+            // Return each change on its own line
+            return changes.join('\n');
         }
 
         async function trackChange(changeType, description) {
@@ -3302,11 +3328,19 @@
                     userName = `User (${item.user_id.substring(0, 8)}...)`;
                 }
 
+                // Format multi-line descriptions
+                const changes = item.description.split('\n').filter(line => line.trim());
+                const changeHtml = changes.length > 1
+                    ? '<ul style="margin: 10px 0; padding-left: 20px; list-style: none;">' +
+                      changes.map(change => `<li style="margin: 5px 0;">• ${change}</li>`).join('') +
+                      '</ul>'
+                    : `<div style="margin: 5px 0;">${item.description}</div>`;
+
                 return `
                     <div class="history-item">
                         <div class="timestamp">${timeStr}</div>
                         <div class="change">
-                            ${item.description}
+                            ${changeHtml}
                         </div>
                         <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
                             by <span class="user">${userName}</span>
