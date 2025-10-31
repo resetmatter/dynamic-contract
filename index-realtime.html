@@ -3626,8 +3626,8 @@
                 return;
             }
 
-            // Get the actual previous state
-            const previousState = undoStack.pop();
+            // Peek at the previous state (don't pop it - we want it to stay in stack)
+            const previousState = undoStack[undoStack.length - 1];
             currentStateIndex = undoStack.length - 1;
 
             // Restore the previous state
@@ -3636,6 +3636,10 @@
             console.log(`⏮️ Undo: ${previousState.description}`);
             updateUndoRedoUI();
             showUndoNotification(`Undone: ${previousState.description}`);
+
+            // Clear any pending state captures that might have been triggered by re-rendering
+            clearTimeout(textEditTimeout);
+            hasUncapturedEdits = false;
 
             // Save to database
             setTimeout(() => {
@@ -3680,6 +3684,10 @@
             updateUndoRedoUI();
             showUndoNotification(`Redone: ${redoState.description}`);
 
+            // Clear any pending state captures that might have been triggered by re-rendering
+            clearTimeout(textEditTimeout);
+            hasUncapturedEdits = false;
+
             // Save to database
             setTimeout(() => {
                 saveContract();
@@ -3713,13 +3721,14 @@
             const historyToggle = document.getElementById('undo-history-toggle');
 
             if (undoBtn) {
-                undoBtn.disabled = undoStack.length === 0;
+                // Need at least 2 states to undo (current + previous)
+                undoBtn.disabled = undoStack.length < 2;
             }
             if (redoBtn) {
                 redoBtn.disabled = redoStack.length === 0;
             }
             if (historyToggle) {
-                historyToggle.disabled = undoStack.length === 0;
+                historyToggle.disabled = undoStack.length < 2;
             }
 
             // Update history dropdown
