@@ -849,29 +849,58 @@
             font-size: 20px;
             margin-right: 8px;
             user-select: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             vertical-align: middle;
+            background: rgba(255, 105, 180, 0.15);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            border-radius: 6px;
+            padding: 4px 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .drag-handle:hover {
+            background: rgba(255, 105, 180, 0.25);
+            border-color: rgba(255, 105, 180, 0.5);
+            box-shadow: 0 2px 5px rgba(255, 105, 180, 0.3);
+            transform: scale(1.05);
         }
 
         .drag-handle:active {
             cursor: grabbing;
+            background: rgba(255, 105, 180, 0.35);
+            border-color: var(--accent-pink);
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .field-group {
             position: relative;
-            padding-left: 35px;
+            padding-left: 10px;
+            margin-left: 45px;
         }
 
         /* List fields don't have parent bow, so no left padding */
         .field-group-list {
             padding-left: 0;
+            margin-left: 0;
         }
 
         .field-group .drag-handle {
             position: absolute;
-            left: 5px;
+            left: -40px;
             top: 50%;
             transform: translateY(-50%);
+        }
+
+        .field-group .drag-handle:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .field-group .drag-handle:active {
+            transform: translateY(-50%) scale(0.98);
         }
 
         .field-group.dragging {
@@ -881,14 +910,23 @@
 
         .list-item {
             position: relative;
-            padding-left: 35px;
+            padding-left: 10px;
+            margin-left: 45px;
         }
 
         .list-item .drag-handle {
             position: absolute;
-            left: 5px;
+            left: -40px;
             top: 50%;
             transform: translateY(-50%);
+        }
+
+        .list-item .drag-handle:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .list-item .drag-handle:active {
+            transform: translateY(-50%) scale(0.98);
         }
 
         .list-item.dragging {
@@ -1310,15 +1348,21 @@
                 padding: 20px 12px;
             }
 
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
             .section h2 {
                 font-size: 1.4em;
-                margin-bottom: 12px;
+                margin-bottom: 0;
             }
 
             .section-actions {
                 flex-direction: column;
                 gap: 8px;
-                margin-top: 15px;
+                margin-top: 0;
             }
 
             .section-actions .btn {
@@ -1343,10 +1387,39 @@
                 padding: 12px;
             }
 
+            .drag-handle {
+                font-size: 16px;
+                margin-right: 0;
+                padding: 3px 4px;
+                border-width: 1.5px;
+            }
+
+            .field-group {
+                padding-left: 10px;
+                margin-left: 35px;
+            }
+
+            .field-group-list {
+                margin-left: 0;
+                padding-left: 0;
+            }
+
             .list-item {
                 flex-direction: column;
                 gap: 10px;
-                padding: 12px;
+                padding: 15px;
+                padding-left: 10px;
+                margin-left: 35px;
+            }
+
+            .field-group .drag-handle,
+            .list-item .drag-handle {
+                left: -32px;
+            }
+
+            .field-group .drag-handle:hover,
+            .list-item .drag-handle:hover {
+                transform: translateY(-50%) scale(1.02);
             }
 
             .list-item input {
@@ -1365,12 +1438,6 @@
                 padding: 11px 14px;
                 font-size: 12px;
                 min-height: 44px;
-            }
-
-            .drag-handle {
-                font-size: 18px;
-                margin-right: 0;
-                margin-bottom: 8px;
             }
 
             .form-group label {
@@ -1563,30 +1630,54 @@
                 padding: 18px 12px;
             }
 
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
             .section h2 {
                 font-size: 1.5em;
+                margin-bottom: 0;
             }
 
             .section-actions {
-                flex-direction: row;
-                flex-wrap: wrap;
+                flex-direction: column;
                 gap: 8px;
+                margin-top: 0;
             }
 
             .section-actions .btn {
-                flex: 1 1 calc(50% - 4px);
-                min-width: 120px;
+                width: 100%;
                 padding: 10px 12px;
                 font-size: 12px;
             }
 
+            .drag-handle {
+                font-size: 17px;
+                padding: 3px 5px;
+            }
+
             .field-group {
-                padding-left: 25px;
+                padding-left: 10px;
+                margin-left: 37px;
+            }
+
+            .field-group-list {
+                margin-left: 0;
+                padding-left: 0;
             }
 
             .list-item {
                 flex-wrap: wrap;
-                padding: 12px;
+                padding: 15px;
+                padding-left: 10px;
+                margin-left: 37px;
+            }
+
+            .field-group .drag-handle,
+            .list-item .drag-handle {
+                left: -34px;
             }
 
             .list-item input {
@@ -1713,26 +1804,52 @@
                 padding: 30px 25px;
             }
 
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
             .section h2 {
                 font-size: 1.8em;
+                margin-bottom: 0;
             }
 
             .section-actions {
-                flex-wrap: wrap;
+                flex-direction: column;
                 gap: 10px;
+                margin-top: 0;
             }
 
             .section-actions .btn {
-                flex: 1 1 auto;
-                min-width: 140px;
+                width: 100%;
+            }
+
+            .drag-handle {
+                font-size: 18px;
+                padding: 3px 5px;
             }
 
             .field-group {
-                padding-left: 30px;
+                padding-left: 10px;
+                margin-left: 40px;
+            }
+
+            .field-group-list {
+                margin-left: 0;
+                padding-left: 0;
             }
 
             .list-item {
                 flex-wrap: nowrap;
+                padding: 15px;
+                padding-left: 10px;
+                margin-left: 40px;
+            }
+
+            .field-group .drag-handle,
+            .list-item .drag-handle {
+                left: -36px;
             }
 
             .remove-btn {
@@ -1809,6 +1926,8 @@
             /* List items touch friendly */
             .list-item {
                 padding: 14px;
+                padding-left: 10px;
+                margin-left: 37px; /* Preserve space for drag handle */
                 margin-bottom: 12px;
             }
 
@@ -1817,11 +1936,18 @@
                 font-size: 16px;
             }
 
-            /* Drag handle touch friendly */
+            /* Drag handle touch friendly - increase tap area without affecting layout */
             .drag-handle {
                 touch-action: none;
-                padding: 8px;
-                margin: -8px 8px -8px -8px;
+            }
+
+            .drag-handle::before {
+                content: '';
+                position: absolute;
+                top: -8px;
+                bottom: -8px;
+                left: -8px;
+                right: -8px;
             }
 
             /* Improved readability */
@@ -3599,8 +3725,8 @@
                 list: (f) => `
                     <div class="list-container">
                         ${(f.items || []).map((item, itemIndex) => `
-                            <div class="list-item" draggable="true" data-item-index="${itemIndex}">
-                                <span class="drag-handle">🎀</span>
+                            <div class="list-item" data-item-index="${itemIndex}">
+                                <span class="drag-handle" draggable="true">🎀</span>
                                 <input type="text" value="${item || ''}" data-item-index="${itemIndex}">
                                 <button class="remove-btn" onclick="removeListItem(${sectionIndex}, ${fieldIndex}, ${itemIndex})">✕</button>
                             </div>
@@ -3624,10 +3750,10 @@
                 `;
             }
 
-            // For non-list fields, show bow and make draggable
+            // For non-list fields, show bow and make only the drag handle draggable
             return `
-                <div class="field-group" data-field-index="${fieldIndex}" draggable="true">
-                    <span class="drag-handle">🎀</span>
+                <div class="field-group" data-field-index="${fieldIndex}">
+                    <span class="drag-handle" draggable="true">🎀</span>
                     <label contenteditable="true" data-field-label>${field.label || 'Field'}</label>
                     ${renderFunc(field)}
                     <button class="remove-btn" onclick="removeField(${sectionIndex}, ${fieldIndex})" style="margin-top: 10px;">Remove Field</button>
@@ -3735,12 +3861,13 @@
             const editor = document.getElementById('contract-sections');
 
             editor.addEventListener('dragstart', (e) => {
-                const fieldGroup = e.target.closest('.field-group');
-                if (fieldGroup && e.target.classList.contains('drag-handle')) {
+                // Only allow dragging if the drag handle itself is being dragged
+                if (!e.target.classList.contains('drag-handle')) {
                     e.preventDefault();
                     return;
                 }
 
+                const fieldGroup = e.target.closest('.field-group');
                 if (fieldGroup) {
                     draggedFieldElement = fieldGroup;
                     const section = fieldGroup.closest('.contract-section');
@@ -3798,14 +3925,14 @@
             const editor = document.getElementById('contract-sections');
 
             editor.addEventListener('dragstart', (e) => {
+                // Only allow dragging if the drag handle itself is being dragged
+                if (!e.target.classList.contains('drag-handle')) {
+                    e.preventDefault();
+                    return;
+                }
+
                 const listItem = e.target.closest('.list-item');
                 if (listItem) {
-                    // Don't drag if clicking the drag handle itself
-                    if (e.target.classList.contains('drag-handle')) {
-                        e.preventDefault();
-                        return;
-                    }
-
                     draggedListItem = listItem;
                     draggedListContainer = listItem.closest('.list-container');
                     listItem.classList.add('dragging');
