@@ -658,6 +658,38 @@
             font-weight: 600;
         }
 
+        .history-date-group {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(220, 20, 60, 0.95));
+            padding: 8px 15px;
+            margin: 0 -20px 15px -20px;
+            border-bottom: 1px solid var(--accent-pink);
+            font-weight: 600;
+            color: white;
+            font-size: 0.9em;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .history-date-group:hover {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 1), rgba(220, 20, 60, 1));
+        }
+
+        .history-date-group .toggle-icon {
+            float: right;
+            transition: transform 0.3s;
+        }
+
+        .history-date-group.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .history-group-items.collapsed {
+            display: none;
+        }
+
         /* Share Dialog */
         .dialog-overlay {
             display: none;
@@ -1204,6 +1236,17 @@
             }
         }
 
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @keyframes slideInRight {
             from {
                 transform: translateX(400px);
@@ -1223,6 +1266,17 @@
             to {
                 transform: translateX(400px);
                 opacity: 0;
+            }
+        }
+
+        @keyframes fadeInSlideDown {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
             }
         }
 
@@ -1403,8 +1457,44 @@
             <h3>Change History</h3>
             <button class="btn btn-secondary" id="close-history-btn">✕</button>
         </div>
+
+        <!-- History Filters -->
+        <div style="padding: 15px; background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid var(--border-color);">
+            <div style="margin-bottom: 10px;">
+                <input
+                    type="text"
+                    id="history-search"
+                    placeholder="🔍 Search changes..."
+                    style="width: 100%; padding: 8px 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);"
+                >
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <select
+                    id="history-user-filter"
+                    style="flex: 1; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);"
+                >
+                    <option value="all">👥 All Users</option>
+                </select>
+                <select
+                    id="history-date-filter"
+                    style="flex: 1; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);"
+                >
+                    <option value="all">📅 All Time</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="older">Older</option>
+                </select>
+            </div>
+        </div>
+
         <div class="history-timeline" id="history-timeline">
             <!-- History items will be loaded here -->
+        </div>
+
+        <div id="history-load-more" style="padding: 15px; text-align: center; display: none;">
+            <button class="btn btn-secondary" onclick="loadMoreHistory()">Load More</button>
         </div>
     </div>
 
@@ -1529,6 +1619,7 @@
         let currentContract = null;
         let realtimeChannel = null;
         let presenceChannel = null;
+        let historyChannel = null;
         let saveTimeout = null;
         let isSyncing = false;
         let pollingInterval = null;
@@ -1927,6 +2018,12 @@
             if (presenceChannel) {
                 supabaseClient.removeChannel(presenceChannel);
                 presenceChannel = null;
+            }
+
+            // Clean up history channel
+            if (historyChannel) {
+                supabaseClient.removeChannel(historyChannel);
+                historyChannel = null;
             }
 
             // Remove presence UI elements
@@ -2534,6 +2631,27 @@
             const subSig = document.getElementById('submissive-signature')?.value || '';
             const subDate = document.getElementById('submissive-signature-date')?.value || null;
 
+            // Fetch the current state from database for change detection (before we update it)
+            const { data: currentDbState } = await supabaseClient
+                .from('contracts')
+                .select('title, data, owner_signature, submissive_signature')
+                .eq('id', currentContract.id)
+                .single();
+
+            // Build previous contract state for comparison
+            const previousContract = currentDbState || null;
+
+            // Build new contract state for comparison
+            const newContract = {
+                title: currentContract.title,
+                data: currentContract.data,
+                owner_signature: ownerSig,
+                submissive_signature: subSig
+            };
+
+            // Generate change description
+            const changeDescription = generateChangeDescription(previousContract, newContract);
+
             const { error } = await supabaseClient
                 .from('contracts')
                 .update({
@@ -2558,8 +2676,8 @@
                 currentContract.submissive_signature_date = subDate;
 
                 updateSyncStatus('synced');
-                // Track change in history
-                await trackChange('updated', 'Contract saved');
+                // Track change in history with meaningful description
+                await trackChange('updated', changeDescription);
             }
 
             isSyncing = false;
@@ -2771,22 +2889,21 @@
                     warningEl.style.cssText = `
                         position: fixed;
                         top: 70px;
-                        left: 50%;
-                        transform: translateX(-50%);
+                        left: 20px;
                         background: linear-gradient(135deg, #dc143c, #ff1744);
                         color: white;
-                        padding: 12px 24px;
+                        padding: 10px 16px;
                         border-radius: 8px;
                         box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
                         z-index: 9999;
                         font-weight: 600;
+                        font-size: 13px;
                         display: flex;
                         align-items: center;
-                        gap: 10px;
-                        animation: slideDown 0.3s ease-out;
-                        max-width: 90%;
-                        flex-wrap: wrap;
-                        justify-content: center;
+                        gap: 8px;
+                        animation: slideInLeft 0.3s ease-out;
+                        max-width: 350px;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
                     `;
                     document.body.appendChild(warningEl);
                 }
@@ -2802,10 +2919,11 @@
                     : `${otherEditors.length} other ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}`;
 
                 warningEl.innerHTML = `
-                    <span style="font-size: 20px;">⚠️</span>
-                    <span>${message}</span>
-                    <span style="font-size: 16px;">💾</span>
-                    <span style="font-size: 0.9em; opacity: 0.9;">Changes save automatically</span>
+                    <span style="font-size: 18px;">⚠️</span>
+                    <div style="flex: 1;">
+                        <div>${message}</div>
+                        <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">💾 Changes save automatically</div>
+                    </div>
                 `;
             } else if (warningEl) {
                 warningEl.remove();
@@ -2820,8 +2938,8 @@
                 listEl.id = 'presence-detail-list';
                 listEl.style.cssText = `
                     position: fixed;
-                    top: 140px;
-                    right: 20px;
+                    top: 145px;
+                    left: 20px;
                     background: rgba(20, 10, 10, 0.95);
                     border: 2px solid var(--accent-pink);
                     border-radius: 8px;
@@ -2911,13 +3029,366 @@
         // HISTORY TRACKING
         // ============================================
 
+        /**
+         * Generate human-friendly description of changes between two contract snapshots
+         */
+        function generateChangeDescription(oldContract, newContract) {
+            const changes = [];
+
+            // Helper function to escape HTML and truncate text
+            function formatText(text, maxLength = 60) {
+                if (!text) return '';
+                const escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                if (escaped.length > maxLength) {
+                    return escaped.substring(0, maxLength) + '...';
+                }
+                return escaped;
+            }
+
+            // Helper to format field value for display
+            function formatValue(value, maxLength = 80) {
+                if (!value) return '(empty)';
+                const singleLine = value.replace(/\n+/g, ' ').trim();
+                return `"${formatText(singleLine, maxLength)}"`;
+            }
+
+            // Compute text diff to show what was added/removed/changed
+            function getTextDiff(oldText, newText) {
+                oldText = oldText || '';
+                newText = newText || '';
+
+                // Simple case: one is empty
+                if (!oldText && newText) {
+                    return { type: 'added', text: newText };
+                }
+                if (oldText && !newText) {
+                    return { type: 'removed', text: oldText };
+                }
+                if (oldText === newText) {
+                    return { type: 'unchanged' };
+                }
+
+                // Check for simple append
+                if (newText.startsWith(oldText)) {
+                    const added = newText.substring(oldText.length).trim();
+                    if (added) {
+                        return { type: 'appended', text: added, context: formatText(oldText, 40) };
+                    }
+                }
+
+                // Check for simple prepend
+                if (newText.endsWith(oldText)) {
+                    const added = newText.substring(0, newText.length - oldText.length).trim();
+                    if (added) {
+                        return { type: 'prepended', text: added, context: formatText(oldText, 40) };
+                    }
+                }
+
+                // Check for simple truncation from end
+                if (oldText.startsWith(newText)) {
+                    const removed = oldText.substring(newText.length).trim();
+                    if (removed) {
+                        return { type: 'truncated_end', text: removed, context: formatText(newText, 40) };
+                    }
+                }
+
+                // Check for simple truncation from beginning
+                if (oldText.endsWith(newText)) {
+                    const removed = oldText.substring(0, oldText.length - newText.length).trim();
+                    if (removed) {
+                        return { type: 'truncated_start', text: removed, context: formatText(newText, 40) };
+                    }
+                }
+
+                // For more complex changes, try word-level diff
+                const oldWords = oldText.split(/\s+/);
+                const newWords = newText.split(/\s+/);
+
+                // Find common prefix
+                let commonPrefixLength = 0;
+                while (commonPrefixLength < oldWords.length &&
+                       commonPrefixLength < newWords.length &&
+                       oldWords[commonPrefixLength] === newWords[commonPrefixLength]) {
+                    commonPrefixLength++;
+                }
+
+                // Find common suffix
+                let commonSuffixLength = 0;
+                while (commonSuffixLength < oldWords.length - commonPrefixLength &&
+                       commonSuffixLength < newWords.length - commonPrefixLength &&
+                       oldWords[oldWords.length - 1 - commonSuffixLength] === newWords[newWords.length - 1 - commonSuffixLength]) {
+                    commonSuffixLength++;
+                }
+
+                const removedWords = oldWords.slice(commonPrefixLength, oldWords.length - commonSuffixLength);
+                const addedWords = newWords.slice(commonPrefixLength, newWords.length - commonSuffixLength);
+
+                if (removedWords.length > 0 && addedWords.length === 0) {
+                    // Only removals
+                    const context = commonPrefixLength > 0 ? oldWords.slice(Math.max(0, commonPrefixLength - 3), commonPrefixLength).join(' ') : '';
+                    return {
+                        type: 'removed_words',
+                        text: removedWords.join(' '),
+                        context: context
+                    };
+                } else if (addedWords.length > 0 && removedWords.length === 0) {
+                    // Only additions
+                    const context = commonPrefixLength > 0 ? oldWords.slice(Math.max(0, commonPrefixLength - 3), commonPrefixLength).join(' ') : '';
+                    return {
+                        type: 'added_words',
+                        text: addedWords.join(' '),
+                        context: context
+                    };
+                } else if (removedWords.length > 0 && addedWords.length > 0) {
+                    // Replacement
+                    return {
+                        type: 'replaced',
+                        oldText: removedWords.join(' '),
+                        newText: addedWords.join(' ')
+                    };
+                }
+
+                // Fallback: show both values
+                return {
+                    type: 'changed',
+                    oldText: formatText(oldText, 50),
+                    newText: formatText(newText, 50)
+                };
+            }
+
+            // Format diff result into readable text
+            function formatDiff(fieldLabel, diff) {
+                const label = formatText(fieldLabel);
+
+                switch (diff.type) {
+                    case 'added':
+                        return `📝 Set "${label}" to ${formatValue(diff.text)}`;
+
+                    case 'removed':
+                        return `🗑️ Cleared "${label}" (was ${formatValue(diff.text)})`;
+
+                    case 'appended':
+                        return `➕ Added to "${label}": ${formatValue(diff.text)}`;
+
+                    case 'prepended':
+                        return `➕ Added at start of "${label}": ${formatValue(diff.text)}`;
+
+                    case 'truncated_end':
+                        return `➖ Removed from end of "${label}": ${formatValue(diff.text)}`;
+
+                    case 'truncated_start':
+                        return `➖ Removed from start of "${label}": ${formatValue(diff.text)}`;
+
+                    case 'added_words':
+                        const addContext = diff.context ? `after "...${diff.context}"` : '';
+                        return `➕ Added to "${label}" ${addContext}: ${formatValue(diff.text)}`;
+
+                    case 'removed_words':
+                        const remContext = diff.context ? `after "...${diff.context}"` : '';
+                        return `➖ Removed from "${label}" ${remContext}: ${formatValue(diff.text)}`;
+
+                    case 'replaced':
+                        return `✏️ Changed in "${label}": ${formatValue(diff.oldText)} → ${formatValue(diff.newText)}`;
+
+                    case 'changed':
+                        return `✏️ Updated "${label}" from ${formatValue(diff.oldText)} to ${formatValue(diff.newText)}`;
+
+                    case 'unchanged':
+                    default:
+                        return null;
+                }
+            }
+
+            // Check title change
+            if (oldContract?.title !== newContract.title) {
+                const diff = getTextDiff(oldContract?.title || '', newContract.title);
+                const diffText = formatDiff('Contract Title', diff);
+                if (diffText) {
+                    changes.push(diffText);
+                }
+            }
+
+            // Check signature changes
+            if (oldContract?.owner_signature !== newContract.owner_signature) {
+                if (newContract.owner_signature && !oldContract?.owner_signature) {
+                    changes.push(`✍️ Owner signed the contract`);
+                } else if (!newContract.owner_signature && oldContract?.owner_signature) {
+                    changes.push('Owner signature removed');
+                }
+            }
+            if (oldContract?.submissive_signature !== newContract.submissive_signature) {
+                if (newContract.submissive_signature && !oldContract?.submissive_signature) {
+                    changes.push(`✍️ Submissive signed the contract`);
+                } else if (!newContract.submissive_signature && oldContract?.submissive_signature) {
+                    changes.push('Submissive signature removed');
+                }
+            }
+
+            // Compare sections
+            const oldSections = oldContract?.data?.sections || [];
+            const newSections = newContract.data?.sections || [];
+
+            // Detect section additions
+            if (newSections.length > oldSections.length) {
+                const addedSections = newSections.slice(oldSections.length);
+                addedSections.forEach(section => {
+                    if (section.title) {
+                        changes.push(`➕ Added section: "${formatText(section.title)}"`);
+                    }
+                });
+            }
+
+            // Detect section removals
+            if (newSections.length < oldSections.length) {
+                const removedSections = oldSections.slice(newSections.length);
+                removedSections.forEach(section => {
+                    if (section.title) {
+                        changes.push(`➖ Removed section: "${formatText(section.title)}"`);
+                    }
+                });
+            }
+
+            // Compare existing sections for modifications
+            const minLength = Math.min(oldSections.length, newSections.length);
+            for (let i = 0; i < minLength; i++) {
+                const oldSection = oldSections[i];
+                const newSection = newSections[i];
+
+                // Check section title change
+                if (oldSection.title !== newSection.title) {
+                    changes.push(`Renamed section from "${formatText(oldSection.title)}" to "${formatText(newSection.title)}"`);
+                }
+
+                // Compare fields within section
+                const oldFields = oldSection.fields || [];
+                const newFields = newSection.fields || [];
+                const sectionName = newSection.title || oldSection.title || 'Untitled Section';
+
+                // Detect field additions
+                if (newFields.length > oldFields.length) {
+                    const addedFields = newFields.slice(oldFields.length);
+                    addedFields.forEach(field => {
+                        const fieldLabel = field.label || 'New field';
+                        if (field.type === 'list' && field.items && field.items.length > 0) {
+                            changes.push(`➕ Added "${formatText(fieldLabel)}" to "${formatText(sectionName)}" with ${field.items.length} item(s)`);
+                        } else if (field.value) {
+                            changes.push(`➕ Added "${formatText(fieldLabel)}" to "${formatText(sectionName)}": ${formatValue(field.value)}`);
+                        } else {
+                            changes.push(`➕ Added field "${formatText(fieldLabel)}" to "${formatText(sectionName)}"`);
+                        }
+                    });
+                }
+
+                // Detect field removals
+                if (newFields.length < oldFields.length) {
+                    const removedFields = oldFields.slice(newFields.length);
+                    removedFields.forEach(field => {
+                        const fieldLabel = field.label || 'field';
+                        changes.push(`➖ Removed "${formatText(fieldLabel)}" from "${formatText(sectionName)}"`);
+                    });
+                }
+
+                // Compare existing fields for value changes
+                const minFieldLength = Math.min(oldFields.length, newFields.length);
+                for (let j = 0; j < minFieldLength; j++) {
+                    const oldField = oldFields[j];
+                    const newField = newFields[j];
+                    const fieldLabel = newField.label || oldField.label || 'field';
+
+                    // Check field label change
+                    if (oldField.label !== newField.label && oldField.label && newField.label) {
+                        changes.push(`Renamed field from "${formatText(oldField.label)}" to "${formatText(newField.label)}" in "${formatText(sectionName)}"`);
+                    }
+
+                    // Check field value changes (for text/textarea fields)
+                    if (oldField.type !== 'list' && newField.type !== 'list') {
+                        const oldValue = oldField.value || '';
+                        const newValue = newField.value || '';
+
+                        if (oldValue !== newValue) {
+                            const diff = getTextDiff(oldValue, newValue);
+                            const diffText = formatDiff(fieldLabel, diff);
+                            if (diffText) {
+                                changes.push(diffText);
+                            }
+                        }
+                    }
+
+                    // Check list item changes
+                    if (newField.type === 'list') {
+                        const oldItems = (oldField.items || []).filter(item => item && item.trim());
+                        const newItems = (newField.items || []).filter(item => item && item.trim());
+
+                        if (newItems.length > oldItems.length) {
+                            // Items were added
+                            const addedItems = newItems.slice(oldItems.length);
+                            addedItems.forEach(item => {
+                                changes.push(`➕ Added to ${formatText(fieldLabel)}: ${formatValue(item, 100)}`);
+                            });
+                        }
+
+                        if (newItems.length < oldItems.length) {
+                            // Items were removed
+                            const removedItems = oldItems.slice(newItems.length);
+                            removedItems.forEach(item => {
+                                changes.push(`➖ Removed from ${formatText(fieldLabel)}: ${formatValue(item, 100)}`);
+                            });
+                        }
+
+                        // Check for modifications in existing items
+                        const minItemLength = Math.min(oldItems.length, newItems.length);
+                        for (let k = 0; k < minItemLength; k++) {
+                            if (oldItems[k] !== newItems[k]) {
+                                const diff = getTextDiff(oldItems[k], newItems[k]);
+
+                                // For list items, provide more context about which item changed
+                                switch (diff.type) {
+                                    case 'appended':
+                                        changes.push(`➕ Extended item in ${formatText(fieldLabel)}: added ${formatValue(diff.text)}`);
+                                        break;
+                                    case 'prepended':
+                                        changes.push(`➕ Extended item in ${formatText(fieldLabel)}: added ${formatValue(diff.text)} at start`);
+                                        break;
+                                    case 'truncated_end':
+                                        changes.push(`➖ Shortened item in ${formatText(fieldLabel)}: removed ${formatValue(diff.text)} from end`);
+                                        break;
+                                    case 'truncated_start':
+                                        changes.push(`➖ Shortened item in ${formatText(fieldLabel)}: removed ${formatValue(diff.text)} from start`);
+                                        break;
+                                    case 'added_words':
+                                        changes.push(`➕ Added to item in ${formatText(fieldLabel)}: ${formatValue(diff.text)}`);
+                                        break;
+                                    case 'removed_words':
+                                        changes.push(`➖ Removed from item in ${formatText(fieldLabel)}: ${formatValue(diff.text)}`);
+                                        break;
+                                    case 'replaced':
+                                        changes.push(`✏️ Changed item in ${formatText(fieldLabel)}: ${formatValue(diff.oldText)} → ${formatValue(diff.newText)}`);
+                                        break;
+                                    default:
+                                        changes.push(`✏️ Modified item in ${formatText(fieldLabel)}: ${formatValue(oldItems[k], 60)} → ${formatValue(newItems[k], 60)}`);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Return all changes as a formatted list
+            if (changes.length === 0) {
+                return 'No changes detected';
+            }
+
+            // Return each change on its own line
+            return changes.join('\n');
+        }
+
         async function trackChange(changeType, description) {
             // Skip history tracking for public editors
             if (currentUser?.isPublicEditor) {
                 return;
             }
 
-            const { error } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('history')
                 .insert({
                     contract_id: currentContract.id,
@@ -2925,10 +3396,21 @@
                     change_type: changeType,
                     description: description,
                     snapshot: currentContract.data
-                });
+                })
+                .select()
+                .single();
 
             if (error) {
                 console.error('Error tracking change:', error);
+                return;
+            }
+
+            // If history panel is open, manually update it with the new entry
+            // (This ensures immediate local updates; realtime will handle updates from others)
+            const historyPanel = document.getElementById('history-panel');
+            if (historyPanel && historyPanel.classList.contains('open') && data) {
+                // handleNewHistoryEntry has duplicate checking built-in
+                await handleNewHistoryEntry(data);
             }
         }
 
@@ -3061,32 +3543,300 @@
         // HISTORY TRACKING
         // ============================================
 
+        let currentHistoryUserMap = {}; // Store user map for realtime updates
+        let allHistoryItems = []; // Store all loaded history items
+        let historyLimit = 50; // Items to load per batch
+        let historyOffset = 0; // Current offset for pagination
+        let historyFiltersSetup = false; // Flag to prevent duplicate listeners
+
         document.getElementById('history-btn').addEventListener('click', async () => {
             document.getElementById('history-panel').classList.add('open');
             await loadHistory();
+            setupHistoryRealtime();
+            if (!historyFiltersSetup) {
+                setupHistoryFilters();
+                historyFiltersSetup = true;
+            }
         });
 
         document.getElementById('close-history-btn').addEventListener('click', () => {
             document.getElementById('history-panel').classList.remove('open');
+            cleanupHistoryRealtime();
         });
 
-        async function loadHistory() {
+        function setupHistoryFilters() {
+            const searchInput = document.getElementById('history-search');
+            const userFilter = document.getElementById('history-user-filter');
+            const dateFilter = document.getElementById('history-date-filter');
+
+            // Debounced search
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    applyHistoryFilters();
+                }, 300);
+            });
+
+            userFilter.addEventListener('change', applyHistoryFilters);
+            dateFilter.addEventListener('change', applyHistoryFilters);
+        }
+
+        function applyHistoryFilters() {
+            const searchTerm = document.getElementById('history-search').value.toLowerCase();
+            const userFilter = document.getElementById('history-user-filter').value;
+            const dateFilter = document.getElementById('history-date-filter').value;
+
+            let filteredItems = allHistoryItems.filter(item => {
+                // Search filter
+                if (searchTerm && !item.description.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+
+                // User filter
+                if (userFilter !== 'all' && item.user_id !== userFilter) {
+                    return false;
+                }
+
+                // Date filter
+                if (dateFilter !== 'all') {
+                    const itemDate = new Date(item.created_at);
+                    const dateGroup = getDateGroup(itemDate);
+                    if (dateGroup !== dateFilter) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            renderHistory(filteredItems, currentHistoryUserMap);
+        }
+
+        function setupHistoryRealtime() {
+            // Clean up existing channel
+            if (historyChannel) {
+                supabaseClient.removeChannel(historyChannel);
+            }
+
+            // Subscribe to history INSERT events
+            historyChannel = supabaseClient
+                .channel(`history:${currentContract.id}`)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'history',
+                        filter: `contract_id=eq.${currentContract.id}`
+                    },
+                    async (payload) => {
+                        console.log('New history entry received:', payload);
+                        await handleNewHistoryEntry(payload.new);
+                    }
+                )
+                .subscribe((status) => {
+                    if (status === 'SUBSCRIBED') {
+                        console.log('✅ History realtime enabled');
+                    } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                        console.warn('⚠️ History realtime connection failed:', status);
+                    }
+                });
+        }
+
+        function cleanupHistoryRealtime() {
+            if (historyChannel) {
+                supabaseClient.removeChannel(historyChannel);
+                historyChannel = null;
+            }
+        }
+
+        async function handleNewHistoryEntry(newEntry) {
+            // Check if this entry already exists in our array (prevent duplicates)
+            const existingIndex = allHistoryItems.findIndex(item => item.id === newEntry.id);
+            if (existingIndex !== -1) {
+                console.log('History entry already exists, skipping duplicate:', newEntry.id);
+                return;
+            }
+
+            // Fetch user profile if not already in map
+            if (!currentHistoryUserMap[newEntry.user_id]) {
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('id, display_name')
+                    .eq('id', newEntry.user_id)
+                    .single();
+
+                if (profile) {
+                    currentHistoryUserMap[profile.id] = profile.display_name;
+
+                    // Update user filter dropdown
+                    const userFilter = document.getElementById('history-user-filter');
+                    const userName = profile.display_name || `User (${newEntry.user_id.substring(0, 8)}...)`;
+                    const option = document.createElement('option');
+                    option.value = newEntry.user_id;
+                    option.textContent = userName;
+                    userFilter.appendChild(option);
+                }
+            }
+
+            // Add to beginning of allHistoryItems
+            allHistoryItems.unshift(newEntry);
+
+            // Re-apply current filters and re-render
+            applyHistoryFilters();
+        }
+
+        function renderHistoryItem(item, userMap) {
+            const date = new Date(item.created_at);
+            const timeStr = date.toLocaleString();
+
+            // Get user display name
+            let userName = 'User';
+            if (item.user_id === currentUser?.id) {
+                userName = 'You';
+            } else if (userMap[item.user_id]) {
+                userName = userMap[item.user_id];
+            } else {
+                // Show truncated user ID as fallback
+                userName = `User (${item.user_id.substring(0, 8)}...)`;
+            }
+
+            // Format multi-line descriptions
+            const changes = item.description.split('\n').filter(line => line.trim());
+            const changeHtml = changes.length > 1
+                ? '<ul style="margin: 10px 0; padding-left: 20px; list-style: none;">' +
+                  changes.map(change => `<li style="margin: 5px 0;">• ${change}</li>`).join('') +
+                  '</ul>'
+                : `<div style="margin: 5px 0;">${item.description}</div>`;
+
+            return `
+                <div class="history-item" data-history-id="${item.id}">
+                    <div class="timestamp">${timeStr}</div>
+                    <div class="change">
+                        ${changeHtml}
+                    </div>
+                    <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
+                        by <span class="user">${userName}</span>
+                    </div>
+                    ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
+                </div>
+            `;
+        }
+
+        function getDateGroup(date) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+            const itemDate = new Date(date);
+            const itemDay = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+
+            if (itemDay.getTime() === today.getTime()) {
+                return 'today';
+            } else if (itemDay.getTime() === yesterday.getTime()) {
+                return 'yesterday';
+            } else if (itemDate >= weekAgo) {
+                return 'week';
+            } else if (itemDate >= monthAgo) {
+                return 'month';
+            } else {
+                return 'older';
+            }
+        }
+
+        function getDateGroupLabel(group) {
+            const labels = {
+                'today': '📅 Today',
+                'yesterday': '📅 Yesterday',
+                'week': '📅 This Week',
+                'month': '📅 This Month',
+                'older': '📅 Older'
+            };
+            return labels[group] || group;
+        }
+
+        async function loadHistory(loadMore = false) {
+            if (!loadMore) {
+                historyOffset = 0;
+                allHistoryItems = [];
+            }
+
+            // Fetch history entries
             const { data, error } = await supabaseClient
                 .from('history')
                 .select('*')
                 .eq('contract_id', currentContract.id)
                 .order('created_at', { ascending: false })
-                .limit(50);
+                .range(historyOffset, historyOffset + historyLimit - 1);
 
             if (error) {
                 console.error('Error loading history:', error);
                 return;
             }
 
-            renderHistory(data);
+            // Add to all items if loading more, otherwise replace
+            if (loadMore) {
+                allHistoryItems.push(...data);
+            } else {
+                allHistoryItems = data;
+            }
+
+            historyOffset += data.length;
+
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('history-load-more');
+            if (data.length === historyLimit) {
+                loadMoreBtn.style.display = 'block';
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+
+            // Fetch user profiles for all users who made changes
+            const userIds = [...new Set(allHistoryItems.map(item => item.user_id))];
+            const { data: profiles } = await supabaseClient
+                .from('user_profiles')
+                .select('id, display_name')
+                .in('id', userIds);
+
+            // Create a map of user_id to display name and store globally for realtime updates
+            currentHistoryUserMap = {};
+            if (profiles) {
+                profiles.forEach(profile => {
+                    currentHistoryUserMap[profile.id] = profile.display_name;
+                });
+            }
+
+            // Populate user filter dropdown
+            const userFilter = document.getElementById('history-user-filter');
+            const currentValue = userFilter.value;
+            userFilter.innerHTML = '<option value="all">👥 All Users</option>';
+
+            userIds.forEach(userId => {
+                const userName = userId === currentUser?.id
+                    ? 'You'
+                    : (currentHistoryUserMap[userId] || `User (${userId.substring(0, 8)}...)`);
+                const option = document.createElement('option');
+                option.value = userId;
+                option.textContent = userName;
+                userFilter.appendChild(option);
+            });
+
+            userFilter.value = currentValue; // Restore previous selection
+
+            renderHistory(allHistoryItems, currentHistoryUserMap);
         }
 
-        function renderHistory(items) {
+        window.loadMoreHistory = async function() {
+            await loadHistory(true);
+        };
+
+        function renderHistory(items, userMap = {}) {
             const timeline = document.getElementById('history-timeline');
 
             if (items.length === 0) {
@@ -3094,21 +3844,49 @@
                 return;
             }
 
-            timeline.innerHTML = items.map(item => {
-                const date = new Date(item.created_at);
-                const timeStr = date.toLocaleString();
+            // Group items by date
+            const groups = {
+                'today': [],
+                'yesterday': [],
+                'week': [],
+                'month': [],
+                'older': []
+            };
 
-                return `
-                    <div class="history-item">
-                        <div class="timestamp">${timeStr}</div>
-                        <div class="change">
-                            <span class="user">${item.user_id}</span> ${item.description}
+            items.forEach(item => {
+                const group = getDateGroup(item.created_at);
+                groups[group].push(item);
+            });
+
+            // Render grouped items
+            let html = '';
+            ['today', 'yesterday', 'week', 'month', 'older'].forEach(groupKey => {
+                if (groups[groupKey].length > 0) {
+                    const groupLabel = getDateGroupLabel(groupKey);
+                    const count = groups[groupKey].length;
+
+                    html += `
+                        <div class="history-date-group" onclick="toggleHistoryGroup('${groupKey}')">
+                            ${groupLabel} (${count})
+                            <span class="toggle-icon">▼</span>
                         </div>
-                        ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
-                    </div>
-                `;
-            }).join('');
+                        <div class="history-group-items" id="history-group-${groupKey}">
+                            ${groups[groupKey].map(item => renderHistoryItem(item, userMap)).join('')}
+                        </div>
+                    `;
+                }
+            });
+
+            timeline.innerHTML = html;
         }
+
+        window.toggleHistoryGroup = function(groupKey) {
+            const header = event.currentTarget;
+            const items = document.getElementById(`history-group-${groupKey}`);
+
+            header.classList.toggle('collapsed');
+            items.classList.toggle('collapsed');
+        };
 
         document.getElementById('save-snapshot-btn').addEventListener('click', async () => {
             const description = prompt('Snapshot description:');
