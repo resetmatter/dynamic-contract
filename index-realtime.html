@@ -1204,6 +1204,17 @@
             }
         }
 
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
         @keyframes slideInRight {
             from {
                 transform: translateX(400px);
@@ -2792,22 +2803,21 @@
                     warningEl.style.cssText = `
                         position: fixed;
                         top: 70px;
-                        left: 50%;
-                        transform: translateX(-50%);
+                        left: 20px;
                         background: linear-gradient(135deg, #dc143c, #ff1744);
                         color: white;
-                        padding: 12px 24px;
+                        padding: 10px 16px;
                         border-radius: 8px;
                         box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
                         z-index: 9999;
                         font-weight: 600;
+                        font-size: 13px;
                         display: flex;
                         align-items: center;
-                        gap: 10px;
-                        animation: slideDown 0.3s ease-out;
-                        max-width: 90%;
-                        flex-wrap: wrap;
-                        justify-content: center;
+                        gap: 8px;
+                        animation: slideInLeft 0.3s ease-out;
+                        max-width: 350px;
+                        border: 1px solid rgba(255, 255, 255, 0.2);
                     `;
                     document.body.appendChild(warningEl);
                 }
@@ -2823,10 +2833,11 @@
                     : `${otherEditors.length} other ${otherEditors.length === 1 ? 'person is' : 'people are'} editing: ${editorNames}`;
 
                 warningEl.innerHTML = `
-                    <span style="font-size: 20px;">⚠️</span>
-                    <span>${message}</span>
-                    <span style="font-size: 16px;">💾</span>
-                    <span style="font-size: 0.9em; opacity: 0.9;">Changes save automatically</span>
+                    <span style="font-size: 18px;">⚠️</span>
+                    <div style="flex: 1;">
+                        <div>${message}</div>
+                        <div style="font-size: 11px; opacity: 0.9; margin-top: 2px;">💾 Changes save automatically</div>
+                    </div>
                 `;
             } else if (warningEl) {
                 warningEl.remove();
@@ -2841,8 +2852,8 @@
                 listEl.id = 'presence-detail-list';
                 listEl.style.cssText = `
                     position: fixed;
-                    top: 140px;
-                    right: 20px;
+                    top: 145px;
+                    left: 20px;
                     background: rgba(20, 10, 10, 0.95);
                     border: 2px solid var(--accent-pink);
                     border-radius: 8px;
