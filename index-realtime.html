@@ -658,6 +658,38 @@
             font-weight: 600;
         }
 
+        .history-date-group {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.95), rgba(220, 20, 60, 0.95));
+            padding: 8px 15px;
+            margin: 0 -20px 15px -20px;
+            border-bottom: 1px solid var(--accent-pink);
+            font-weight: 600;
+            color: white;
+            font-size: 0.9em;
+            z-index: 10;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .history-date-group:hover {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 1), rgba(220, 20, 60, 1));
+        }
+
+        .history-date-group .toggle-icon {
+            float: right;
+            transition: transform 0.3s;
+        }
+
+        .history-date-group.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+
+        .history-group-items.collapsed {
+            display: none;
+        }
+
         /* Share Dialog */
         .dialog-overlay {
             display: none;
@@ -1425,8 +1457,44 @@
             <h3>Change History</h3>
             <button class="btn btn-secondary" id="close-history-btn">✕</button>
         </div>
+
+        <!-- History Filters -->
+        <div style="padding: 15px; background: rgba(0, 0, 0, 0.3); border-bottom: 1px solid var(--border-color);">
+            <div style="margin-bottom: 10px;">
+                <input
+                    type="text"
+                    id="history-search"
+                    placeholder="🔍 Search changes..."
+                    style="width: 100%; padding: 8px 12px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);"
+                >
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <select
+                    id="history-user-filter"
+                    style="flex: 1; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);"
+                >
+                    <option value="all">👥 All Users</option>
+                </select>
+                <select
+                    id="history-date-filter"
+                    style="flex: 1; padding: 8px; background: var(--input-bg); border: 1px solid var(--border-color); border-radius: 4px; color: var(--text-color);"
+                >
+                    <option value="all">📅 All Time</option>
+                    <option value="today">Today</option>
+                    <option value="yesterday">Yesterday</option>
+                    <option value="week">This Week</option>
+                    <option value="month">This Month</option>
+                    <option value="older">Older</option>
+                </select>
+            </div>
+        </div>
+
         <div class="history-timeline" id="history-timeline">
             <!-- History items will be loaded here -->
+        </div>
+
+        <div id="history-load-more" style="padding: 15px; text-align: center; display: none;">
+            <button class="btn btn-secondary" onclick="loadMoreHistory()">Load More</button>
         </div>
     </div>
 
@@ -3476,17 +3544,74 @@
         // ============================================
 
         let currentHistoryUserMap = {}; // Store user map for realtime updates
+        let allHistoryItems = []; // Store all loaded history items
+        let historyLimit = 50; // Items to load per batch
+        let historyOffset = 0; // Current offset for pagination
+        let historyFiltersSetup = false; // Flag to prevent duplicate listeners
 
         document.getElementById('history-btn').addEventListener('click', async () => {
             document.getElementById('history-panel').classList.add('open');
             await loadHistory();
             setupHistoryRealtime();
+            if (!historyFiltersSetup) {
+                setupHistoryFilters();
+                historyFiltersSetup = true;
+            }
         });
 
         document.getElementById('close-history-btn').addEventListener('click', () => {
             document.getElementById('history-panel').classList.remove('open');
             cleanupHistoryRealtime();
         });
+
+        function setupHistoryFilters() {
+            const searchInput = document.getElementById('history-search');
+            const userFilter = document.getElementById('history-user-filter');
+            const dateFilter = document.getElementById('history-date-filter');
+
+            // Debounced search
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    applyHistoryFilters();
+                }, 300);
+            });
+
+            userFilter.addEventListener('change', applyHistoryFilters);
+            dateFilter.addEventListener('change', applyHistoryFilters);
+        }
+
+        function applyHistoryFilters() {
+            const searchTerm = document.getElementById('history-search').value.toLowerCase();
+            const userFilter = document.getElementById('history-user-filter').value;
+            const dateFilter = document.getElementById('history-date-filter').value;
+
+            let filteredItems = allHistoryItems.filter(item => {
+                // Search filter
+                if (searchTerm && !item.description.toLowerCase().includes(searchTerm)) {
+                    return false;
+                }
+
+                // User filter
+                if (userFilter !== 'all' && item.user_id !== userFilter) {
+                    return false;
+                }
+
+                // Date filter
+                if (dateFilter !== 'all') {
+                    const itemDate = new Date(item.created_at);
+                    const dateGroup = getDateGroup(itemDate);
+                    if (dateGroup !== dateFilter) {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+
+            renderHistory(filteredItems, currentHistoryUserMap);
+        }
 
         function setupHistoryRealtime() {
             // Clean up existing channel
@@ -3527,11 +3652,9 @@
         }
 
         async function handleNewHistoryEntry(newEntry) {
-            const timeline = document.getElementById('history-timeline');
-
-            // Check if this entry already exists (prevent duplicates)
-            const existingEntry = timeline.querySelector(`[data-history-id="${newEntry.id}"]`);
-            if (existingEntry) {
+            // Check if this entry already exists in our array (prevent duplicates)
+            const existingIndex = allHistoryItems.findIndex(item => item.id === newEntry.id);
+            if (existingIndex !== -1) {
                 console.log('History entry already exists, skipping duplicate:', newEntry.id);
                 return;
             }
@@ -3546,27 +3669,22 @@
 
                 if (profile) {
                     currentHistoryUserMap[profile.id] = profile.display_name;
+
+                    // Update user filter dropdown
+                    const userFilter = document.getElementById('history-user-filter');
+                    const userName = profile.display_name || `User (${newEntry.user_id.substring(0, 8)}...)`;
+                    const option = document.createElement('option');
+                    option.value = newEntry.user_id;
+                    option.textContent = userName;
+                    userFilter.appendChild(option);
                 }
             }
 
-            // Prepend the new entry to the timeline
-            const newEntryHtml = renderHistoryItem(newEntry, currentHistoryUserMap);
+            // Add to beginning of allHistoryItems
+            allHistoryItems.unshift(newEntry);
 
-            // Create a temporary container to parse the HTML
-            const temp = document.createElement('div');
-            temp.innerHTML = newEntryHtml;
-            const newElement = temp.firstElementChild;
-
-            // Add animation class
-            newElement.style.animation = 'fadeInSlideDown 0.3s ease-out';
-
-            // Prepend to timeline
-            if (timeline.firstChild && timeline.firstChild.tagName !== 'P') {
-                timeline.insertBefore(newElement, timeline.firstChild);
-            } else {
-                // If timeline is empty or has "No history yet" message, replace it
-                timeline.innerHTML = newEntryHtml;
-            }
+            // Re-apply current filters and re-render
+            applyHistoryFilters();
         }
 
         function renderHistoryItem(item, userMap) {
@@ -3606,22 +3724,81 @@
             `;
         }
 
-        async function loadHistory() {
+        function getDateGroup(date) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            const weekAgo = new Date(today);
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const monthAgo = new Date(today);
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+            const itemDate = new Date(date);
+            const itemDay = new Date(itemDate.getFullYear(), itemDate.getMonth(), itemDate.getDate());
+
+            if (itemDay.getTime() === today.getTime()) {
+                return 'today';
+            } else if (itemDay.getTime() === yesterday.getTime()) {
+                return 'yesterday';
+            } else if (itemDate >= weekAgo) {
+                return 'week';
+            } else if (itemDate >= monthAgo) {
+                return 'month';
+            } else {
+                return 'older';
+            }
+        }
+
+        function getDateGroupLabel(group) {
+            const labels = {
+                'today': '📅 Today',
+                'yesterday': '📅 Yesterday',
+                'week': '📅 This Week',
+                'month': '📅 This Month',
+                'older': '📅 Older'
+            };
+            return labels[group] || group;
+        }
+
+        async function loadHistory(loadMore = false) {
+            if (!loadMore) {
+                historyOffset = 0;
+                allHistoryItems = [];
+            }
+
             // Fetch history entries
             const { data, error } = await supabaseClient
                 .from('history')
                 .select('*')
                 .eq('contract_id', currentContract.id)
                 .order('created_at', { ascending: false })
-                .limit(50);
+                .range(historyOffset, historyOffset + historyLimit - 1);
 
             if (error) {
                 console.error('Error loading history:', error);
                 return;
             }
 
+            // Add to all items if loading more, otherwise replace
+            if (loadMore) {
+                allHistoryItems.push(...data);
+            } else {
+                allHistoryItems = data;
+            }
+
+            historyOffset += data.length;
+
+            // Show/hide load more button
+            const loadMoreBtn = document.getElementById('history-load-more');
+            if (data.length === historyLimit) {
+                loadMoreBtn.style.display = 'block';
+            } else {
+                loadMoreBtn.style.display = 'none';
+            }
+
             // Fetch user profiles for all users who made changes
-            const userIds = [...new Set(data.map(item => item.user_id))];
+            const userIds = [...new Set(allHistoryItems.map(item => item.user_id))];
             const { data: profiles } = await supabaseClient
                 .from('user_profiles')
                 .select('id, display_name')
@@ -3635,8 +3812,29 @@
                 });
             }
 
-            renderHistory(data, currentHistoryUserMap);
+            // Populate user filter dropdown
+            const userFilter = document.getElementById('history-user-filter');
+            const currentValue = userFilter.value;
+            userFilter.innerHTML = '<option value="all">👥 All Users</option>';
+
+            userIds.forEach(userId => {
+                const userName = userId === currentUser?.id
+                    ? 'You'
+                    : (currentHistoryUserMap[userId] || `User (${userId.substring(0, 8)}...)`);
+                const option = document.createElement('option');
+                option.value = userId;
+                option.textContent = userName;
+                userFilter.appendChild(option);
+            });
+
+            userFilter.value = currentValue; // Restore previous selection
+
+            renderHistory(allHistoryItems, currentHistoryUserMap);
         }
+
+        window.loadMoreHistory = async function() {
+            await loadHistory(true);
+        };
 
         function renderHistory(items, userMap = {}) {
             const timeline = document.getElementById('history-timeline');
@@ -3646,8 +3844,49 @@
                 return;
             }
 
-            timeline.innerHTML = items.map(item => renderHistoryItem(item, userMap)).join('');
+            // Group items by date
+            const groups = {
+                'today': [],
+                'yesterday': [],
+                'week': [],
+                'month': [],
+                'older': []
+            };
+
+            items.forEach(item => {
+                const group = getDateGroup(item.created_at);
+                groups[group].push(item);
+            });
+
+            // Render grouped items
+            let html = '';
+            ['today', 'yesterday', 'week', 'month', 'older'].forEach(groupKey => {
+                if (groups[groupKey].length > 0) {
+                    const groupLabel = getDateGroupLabel(groupKey);
+                    const count = groups[groupKey].length;
+
+                    html += `
+                        <div class="history-date-group" onclick="toggleHistoryGroup('${groupKey}')">
+                            ${groupLabel} (${count})
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                        <div class="history-group-items" id="history-group-${groupKey}">
+                            ${groups[groupKey].map(item => renderHistoryItem(item, userMap)).join('')}
+                        </div>
+                    `;
+                }
+            });
+
+            timeline.innerHTML = html;
         }
+
+        window.toggleHistoryGroup = function(groupKey) {
+            const header = event.currentTarget;
+            const items = document.getElementById(`history-group-${groupKey}`);
+
+            header.classList.toggle('collapsed');
+            items.classList.toggle('collapsed');
+        };
 
         document.getElementById('save-snapshot-btn').addEventListener('click', async () => {
             const description = prompt('Snapshot description:');
