@@ -3551,7 +3551,9 @@
                 clearTimeout(textEditTimeout);
                 captureStateForUndo('Text edit');
                 hasUncapturedEdits = false;
+                return true; // Return true if we flushed
             }
+            return false; // Return false if nothing to flush
         }
 
         // Capture current state for undo/redo
@@ -3601,6 +3603,7 @@
             // Flush any pending state captures first
             flushPendingStateCapture();
 
+            // Need at least 1 state to undo to
             if (undoStack.length === 0) {
                 console.log('⏮️ Nothing to undo');
                 return;
@@ -3608,18 +3611,22 @@
 
             isUndoRedoAction = true;
 
-            // Capture current state before undo (for redo)
-            collectFormData();
-            const currentState = {
-                contractData: JSON.parse(JSON.stringify(currentContract)),
-                description: 'Current state',
-                timestamp: Date.now()
-            };
+            // The last state in undo stack is the current/recent state
+            // Pop it and save for redo
+            const recentState = undoStack.pop();
+            redoStack.push(recentState);
 
-            // Add current state to redo stack
-            redoStack.push(currentState);
+            // Now check if there's a previous state to restore to
+            if (undoStack.length === 0) {
+                console.log('⏮️ No previous state to undo to');
+                // Put it back
+                undoStack.push(recentState);
+                redoStack.pop();
+                isUndoRedoAction = false;
+                return;
+            }
 
-            // Get previous state
+            // Get the actual previous state
             const previousState = undoStack.pop();
             currentStateIndex = undoStack.length - 1;
 
@@ -3640,7 +3647,7 @@
         // Perform redo
         function performRedo() {
             // Flush any pending state captures first
-            flushPendingStateCapture();
+            const flushed = flushPendingStateCapture();
 
             if (redoStack.length === 0) {
                 console.log('⏭️ Nothing to redo');
@@ -3650,7 +3657,9 @@
             isUndoRedoAction = true;
 
             // Capture current state before redo (for undo)
-            collectFormData();
+            if (!flushed) {
+                collectFormData();
+            }
             const currentState = {
                 contractData: JSON.parse(JSON.stringify(currentContract)),
                 description: 'Previous state',
