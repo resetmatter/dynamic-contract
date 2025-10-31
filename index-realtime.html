@@ -3930,9 +3930,17 @@
 
         // Save contract to database
         async function saveContract() {
-            if (isSyncing) return;
+            if (isSyncing) {
+                console.log('⏭️ Save already in progress, skipping...');
+                return;
+            }
             isSyncing = true;
             lastSaveTimestamp = Date.now();
+
+            console.log('💾 Starting save to database...', {
+                contractId: currentContract.id,
+                timestamp: new Date(lastSaveTimestamp).toLocaleTimeString()
+            });
 
             // Collect signature data
             const ownerSig = document.getElementById('owner-signature')?.value || '';
@@ -3979,9 +3987,12 @@
                 .eq('id', currentContract.id);
 
             if (error) {
-                console.error('Error saving contract:', error);
+                console.error('❌ Error saving contract:', error);
                 updateSyncStatus('error');
             } else {
+                console.log('✅ Save completed successfully - UPDATE sent to database');
+                console.log('   This should trigger realtime broadcast to other tabs/users');
+
                 // Update local copy with signatures
                 currentContract.owner_signature = ownerSig;
                 currentContract.owner_signature_date = ownerDate;
@@ -3994,6 +4005,7 @@
             }
 
             isSyncing = false;
+            console.log('💾 Save process complete, isSyncing reset to false');
         }
 
         // ============================================
@@ -4001,11 +4013,15 @@
         // ============================================
 
         function setupRealtimeSync() {
+            console.log('🔧 Setting up realtime sync for contract:', currentContract.id);
+
             // Clean up existing connections
             if (realtimeChannel) {
+                console.log('🧹 Cleaning up existing realtime channel');
                 supabaseClient.removeChannel(realtimeChannel);
             }
             if (pollingInterval) {
+                console.log('🧹 Cleaning up existing polling interval');
                 clearInterval(pollingInterval);
                 pollingInterval = null;
             }
@@ -4024,8 +4040,11 @@
                     handleRealtimeUpdate
                 )
                 .subscribe((status, err) => {
+                    console.log('📡 Realtime subscription status:', status);
+                    if (err) console.error('📡 Realtime subscription error:', err);
+
                     if (status === 'SUBSCRIBED') {
-                        console.log('✅ Realtime sync enabled (WebSocket)');
+                        console.log('✅ Realtime sync enabled (WebSocket) - listening for updates to contract:', currentContract.id);
                         usePolling = false;
                     } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
                         console.log('⚠️ Realtime not available, using polling fallback');
@@ -4049,7 +4068,8 @@
 
             // Poll every 3 seconds for changes
             pollingInterval = setInterval(async () => {
-                if (isSyncing) return; // Don't poll while we're saving
+                // Don't skip polling - we need to catch updates even during saves
+                // The timestamp-based echo detection will prevent infinite loops
 
                 try {
                     const { data, error } = await supabaseClient
@@ -4090,6 +4110,11 @@
         }
 
         function handleRealtimeUpdate(payload) {
+            console.log('🔔 Realtime update received!', {
+                event: payload.eventType,
+                timestamp: new Date().toLocaleTimeString()
+            });
+
             const newData = payload.new;
 
             // Only ignore if this is our own update echoing back within 2 seconds
@@ -4098,7 +4123,10 @@
                                   JSON.stringify(newData.data) === JSON.stringify(currentContract.data);
 
             if (isOurOwnUpdate) {
-                console.log('📤 Ignoring our own update echo');
+                console.log('📤 Ignoring our own update echo', {
+                    timeSinceLastSave: timeSinceLastSave + 'ms',
+                    isSyncing
+                });
                 return;
             }
 
@@ -4108,12 +4136,17 @@
             const dominantChanged = newData.dominant_name !== currentContract.dominant_name;
             const submissiveChanged = newData.submissive_name !== currentContract.submissive_name;
 
+            console.log('🔍 Checking for changes:', {
+                dataChanged,
+                titleChanged,
+                dominantChanged,
+                submissiveChanged,
+                timeSinceLastSave: timeSinceLastSave + 'ms',
+                isSyncing
+            });
+
             if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
-                console.log('📥 Received realtime update from another user/device');
-                console.log('  - Data changed:', dataChanged);
-                console.log('  - Title changed:', titleChanged);
-                console.log('  - Dominant name changed:', dominantChanged);
-                console.log('  - Submissive name changed:', submissiveChanged);
+                console.log('📥 APPLYING UPDATE from another user/device');
 
                 // Update contract data
                 const oldContract = JSON.parse(JSON.stringify(currentContract));
@@ -4126,6 +4159,8 @@
 
                 // Show notification that data was updated
                 showSyncNotification('Contract updated by another user');
+            } else {
+                console.log('⏭️ No changes detected, skipping update');
             }
         }
 
