@@ -878,7 +878,7 @@
 
         .field-group {
             position: relative;
-            padding-left: 35px;
+            padding-left: 50px;
         }
 
         /* List fields don't have parent bow, so no left padding */
@@ -893,6 +893,14 @@
             transform: translateY(-50%);
         }
 
+        .field-group .drag-handle:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .field-group .drag-handle:active {
+            transform: translateY(-50%) scale(0.98);
+        }
+
         .field-group.dragging {
             opacity: 0.5;
             background: rgba(255, 105, 180, 0.1);
@@ -900,7 +908,7 @@
 
         .list-item {
             position: relative;
-            padding-left: 35px;
+            padding-left: 50px;
         }
 
         .list-item .drag-handle {
@@ -908,6 +916,14 @@
             left: 5px;
             top: 50%;
             transform: translateY(-50%);
+        }
+
+        .list-item .drag-handle:hover {
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .list-item .drag-handle:active {
+            transform: translateY(-50%) scale(0.98);
         }
 
         .list-item.dragging {
