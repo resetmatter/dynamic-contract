@@ -3320,7 +3320,7 @@
                 return;
             }
 
-            const { error } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('history')
                 .insert({
                     contract_id: currentContract.id,
@@ -3328,10 +3328,21 @@
                     change_type: changeType,
                     description: description,
                     snapshot: currentContract.data
-                });
+                })
+                .select()
+                .single();
 
             if (error) {
                 console.error('Error tracking change:', error);
+                return;
+            }
+
+            // If history panel is open, manually update it with the new entry
+            // (This ensures immediate local updates; realtime will handle updates from others)
+            const historyPanel = document.getElementById('history-panel');
+            if (historyPanel && historyPanel.classList.contains('open') && data) {
+                // handleNewHistoryEntry has duplicate checking built-in
+                await handleNewHistoryEntry(data);
             }
         }
 
@@ -3516,6 +3527,15 @@
         }
 
         async function handleNewHistoryEntry(newEntry) {
+            const timeline = document.getElementById('history-timeline');
+
+            // Check if this entry already exists (prevent duplicates)
+            const existingEntry = timeline.querySelector(`[data-history-id="${newEntry.id}"]`);
+            if (existingEntry) {
+                console.log('History entry already exists, skipping duplicate:', newEntry.id);
+                return;
+            }
+
             // Fetch user profile if not already in map
             if (!currentHistoryUserMap[newEntry.user_id]) {
                 const { data: profile } = await supabaseClient
@@ -3530,7 +3550,6 @@
             }
 
             // Prepend the new entry to the timeline
-            const timeline = document.getElementById('history-timeline');
             const newEntryHtml = renderHistoryItem(newEntry, currentHistoryUserMap);
 
             // Create a temporary container to parse the HTML
@@ -3574,7 +3593,7 @@
                 : `<div style="margin: 5px 0;">${item.description}</div>`;
 
             return `
-                <div class="history-item">
+                <div class="history-item" data-history-id="${item.id}">
                     <div class="timestamp">${timeStr}</div>
                     <div class="change">
                         ${changeHtml}
