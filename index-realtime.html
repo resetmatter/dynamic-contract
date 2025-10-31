@@ -4375,6 +4375,8 @@
         }
 
         function updateFieldsSelectively(oldContract, newContract) {
+            console.log('🔧 updateFieldsSelectively called');
+
             // Get currently focused element to preserve it
             const focusedElement = document.activeElement;
             const focusedField = focusedElement?.dataset?.fieldValue !== undefined ||
@@ -4387,11 +4389,15 @@
                                  focusedElement.tagName === 'TEXTAREA' ||
                                  focusedElement.isContentEditable);
 
+            console.log('   Focused element:', focusedElement?.tagName, focusedElement?.id);
+            console.log('   Preserve focus:', preserveFocus);
+
             // Update title if changed and not focused
             const titleInput = document.getElementById('contract-title');
             if (titleInput &&
                 newContract.title !== oldContract.title &&
                 document.activeElement !== titleInput) {
+                console.log('   Updating title:', oldContract.title, '→', newContract.title);
                 titleInput.value = newContract.title || '';
                 document.getElementById('contract-display-title').textContent = newContract.title || 'D/s Dynamic Contract';
             }
@@ -4424,7 +4430,11 @@
                                        s.fields.length !== newSections[i].fields.length
                                    );
 
+            console.log('   Structure changed:', structureChanged);
+            console.log('   Old sections:', oldSections.length, 'New sections:', newSections.length);
+
             if (structureChanged) {
+                console.log('   ⚠️ Structure changed - doing full re-render');
                 // Full re-render if structure changed, but try to preserve focus
                 const focusPath = preserveFocus ? getFocusPath(focusedElement) : null;
                 renderContractEditor();
@@ -4434,7 +4444,10 @@
                 return;
             }
 
+            console.log('   📝 Selectively updating', newSections.length, 'sections');
+
             // Selectively update field values without full re-render
+            let fieldsUpdated = 0;
             newSections.forEach((section, sectionIndex) => {
                 const oldSection = oldSections[sectionIndex];
                 if (!oldSection) return;
@@ -4470,6 +4483,7 @@
 
                         // If list length changed, re-render the whole section
                         if (listItems.length !== oldListItems.length) {
+                            console.log('      List length changed, re-rendering');
                             const focusPath = preserveFocus ? getFocusPath(focusedElement) : null;
                             renderContractEditor();
                             if (focusPath) {
@@ -4483,10 +4497,14 @@
                             const itemInput = document.querySelector(
                                 `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] input[data-item-index="${itemIndex}"]`
                             );
+                            if (item !== oldListItems[itemIndex]) {
+                                console.log(`      List item [${sectionIndex}][${fieldIndex}][${itemIndex}] changed:`, oldListItems[itemIndex], '→', item, 'Found element:', !!itemInput);
+                            }
                             if (itemInput &&
                                 item !== oldListItems[itemIndex] &&
                                 document.activeElement !== itemInput) {
                                 itemInput.value = item || '';
+                                fieldsUpdated++;
                             }
                         });
                     } else {
@@ -4494,18 +4512,25 @@
                         const fieldInput = document.querySelector(
                             `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] [data-field-value]`
                         );
+                        if (field.value !== oldField.value) {
+                            console.log(`      Field [${sectionIndex}][${fieldIndex}] changed:`, oldField.value?.substring(0, 50), '→', field.value?.substring(0, 50), 'Found element:', !!fieldInput);
+                        }
                         if (fieldInput &&
                             field.value !== oldField.value &&
                             document.activeElement !== fieldInput) {
                             if (fieldInput.tagName === 'INPUT') {
                                 fieldInput.value = field.value || '';
+                                fieldsUpdated++;
                             } else if (fieldInput.tagName === 'TEXTAREA') {
                                 fieldInput.value = field.value || '';
+                                fieldsUpdated++;
                             }
                         }
                     }
                 });
             });
+
+            console.log('   ✅ Updated', fieldsUpdated, 'fields');
         }
 
         function getFocusPath(element) {
