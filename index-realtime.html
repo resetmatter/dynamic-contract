@@ -1543,18 +1543,18 @@
                 padding: 0;
             }
 
-            /* Thin, Compact Editor Header */
+            /* Thin, Compact Editor Header with Gap from App Header */
             .editor-header {
                 display: flex;
                 flex-direction: row;
-                flex-wrap: wrap;
-                padding: 8px;
+                flex-wrap: nowrap;
+                padding: 10px 8px;
                 gap: 6px;
                 margin-bottom: 10px;
                 position: sticky;
-                top: calc(var(--app-header-height) - 1px);
+                top: calc(var(--app-header-height) + 10px); /* 10px gap from app header */
                 z-index: 90;
-                border-radius: 6px;
+                border-radius: 8px;
                 background: rgba(0, 0, 0, 0.95);
                 border: 1px solid rgba(255, 105, 180, 0.3);
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
@@ -1570,59 +1570,60 @@
             .editor-title {
                 flex: 1;
                 min-width: 0;
-                order: 1;
             }
 
             .editor-title input {
                 width: 100%;
                 font-size: 0.9em;
-                padding: 8px 10px;
+                padding: 10px;
                 border-width: 1px;
             }
 
-            /* Essential actions in thin row */
+            /* Essential actions only - minimal UI */
             .editor-actions {
                 display: flex;
                 flex-wrap: nowrap;
-                gap: 4px;
-                order: 2;
+                gap: 6px;
+                align-items: center;
             }
 
             .editor-actions .btn {
-                padding: 8px 10px;
-                font-size: 18px;
-                min-height: 36px;
-                min-width: 36px;
-                border-radius: 6px;
+                padding: 10px;
+                font-size: 20px;
+                min-height: 40px;
+                min-width: 40px;
+                border-radius: 8px;
             }
 
-            /* Hide less critical buttons on mobile - use menu instead */
+            /* Hide ALL non-essential buttons on mobile */
             #share-btn,
             #save-snapshot-btn,
             #history-btn,
             #back-to-list-btn {
+                display: none !important;
+            }
+
+            /* Hide sync status - takes up space */
+            .editor-actions .sync-status {
                 display: none;
             }
 
-            .editor-actions .sync-status {
-                width: 100%;
-                order: 0;
-                text-align: center;
-                font-size: 10px;
-                padding: 2px 0;
-            }
-
+            /* Compact undo/redo group */
             .undo-redo-group {
                 display: flex;
                 gap: 4px;
-                order: 1;
             }
 
             .undo-redo-btn {
-                padding: 6px 8px !important;
-                min-width: 34px !important;
-                min-height: 34px !important;
-                font-size: 16px !important;
+                padding: 8px !important;
+                min-width: 36px !important;
+                min-height: 36px !important;
+                font-size: 18px !important;
+            }
+
+            /* Hide undo history toggle on mobile - too cluttered */
+            #undo-history-toggle {
+                display: none !important;
             }
 
             .undo-history-dropdown {
@@ -1637,15 +1638,15 @@
             /* Icon-only buttons */
             #preview-btn::before { content: '👁️'; }
             #preview-btn { font-size: 0; }
-            #preview-btn::before { font-size: 18px; }
+            #preview-btn::before { font-size: 20px; }
 
-            /* Mobile menu button for overflow actions */
+            /* Mobile overflow menu button - prominent */
             .editor-overflow-btn {
                 display: block !important;
-                padding: 8px 10px !important;
-                font-size: 20px !important;
-                min-height: 36px !important;
-                min-width: 36px !important;
+                padding: 10px !important;
+                font-size: 22px !important;
+                min-height: 40px !important;
+                min-width: 40px !important;
             }
 
             .contract-content-area {
@@ -1908,18 +1909,21 @@
                 padding: 15px;
             }
 
-            /* Thin, Compact Editor Header */
+            /* Thin, Compact Editor Header with Gap */
             .editor-header {
                 display: flex;
                 flex-direction: row;
-                flex-wrap: wrap;
-                padding: 10px;
+                flex-wrap: nowrap;
+                padding: 12px 10px;
                 gap: 8px;
                 margin-bottom: 12px;
+                position: sticky;
+                top: calc(var(--app-header-height) + 10px); /* 10px gap from app header */
                 background: rgba(0, 0, 0, 0.95);
                 border: 1px solid rgba(255, 105, 180, 0.3);
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
                 align-items: center;
+                border-radius: 8px;
             }
 
             .editor-header.scrolled {
@@ -1931,71 +1935,71 @@
             .editor-title {
                 flex: 1;
                 min-width: 0;
-                order: 1;
             }
 
             .editor-title input {
                 width: 100%;
                 font-size: 1em;
-                padding: 9px 12px;
+                padding: 11px 12px;
                 border-width: 1px;
             }
 
-            /* Essential actions in thin row */
+            /* Essential actions only */
             .editor-actions {
                 display: flex;
                 flex-wrap: nowrap;
-                gap: 6px;
-                order: 2;
+                gap: 8px;
+                align-items: center;
             }
 
             .editor-actions .btn {
-                padding: 9px 11px;
-                font-size: 19px;
-                min-height: 38px;
-                min-width: 38px;
+                padding: 11px;
+                font-size: 21px;
+                min-height: 42px;
+                min-width: 42px;
             }
 
-            /* Hide less critical buttons - use menu */
+            /* Hide non-essential buttons */
             #share-btn,
             #save-snapshot-btn,
             #history-btn,
             #back-to-list-btn {
-                display: none;
+                display: none !important;
             }
 
+            /* Hide sync status */
             .editor-actions .sync-status {
-                width: 100%;
-                order: 0;
-                text-align: center;
-                font-size: 11px;
-                padding: 3px 0;
+                display: none;
             }
 
             .undo-redo-group {
                 display: flex;
                 gap: 6px;
-                order: 1;
             }
 
             .undo-redo-btn {
-                padding: 7px 9px !important;
-                min-width: 36px !important;
-                min-height: 36px !important;
-                font-size: 17px !important;
+                padding: 9px !important;
+                min-width: 38px !important;
+                min-height: 38px !important;
+                font-size: 19px !important;
+            }
+
+            /* Hide undo history toggle */
+            #undo-history-toggle {
+                display: none !important;
             }
 
             /* Icon-only buttons */
             #preview-btn::before { content: '👁️'; }
             #preview-btn { font-size: 0; }
-            #preview-btn::before { font-size: 19px; }
+            #preview-btn::before { font-size: 21px; }
 
             .editor-overflow-btn {
                 display: block !important;
-                padding: 9px 11px !important;
-                font-size: 21px !important;
-                min-height: 38px !important;
-                min-width: 38px !important;
+                padding: 11px !important;
+                font-size: 23px !important;
+                min-height: 42px !important;
+                min-width: 42px !important;
             }
 
             .contract-content-area {
@@ -2162,6 +2166,7 @@
             .editor-header {
                 padding: 18px;
                 gap: 15px;
+                top: calc(var(--app-header-height) + 10px); /* Consistent gap */
             }
 
             .editor-title input {
@@ -3235,6 +3240,14 @@
                     <button class="mobile-menu-close" id="editor-overflow-close" aria-label="Close">×</button>
                 </div>
                 <div class="mobile-menu-content">
+                    <!-- Sync Status -->
+                    <div style="padding: 12px 15px; background: rgba(0, 0, 0, 0.4); border-radius: 8px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                            <span class="sync-dot" id="mobile-sync-dot"></span>
+                            <span id="mobile-sync-text" style="color: var(--text-light);">Synced</span>
+                        </div>
+                    </div>
+
                     <div class="mobile-menu-item" id="mobile-history-btn">
                         <span>📜</span>
                         <span>History</span>
@@ -5696,20 +5709,28 @@
         function updateSyncStatus(status) {
             const dot = document.getElementById('sync-dot');
             const text = document.getElementById('sync-text');
+            const mobileDot = document.getElementById('mobile-sync-dot');
+            const mobileText = document.getElementById('mobile-sync-text');
 
-            dot.className = 'sync-dot';
+            if (dot) dot.className = 'sync-dot';
+            if (mobileDot) mobileDot.className = 'sync-dot';
 
             switch (status) {
                 case 'syncing':
-                    dot.classList.add('syncing');
-                    text.textContent = 'Syncing...';
+                    if (dot) dot.classList.add('syncing');
+                    if (mobileDot) mobileDot.classList.add('syncing');
+                    if (text) text.textContent = 'Syncing...';
+                    if (mobileText) mobileText.textContent = 'Syncing...';
                     break;
                 case 'synced':
-                    text.textContent = 'Synced';
+                    if (text) text.textContent = 'Synced';
+                    if (mobileText) mobileText.textContent = 'Synced';
                     break;
                 case 'error':
-                    dot.classList.add('error');
-                    text.textContent = 'Error';
+                    if (dot) dot.classList.add('error');
+                    if (mobileDot) mobileDot.classList.add('error');
+                    if (text) text.textContent = 'Error';
+                    if (mobileText) mobileText.textContent = 'Error';
                     break;
             }
         }
