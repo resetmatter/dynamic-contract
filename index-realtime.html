@@ -1163,7 +1163,7 @@
         <header class="app-header">
             <h1>⛓️ D/s Dynamic Contract 🎀</h1>
             <div class="header-controls">
-                <div class="presence-indicator" id="presence-indicator">
+                <div class="presence-indicator" id="presence-indicator" style="display: none;">
                     <span class="presence-dot"></span>
                     <span id="presence-text">You are online</span>
                 </div>
@@ -1717,6 +1717,7 @@
 
             renderContractEditor();
             setupRealtimeSync();
+            setupPresence(); // Setup presence when opening contract
             showContractEditor();
         };
 
