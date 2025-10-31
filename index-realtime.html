@@ -1548,8 +1548,8 @@
                 display: flex;
                 flex-direction: row;
                 flex-wrap: nowrap;
-                padding: 10px 8px;
-                gap: 6px;
+                padding: 10px 12px;
+                gap: 10px;
                 margin-bottom: 10px;
                 position: sticky;
                 top: calc(var(--app-header-height) + 10px); /* 10px gap from app header */
@@ -1570,13 +1570,18 @@
             .editor-title {
                 flex: 1;
                 min-width: 0;
+                display: flex;
+                align-items: center;
+                padding-right: 10px;
+                border-right: 1px solid rgba(255, 105, 180, 0.2);
             }
 
             .editor-title input {
                 width: 100%;
                 font-size: 0.9em;
-                padding: 10px;
+                padding: 10px 12px;
                 border-width: 1px;
+                height: 44px;
             }
 
             /* Essential actions only - minimal UI */
@@ -1588,11 +1593,16 @@
             }
 
             .editor-actions .btn {
-                padding: 10px;
-                font-size: 20px;
-                min-height: 40px;
-                min-width: 40px;
+                padding: 9px 14px;
+                font-size: 13px;
+                min-height: 44px;
+                white-space: nowrap;
                 border-radius: 8px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
             }
 
             /* Hide ALL non-essential buttons on mobile */
@@ -1615,10 +1625,14 @@
             }
 
             .undo-redo-btn {
-                padding: 8px !important;
-                min-width: 36px !important;
-                min-height: 36px !important;
+                padding: 9px 11px !important;
+                min-width: 44px !important;
+                min-height: 44px !important;
                 font-size: 18px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                line-height: 1 !important;
             }
 
             /* Hide undo history toggle on mobile - too cluttered */
@@ -1635,18 +1649,20 @@
                 max-height: 300px;
             }
 
-            /* Icon-only buttons */
-            #preview-btn::before { content: '👁️'; }
-            #preview-btn { font-size: 0; }
-            #preview-btn::before { font-size: 20px; }
+            /* Text labels for buttons */
+            #preview-btn {
+                min-width: auto;
+                padding: 9px 16px !important;
+            }
 
             /* Mobile overflow menu button - prominent */
             .editor-overflow-btn {
                 display: block !important;
-                padding: 10px !important;
-                font-size: 22px !important;
-                min-height: 40px !important;
-                min-width: 40px !important;
+                padding: 9px 16px !important;
+                font-size: 13px !important;
+                min-height: 44px !important;
+                min-width: auto !important;
+                font-weight: 600 !important;
             }
 
             .contract-content-area {
@@ -1914,8 +1930,8 @@
                 display: flex;
                 flex-direction: row;
                 flex-wrap: nowrap;
-                padding: 12px 10px;
-                gap: 8px;
+                padding: 12px 14px;
+                gap: 12px;
                 margin-bottom: 12px;
                 position: sticky;
                 top: calc(var(--app-header-height) + 10px); /* 10px gap from app header */
@@ -1935,13 +1951,18 @@
             .editor-title {
                 flex: 1;
                 min-width: 0;
+                display: flex;
+                align-items: center;
+                padding-right: 12px;
+                border-right: 1px solid rgba(255, 105, 180, 0.2);
             }
 
             .editor-title input {
                 width: 100%;
                 font-size: 1em;
-                padding: 11px 12px;
+                padding: 11px 14px;
                 border-width: 1px;
+                height: 46px;
             }
 
             /* Essential actions only */
@@ -1953,10 +1974,16 @@
             }
 
             .editor-actions .btn {
-                padding: 11px;
-                font-size: 21px;
-                min-height: 42px;
-                min-width: 42px;
+                padding: 10px 18px;
+                font-size: 14px;
+                min-height: 46px;
+                white-space: nowrap;
+                border-radius: 8px;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                line-height: 1;
             }
 
             /* Hide non-essential buttons */
@@ -1978,10 +2005,14 @@
             }
 
             .undo-redo-btn {
-                padding: 9px !important;
-                min-width: 38px !important;
-                min-height: 38px !important;
-                font-size: 19px !important;
+                padding: 10px 13px !important;
+                min-width: 46px !important;
+                min-height: 46px !important;
+                font-size: 20px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                line-height: 1 !important;
             }
 
             /* Hide undo history toggle */
@@ -1989,17 +2020,19 @@
                 display: none !important;
             }
 
-            /* Icon-only buttons */
-            #preview-btn::before { content: '👁️'; }
-            #preview-btn { font-size: 0; }
-            #preview-btn::before { font-size: 21px; }
+            /* Text labels for buttons */
+            #preview-btn {
+                min-width: auto;
+                padding: 10px 18px !important;
+            }
 
             .editor-overflow-btn {
                 display: block !important;
-                padding: 11px !important;
-                font-size: 23px !important;
-                min-height: 42px !important;
-                min-width: 42px !important;
+                padding: 10px 18px !important;
+                font-size: 14px !important;
+                min-height: 46px !important;
+                min-width: auto !important;
+                font-weight: 600 !important;
             }
 
             .contract-content-area {
@@ -3223,8 +3256,8 @@
                             </div>
                         </div>
                     </div>
-                    <button class="btn" id="preview-btn">👁️ Preview</button>
-                    <button class="btn btn-secondary editor-overflow-btn" id="editor-overflow-btn" title="More options" style="display: none;">⋮</button>
+                    <button class="btn" id="preview-btn">Preview</button>
+                    <button class="btn btn-secondary editor-overflow-btn" id="editor-overflow-btn" title="More options" style="display: none;">More</button>
                     <button class="btn btn-secondary" id="history-btn">📜 History</button>
                     <button class="btn btn-secondary" id="share-btn">🔗 Share</button>
                     <button class="btn" id="save-snapshot-btn">📸 Snapshot</button>
