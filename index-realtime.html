@@ -3694,7 +3694,15 @@
         });
 
         // Setup input listeners for auto-save
+        let sectionListenersSetup = false; // Track if listeners are already set up
+
         function setupSectionListeners() {
+            // Only set up listeners once to avoid duplicates
+            if (sectionListenersSetup) {
+                console.log('⏭️ Section listeners already set up, skipping');
+                return;
+            }
+
             const editor = document.getElementById('contract-sections');
 
             editor.addEventListener('input', (e) => {
@@ -3713,6 +3721,9 @@
             setupFieldDragDrop();
             // Setup drag-and-drop for list items
             setupListItemDragDrop();
+
+            sectionListenersSetup = true;
+            console.log('✅ Section listeners set up');
         }
 
         // Drag and drop for fields
@@ -4070,6 +4081,8 @@
                 .channel(`contract-sync:${currentContract.id}`)
                 .on('broadcast', { event: 'contract-updated' }, async (payload) => {
                     console.log('📡 Broadcast received:', payload);
+                    console.log('   Channel state:', realtimeChannel?.state);
+                    console.log('   Channel topic:', realtimeChannel?.topic);
                     await handleBroadcastUpdate(payload);
                 })
                 .subscribe((status, err) => {
@@ -4078,11 +4091,15 @@
 
                     if (status === 'SUBSCRIBED') {
                         console.log('✅ Broadcast sync enabled - listening for updates to contract:', currentContract.id);
+                        console.log('   Channel ID:', realtimeChannel?.topic);
+                        console.log('   Channel state:', realtimeChannel?.state);
                         usePolling = false;
                     } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
                         console.log('⚠️ Broadcast not available, using polling fallback');
                         usePolling = true;
                         setupPollingSync();
+                    } else {
+                        console.log('📡 Channel status changed to:', status);
                     }
                 });
 
@@ -4147,27 +4164,28 @@
 
         // Handle broadcast updates (client-to-client messaging)
         async function handleBroadcastUpdate(payload) {
-            console.log('🔔 Broadcast update received!', {
-                timestamp: new Date().toLocaleTimeString(),
-                payload: payload.payload
-            });
+            try {
+                console.log('🔔 Broadcast update received!', {
+                    timestamp: new Date().toLocaleTimeString(),
+                    payload: payload.payload
+                });
 
-            const { userId, timestamp: updateTimestamp, updatedAt: expectedUpdatedAt } = payload.payload || {};
+                const { userId, timestamp: updateTimestamp, updatedAt: expectedUpdatedAt } = payload.payload || {};
 
-            // Ignore our own broadcasts
-            if (userId === currentUser?.id) {
-                console.log('📤 Ignoring our own broadcast');
-                return;
-            }
+                // Ignore our own broadcasts
+                if (userId === currentUser?.id) {
+                    console.log('📤 Ignoring our own broadcast');
+                    return;
+                }
 
-            // Ignore if we just saved recently (within 500ms)
-            const timeSinceLastSave = Date.now() - lastSaveTimestamp;
-            if (timeSinceLastSave < 500) {
-                console.log('📤 Ignoring broadcast - just saved', { timeSinceLastSave: timeSinceLastSave + 'ms' });
-                return;
-            }
+                // Ignore if we just saved recently (within 500ms)
+                const timeSinceLastSave = Date.now() - lastSaveTimestamp;
+                if (timeSinceLastSave < 500) {
+                    console.log('📤 Ignoring broadcast - just saved', { timeSinceLastSave: timeSinceLastSave + 'ms' });
+                    return;
+                }
 
-            console.log('📥 Fetching latest contract data from database...');
+                console.log('📥 Fetching latest contract data from database...');
 
             // Fetch with retry logic (max 3 attempts with exponential backoff)
             let latestData = null;
@@ -4260,6 +4278,11 @@
                 showSyncNotification('Contract updated by another user');
             } else {
                 console.log('⏭️ No changes detected after', attempts, 'attempts');
+            }
+            } catch (error) {
+                console.error('❌ Error in handleBroadcastUpdate:', error);
+                console.error('   Error stack:', error.stack);
+                // Don't throw - we want the channel to stay alive for future updates
             }
         }
 
