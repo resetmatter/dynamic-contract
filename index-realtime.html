@@ -489,9 +489,51 @@
         }
 
         .drag-handle {
-            cursor: move;
+            cursor: grab;
             color: var(--accent-pink);
-            font-size: 1.2em;
+            font-size: 20px;
+            margin-right: 8px;
+            user-select: none;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .field-group {
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .field-group .drag-handle {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .field-group.dragging {
+            opacity: 0.5;
+            background: rgba(255, 105, 180, 0.1);
+        }
+
+        .list-item {
+            position: relative;
+            padding-left: 35px;
+        }
+
+        .list-item .drag-handle {
+            position: absolute;
+            left: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .list-item.dragging {
+            opacity: 0.5;
+            background: rgba(255, 105, 180, 0.1);
         }
 
         .list-item input,
@@ -1964,6 +2006,134 @@
                     // Handle regular input fields
                     debouncedSave();
                 }
+            });
+
+            // Setup drag-and-drop for fields
+            setupFieldDragDrop();
+            // Setup drag-and-drop for list items
+            setupListItemDragDrop();
+        }
+
+        // Drag and drop for fields
+        let draggedFieldElement = null;
+        let draggedFieldSectionIndex = null;
+
+        function setupFieldDragDrop() {
+            const editor = document.getElementById('contract-sections');
+
+            editor.addEventListener('dragstart', (e) => {
+                const fieldGroup = e.target.closest('.field-group');
+                if (fieldGroup && e.target.classList.contains('drag-handle')) {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (fieldGroup) {
+                    draggedFieldElement = fieldGroup;
+                    const section = fieldGroup.closest('.contract-section');
+                    draggedFieldSectionIndex = parseInt(section.dataset.sectionIndex);
+                    fieldGroup.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                }
+            });
+
+            editor.addEventListener('dragend', (e) => {
+                const fieldGroup = e.target.closest('.field-group');
+                if (fieldGroup) {
+                    fieldGroup.classList.remove('dragging');
+                    draggedFieldElement = null;
+                    draggedFieldSectionIndex = null;
+                }
+            });
+
+            editor.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const fieldGroup = e.target.closest('.field-group');
+                if (!fieldGroup || fieldGroup === draggedFieldElement) return;
+
+                const section = fieldGroup.closest('.contract-section');
+                const sectionIndex = parseInt(section.dataset.sectionIndex);
+
+                // Only allow dragging within same section
+                if (sectionIndex !== draggedFieldSectionIndex) return;
+
+                const rect = fieldGroup.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
+
+                if (e.clientY < midpoint) {
+                    fieldGroup.parentNode.insertBefore(draggedFieldElement, fieldGroup);
+                } else {
+                    fieldGroup.parentNode.insertBefore(draggedFieldElement, fieldGroup.nextSibling);
+                }
+            });
+
+            editor.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (!draggedFieldElement) return;
+
+                // Collect the new order and save
+                collectFormData();
+                saveContract();
+            });
+        }
+
+        // Drag and drop for list items
+        let draggedListItem = null;
+        let draggedListContainer = null;
+
+        function setupListItemDragDrop() {
+            const editor = document.getElementById('contract-sections');
+
+            editor.addEventListener('dragstart', (e) => {
+                const listItem = e.target.closest('.list-item');
+                if (listItem) {
+                    // Don't drag if clicking the drag handle itself
+                    if (e.target.classList.contains('drag-handle')) {
+                        e.preventDefault();
+                        return;
+                    }
+
+                    draggedListItem = listItem;
+                    draggedListContainer = listItem.closest('.list-container');
+                    listItem.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                }
+            });
+
+            editor.addEventListener('dragend', (e) => {
+                const listItem = e.target.closest('.list-item');
+                if (listItem) {
+                    listItem.classList.remove('dragging');
+                    draggedListItem = null;
+                    draggedListContainer = null;
+                }
+            });
+
+            editor.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                const listItem = e.target.closest('.list-item');
+                if (!listItem || listItem === draggedListItem) return;
+
+                const container = listItem.closest('.list-container');
+                if (container !== draggedListContainer) return; // Only within same list
+
+                const rect = listItem.getBoundingClientRect();
+                const midpoint = rect.top + rect.height / 2;
+
+                if (e.clientY < midpoint) {
+                    listItem.parentNode.insertBefore(draggedListItem, listItem);
+                } else {
+                    listItem.parentNode.insertBefore(draggedListItem, listItem.nextSibling);
+                }
+            });
+
+            editor.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (!draggedListItem) return;
+
+                // Collect the new order and save
+                collectFormData();
+                saveContract();
             });
         }
 
