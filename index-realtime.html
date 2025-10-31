@@ -1348,15 +1348,21 @@
                 padding: 20px 12px;
             }
 
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
             .section h2 {
                 font-size: 1.4em;
-                margin-bottom: 12px;
+                margin-bottom: 0;
             }
 
             .section-actions {
                 flex-direction: column;
                 gap: 8px;
-                margin-top: 15px;
+                margin-top: 0;
             }
 
             .section-actions .btn {
@@ -1624,19 +1630,25 @@
                 padding: 18px 12px;
             }
 
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
             .section h2 {
                 font-size: 1.5em;
+                margin-bottom: 0;
             }
 
             .section-actions {
-                flex-direction: row;
-                flex-wrap: wrap;
+                flex-direction: column;
                 gap: 8px;
+                margin-top: 0;
             }
 
             .section-actions .btn {
-                flex: 1 1 calc(50% - 4px);
-                min-width: 120px;
+                width: 100%;
                 padding: 10px 12px;
                 font-size: 12px;
             }
@@ -1792,18 +1804,25 @@
                 padding: 30px 25px;
             }
 
+            .section-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
             .section h2 {
                 font-size: 1.8em;
+                margin-bottom: 0;
             }
 
             .section-actions {
-                flex-wrap: wrap;
+                flex-direction: column;
                 gap: 10px;
+                margin-top: 0;
             }
 
             .section-actions .btn {
-                flex: 1 1 auto;
-                min-width: 140px;
+                width: 100%;
             }
 
             .drag-handle {
