@@ -3949,9 +3949,10 @@
             const subDate = document.getElementById('submissive-signature-date')?.value || null;
 
             // Fetch the current state from database for change detection (before we update it)
+            // Use * to fetch all columns, avoiding issues with missing columns
             const { data: currentDbState, error: fetchError } = await supabaseClient
                 .from('contracts')
-                .select('title,data,owner_signature,submissive_signature,dominant_name,submissive_name')
+                .select('*')
                 .eq('id', currentContract.id)
                 .single();
 
@@ -3962,32 +3963,43 @@
             // Build previous contract state for comparison
             const previousContract = currentDbState || null;
 
-            // Build new contract state for comparison
+            // Build new contract state for comparison (only include what we're comparing)
             const newContract = {
                 title: currentContract.title,
                 data: currentContract.data,
                 owner_signature: ownerSig,
-                submissive_signature: subSig,
-                dominant_name: currentContract.dominant_name,
-                submissive_name: currentContract.submissive_name
+                submissive_signature: subSig
             };
+
+            // Include name fields only if they exist in the database schema
+            if (currentDbState && 'dominant_name' in currentDbState) {
+                newContract.dominant_name = currentContract.dominant_name;
+                newContract.submissive_name = currentContract.submissive_name;
+            }
 
             // Generate change description
             const changeDescription = generateChangeDescription(previousContract, newContract);
 
+            // Build update object - only include fields that exist in database
+            const updateData = {
+                title: currentContract.title,
+                data: currentContract.data,
+                owner_signature: ownerSig,
+                owner_signature_date: ownerDate,
+                submissive_signature: subSig,
+                submissive_signature_date: subDate
+                // Don't set updated_at manually - let the DB trigger handle it
+            };
+
+            // Include name fields only if they exist in the database schema
+            if (currentDbState && 'dominant_name' in currentDbState) {
+                updateData.dominant_name = currentContract.dominant_name;
+                updateData.submissive_name = currentContract.submissive_name;
+            }
+
             const { data: updatedData, error } = await supabaseClient
                 .from('contracts')
-                .update({
-                    title: currentContract.title,
-                    data: currentContract.data,
-                    dominant_name: currentContract.dominant_name,
-                    submissive_name: currentContract.submissive_name,
-                    owner_signature: ownerSig,
-                    owner_signature_date: ownerDate,
-                    submissive_signature: subSig,
-                    submissive_signature_date: subDate
-                    // Don't set updated_at manually - let the DB trigger handle it
-                })
+                .update(updateData)
                 .eq('id', currentContract.id)
                 .select()
                 .single();
@@ -4107,8 +4119,11 @@
                     // Check if data changed (any field)
                     const dataChanged = data && JSON.stringify(data.data) !== JSON.stringify(currentContract.data);
                     const titleChanged = data && data.title !== currentContract.title;
-                    const dominantChanged = data && data.dominant_name !== currentContract.dominant_name;
-                    const submissiveChanged = data && data.submissive_name !== currentContract.submissive_name;
+                    // Only check name fields if they exist in the database
+                    const dominantChanged = data && ('dominant_name' in data) &&
+                                           data.dominant_name !== currentContract.dominant_name;
+                    const submissiveChanged = data && ('submissive_name' in data) &&
+                                             data.submissive_name !== currentContract.submissive_name;
 
                     if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                         console.log('📥 Polling detected changes');
@@ -4214,8 +4229,11 @@
             // Check if data actually changed
             const dataChanged = JSON.stringify(latestData.data) !== JSON.stringify(currentContract.data);
             const titleChanged = latestData.title !== currentContract.title;
-            const dominantChanged = latestData.dominant_name !== currentContract.dominant_name;
-            const submissiveChanged = latestData.submissive_name !== currentContract.submissive_name;
+            // Only check name fields if they exist in the database
+            const dominantChanged = ('dominant_name' in latestData) &&
+                                   latestData.dominant_name !== currentContract.dominant_name;
+            const submissiveChanged = ('submissive_name' in latestData) &&
+                                     latestData.submissive_name !== currentContract.submissive_name;
 
             console.log('🔍 Checking for changes:', {
                 dataChanged,
@@ -4269,8 +4287,11 @@
             // Check if data actually changed
             const dataChanged = JSON.stringify(newData.data) !== JSON.stringify(currentContract.data);
             const titleChanged = newData.title !== currentContract.title;
-            const dominantChanged = newData.dominant_name !== currentContract.dominant_name;
-            const submissiveChanged = newData.submissive_name !== currentContract.submissive_name;
+            // Only check name fields if they exist in the database
+            const dominantChanged = ('dominant_name' in newData) &&
+                                   newData.dominant_name !== currentContract.dominant_name;
+            const submissiveChanged = ('submissive_name' in newData) &&
+                                     newData.submissive_name !== currentContract.submissive_name;
 
             console.log('🔍 Checking for changes:', {
                 dataChanged,
@@ -4322,17 +4343,19 @@
                 document.getElementById('contract-display-title').textContent = newContract.title || 'D/s Dynamic Contract';
             }
 
-            // Update dominant name if changed and not focused
+            // Update dominant name if changed and not focused (only if field exists in DB)
             const dominantInput = document.getElementById('dominant-name');
             if (dominantInput &&
+                'dominant_name' in newContract && 'dominant_name' in oldContract &&
                 newContract.dominant_name !== oldContract.dominant_name &&
                 document.activeElement !== dominantInput) {
                 dominantInput.value = newContract.dominant_name || '';
             }
 
-            // Update submissive name if changed and not focused
+            // Update submissive name if changed and not focused (only if field exists in DB)
             const submissiveInput = document.getElementById('submissive-name');
             if (submissiveInput &&
+                'submissive_name' in newContract && 'submissive_name' in oldContract &&
                 newContract.submissive_name !== oldContract.submissive_name &&
                 document.activeElement !== submissiveInput) {
                 submissiveInput.value = newContract.submissive_name || '';
