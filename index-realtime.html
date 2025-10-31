@@ -1845,7 +1845,9 @@
                 .eq('id', currentUser.id)
                 .single();
 
-            if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
+            // Handle expected errors (profile doesn't exist yet)
+            // PGRST116 = no rows found, 406 = not acceptable (sometimes returned for missing rows)
+            if (error && error.code !== 'PGRST116' && error.status !== 406) {
                 console.error('Error loading user profile:', error);
                 return;
             }
