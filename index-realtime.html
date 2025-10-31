@@ -507,6 +507,11 @@
             padding-left: 35px;
         }
 
+        /* List fields don't have parent bow, so no left padding */
+        .field-group-list {
+            padding-left: 0;
+        }
+
         .field-group .drag-handle {
             position: absolute;
             left: 5px;
@@ -1923,6 +1928,18 @@
             const fieldType = field.type || 'textarea';
             const renderFunc = fieldTypes[fieldType] || fieldTypes.textarea;
 
+            // For list fields, don't show the parent field bow or make it draggable
+            if (fieldType === 'list') {
+                return `
+                    <div class="field-group field-group-list" data-field-index="${fieldIndex}">
+                        <label contenteditable="true" data-field-label>${field.label || 'Field'}</label>
+                        ${renderFunc(field)}
+                        <button class="remove-btn" onclick="removeField(${sectionIndex}, ${fieldIndex})" style="margin-top: 10px;">Remove Field</button>
+                    </div>
+                `;
+            }
+
+            // For non-list fields, show bow and make draggable
             return `
                 <div class="field-group" data-field-index="${fieldIndex}" draggable="true">
                     <span class="drag-handle">🎀</span>
