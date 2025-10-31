@@ -2880,6 +2880,7 @@
         let historyChannel = null;
         let saveTimeout = null;
         let isSyncing = false;
+        let lastSaveTimestamp = 0;
         let pollingInterval = null;
         let usePolling = false;
 
@@ -3931,6 +3932,7 @@
         async function saveContract() {
             if (isSyncing) return;
             isSyncing = true;
+            lastSaveTimestamp = Date.now();
 
             // Collect signature data
             const ownerSig = document.getElementById('owner-signature')?.value || '';
@@ -4061,12 +4063,23 @@
                         return;
                     }
 
-                    // Check if data changed
-                    if (data && JSON.stringify(data.data) !== JSON.stringify(currentContract.data)) {
+                    // Check if data changed (any field)
+                    const dataChanged = data && JSON.stringify(data.data) !== JSON.stringify(currentContract.data);
+                    const titleChanged = data && data.title !== currentContract.title;
+                    const dominantChanged = data && data.dominant_name !== currentContract.dominant_name;
+                    const submissiveChanged = data && data.submissive_name !== currentContract.submissive_name;
+
+                    if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                         console.log('📥 Polling detected changes');
+
+                        // Update contract data with selective updates
+                        const oldContract = JSON.parse(JSON.stringify(currentContract));
                         currentContract = data;
-                        renderContractEditor();
+                        updateFieldsSelectively(oldContract, data);
                         updateSyncStatus('synced');
+
+                        // Show notification
+                        showSyncNotification('Contract updated by another user');
                     }
                 } catch (err) {
                     console.error('Polling failed:', err);
@@ -4077,13 +4090,30 @@
         }
 
         function handleRealtimeUpdate(payload) {
-            if (isSyncing) return; // Don't update if we're the one saving
-
             const newData = payload.new;
 
+            // Only ignore if this is our own update echoing back within 2 seconds
+            const timeSinceLastSave = Date.now() - lastSaveTimestamp;
+            const isOurOwnUpdate = isSyncing && timeSinceLastSave < 2000 &&
+                                  JSON.stringify(newData.data) === JSON.stringify(currentContract.data);
+
+            if (isOurOwnUpdate) {
+                console.log('📤 Ignoring our own update echo');
+                return;
+            }
+
             // Check if data actually changed
-            if (JSON.stringify(newData.data) !== JSON.stringify(currentContract.data)) {
+            const dataChanged = JSON.stringify(newData.data) !== JSON.stringify(currentContract.data);
+            const titleChanged = newData.title !== currentContract.title;
+            const dominantChanged = newData.dominant_name !== currentContract.dominant_name;
+            const submissiveChanged = newData.submissive_name !== currentContract.submissive_name;
+
+            if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                 console.log('📥 Received realtime update from another user/device');
+                console.log('  - Data changed:', dataChanged);
+                console.log('  - Title changed:', titleChanged);
+                console.log('  - Dominant name changed:', dominantChanged);
+                console.log('  - Submissive name changed:', submissiveChanged);
 
                 // Update contract data
                 const oldContract = JSON.parse(JSON.stringify(currentContract));
