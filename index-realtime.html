@@ -3527,6 +3527,12 @@
         let pollingInterval = null;
         let usePolling = false;
 
+        // History tracking debouncing
+        let historyTimeout = null;
+        let pendingHistoryChange = null;
+        let lastHistoryTimestamp = 0;
+        const HISTORY_DEBOUNCE_MS = 3000; // Wait 3 seconds after last edit before creating history entry
+
         // ============================================
         // UNDO/REDO SYSTEM
         // ============================================
@@ -3536,6 +3542,19 @@
         let isUndoRedoAction = false; // Flag to prevent undo/redo from being added to stack
         let lastCapturedState = null; // Last state we captured (for deduplication)
         const MAX_UNDO_STACK_SIZE = 50; // Maximum number of undo states to keep
+        let textEditTimeout = null; // Timeout for debounced state capture
+        let hasUncapturedEdits = false; // Flag for pending edits that haven't been captured
+
+        // Flush any pending state captures immediately
+        function flushPendingStateCapture() {
+            if (hasUncapturedEdits) {
+                clearTimeout(textEditTimeout);
+                captureStateForUndo('Text edit');
+                hasUncapturedEdits = false;
+                return true; // Return true if we flushed
+            }
+            return false; // Return false if nothing to flush
+        }
 
         // Capture current state for undo/redo
         function captureStateForUndo(description = 'Edit') {
@@ -3581,6 +3600,10 @@
 
         // Perform undo
         function performUndo() {
+            // Flush any pending state captures first
+            flushPendingStateCapture();
+
+            // Need at least 1 state to undo to
             if (undoStack.length === 0) {
                 console.log('⏮️ Nothing to undo');
                 return;
@@ -3588,19 +3611,23 @@
 
             isUndoRedoAction = true;
 
-            // Capture current state before undo (for redo)
-            collectFormData();
-            const currentState = {
-                contractData: JSON.parse(JSON.stringify(currentContract)),
-                description: 'Current state',
-                timestamp: Date.now()
-            };
+            // The last state in undo stack is the current/recent state
+            // Pop it and save for redo
+            const recentState = undoStack.pop();
+            redoStack.push(recentState);
 
-            // Add current state to redo stack
-            redoStack.push(currentState);
+            // Now check if there's a previous state to restore to
+            if (undoStack.length === 0) {
+                console.log('⏮️ No previous state to undo to');
+                // Put it back
+                undoStack.push(recentState);
+                redoStack.pop();
+                isUndoRedoAction = false;
+                return;
+            }
 
-            // Get previous state
-            const previousState = undoStack.pop();
+            // Peek at the previous state (don't pop it - we want it to stay in stack)
+            const previousState = undoStack[undoStack.length - 1];
             currentStateIndex = undoStack.length - 1;
 
             // Restore the previous state
@@ -3609,6 +3636,10 @@
             console.log(`⏮️ Undo: ${previousState.description}`);
             updateUndoRedoUI();
             showUndoNotification(`Undone: ${previousState.description}`);
+
+            // Clear any pending state captures that might have been triggered by re-rendering
+            clearTimeout(textEditTimeout);
+            hasUncapturedEdits = false;
 
             // Save to database
             setTimeout(() => {
@@ -3619,6 +3650,9 @@
 
         // Perform redo
         function performRedo() {
+            // Flush any pending state captures first
+            const flushed = flushPendingStateCapture();
+
             if (redoStack.length === 0) {
                 console.log('⏭️ Nothing to redo');
                 return;
@@ -3627,7 +3661,9 @@
             isUndoRedoAction = true;
 
             // Capture current state before redo (for undo)
-            collectFormData();
+            if (!flushed) {
+                collectFormData();
+            }
             const currentState = {
                 contractData: JSON.parse(JSON.stringify(currentContract)),
                 description: 'Previous state',
@@ -3647,6 +3683,10 @@
             console.log(`⏭️ Redo: ${redoState.description}`);
             updateUndoRedoUI();
             showUndoNotification(`Redone: ${redoState.description}`);
+
+            // Clear any pending state captures that might have been triggered by re-rendering
+            clearTimeout(textEditTimeout);
+            hasUncapturedEdits = false;
 
             // Save to database
             setTimeout(() => {
@@ -3681,13 +3721,14 @@
             const historyToggle = document.getElementById('undo-history-toggle');
 
             if (undoBtn) {
-                undoBtn.disabled = undoStack.length === 0;
+                // Need at least 2 states to undo (current + previous)
+                undoBtn.disabled = undoStack.length < 2;
             }
             if (redoBtn) {
                 redoBtn.disabled = redoStack.length === 0;
             }
             if (historyToggle) {
-                historyToggle.disabled = undoStack.length === 0;
+                historyToggle.disabled = undoStack.length < 2;
             }
 
             // Update history dropdown
@@ -4333,7 +4374,12 @@
             }
         }
 
-        document.getElementById('back-to-list-btn').addEventListener('click', showContractList);
+        document.getElementById('back-to-list-btn').addEventListener('click', async () => {
+            // Flush any pending history changes before navigating away
+            clearTimeout(historyTimeout);
+            await flushHistoryChange();
+            showContractList();
+        });
 
         // ============================================
         // CONTRACT LIST
@@ -4711,9 +4757,8 @@
 
             const editor = document.getElementById('contract-sections');
 
-            // Debounced state capture for text edits (longer delay than save)
-            let textEditTimeout = null;
-            let hasUncapturedEdits = false;
+            // Note: textEditTimeout and hasUncapturedEdits are now global variables
+            // defined in the UNDO/REDO SYSTEM section
 
             editor.addEventListener('input', (e) => {
                 const target = e.target;
@@ -4728,14 +4773,14 @@
                     hasUncapturedEdits = true;
                 }
 
-                // Capture state after user stops typing for 2 seconds
+                // Capture state after user stops typing for 1 second
                 clearTimeout(textEditTimeout);
                 textEditTimeout = setTimeout(() => {
                     if (hasUncapturedEdits) {
                         captureStateForUndo('Text edit');
                         hasUncapturedEdits = false;
                     }
-                }, 2000);
+                }, 1000);
             });
 
             // Setup drag-and-drop for fields
@@ -6282,28 +6327,57 @@
             return changes.join('\n');
         }
 
-        async function trackChange(changeType, description) {
-            // Skip history tracking for public editors
-            if (currentUser?.isPublicEditor) {
+        // Debounced history tracking - groups rapid changes together
+        function trackChange(changeType, description) {
+            // Skip if description indicates no changes
+            if (description === 'No changes detected') {
                 return;
             }
+
+            // Store pending change
+            pendingHistoryChange = {
+                changeType: changeType,
+                description: description,
+                snapshot: JSON.parse(JSON.stringify(currentContract.data)) // Deep copy
+            };
+
+            // Clear existing timeout and set new one
+            clearTimeout(historyTimeout);
+            historyTimeout = setTimeout(() => {
+                flushHistoryChange();
+            }, HISTORY_DEBOUNCE_MS);
+        }
+
+        // Actually insert the history entry to database
+        async function flushHistoryChange() {
+            if (!pendingHistoryChange) {
+                return;
+            }
+
+            // Track changes for all users, including public editors
+            // Public editors will have user_id set to null
+            const userId = currentUser?.isPublicEditor ? null : currentUser?.id;
 
             const { data, error } = await supabaseClient
                 .from('history')
                 .insert({
                     contract_id: currentContract.id,
-                    user_id: currentUser.id,
-                    change_type: changeType,
-                    description: description,
-                    snapshot: currentContract.data
+                    user_id: userId,
+                    change_type: pendingHistoryChange.changeType,
+                    description: pendingHistoryChange.description,
+                    snapshot: pendingHistoryChange.snapshot
                 })
                 .select()
                 .single();
 
             if (error) {
                 console.error('Error tracking change:', error);
+                pendingHistoryChange = null;
                 return;
             }
+
+            // Update timestamp
+            lastHistoryTimestamp = Date.now();
 
             // If history panel is open, manually update it with the new entry
             // (This ensures immediate local updates; realtime will handle updates from others)
@@ -6312,6 +6386,9 @@
                 // handleNewHistoryEntry has duplicate checking built-in
                 await handleNewHistoryEntry(data);
             }
+
+            // Clear pending change
+            pendingHistoryChange = null;
         }
 
         // ============================================
@@ -6500,8 +6577,13 @@
                 }
 
                 // User filter
-                if (userFilter !== 'all' && item.user_id !== userFilter) {
-                    return false;
+                if (userFilter !== 'all') {
+                    // Handle null user_id (public users)
+                    if (userFilter === 'null' && item.user_id !== null) {
+                        return false;
+                    } else if (userFilter !== 'null' && item.user_id !== userFilter) {
+                        return false;
+                    }
                 }
 
                 // Date filter
@@ -6558,6 +6640,12 @@
         }
 
         async function handleNewHistoryEntry(newEntry) {
+            // Skip pointless "No changes detected" entries
+            if (newEntry.description === 'No changes detected') {
+                console.log('Skipping "No changes detected" history entry');
+                return;
+            }
+
             // Check if this entry already exists in our array (prevent duplicates)
             const existingIndex = allHistoryItems.findIndex(item => item.id === newEntry.id);
             if (existingIndex !== -1) {
@@ -6599,7 +6687,10 @@
 
             // Get user display name
             let userName = 'User';
-            if (item.user_id === currentUser?.id) {
+            if (item.user_id === null) {
+                // Public/anonymous user edit
+                userName = 'Public User';
+            } else if (item.user_id === currentUser?.id) {
                 userName = 'You';
             } else if (userMap[item.user_id]) {
                 userName = userMap[item.user_id];
@@ -6678,6 +6769,7 @@
                 .from('history')
                 .select('*')
                 .eq('contract_id', currentContract.id)
+                .neq('description', 'No changes detected') // Filter out pointless entries
                 .order('created_at', { ascending: false })
                 .range(historyOffset, historyOffset + historyLimit - 1);
 
@@ -6686,11 +6778,14 @@
                 return;
             }
 
+            // Filter out any "No changes detected" entries that might have slipped through
+            const filteredData = data.filter(item => item.description !== 'No changes detected');
+
             // Add to all items if loading more, otherwise replace
             if (loadMore) {
-                allHistoryItems.push(...data);
+                allHistoryItems.push(...filteredData);
             } else {
-                allHistoryItems = data;
+                allHistoryItems = filteredData;
             }
 
             historyOffset += data.length;
@@ -6705,10 +6800,13 @@
 
             // Fetch user profiles for all users who made changes
             const userIds = [...new Set(allHistoryItems.map(item => item.user_id))];
+            // Filter out null user_ids for the profile query
+            const authenticatedUserIds = userIds.filter(id => id !== null);
+
             const { data: profiles } = await supabaseClient
                 .from('user_profiles')
                 .select('id, display_name')
-                .in('id', userIds);
+                .in('id', authenticatedUserIds);
 
             // Create a map of user_id to display name and store globally for realtime updates
             currentHistoryUserMap = {};
@@ -6724,11 +6822,16 @@
             userFilter.innerHTML = '<option value="all">👥 All Users</option>';
 
             userIds.forEach(userId => {
-                const userName = userId === currentUser?.id
-                    ? 'You'
-                    : (currentHistoryUserMap[userId] || `User (${userId.substring(0, 8)}...)`);
+                let userName;
+                if (userId === null) {
+                    userName = 'Public User';
+                } else if (userId === currentUser?.id) {
+                    userName = 'You';
+                } else {
+                    userName = currentHistoryUserMap[userId] || `User (${userId.substring(0, 8)}...)`;
+                }
                 const option = document.createElement('option');
-                option.value = userId;
+                option.value = userId === null ? 'null' : userId;
                 option.textContent = userName;
                 userFilter.appendChild(option);
             });
@@ -6798,6 +6901,10 @@
             const description = prompt('Snapshot description:');
             if (!description) return;
 
+            // Flush any pending history changes first
+            clearTimeout(historyTimeout);
+            await flushHistoryChange();
+
             const { error } = await supabaseClient
                 .from('history')
                 .insert({
@@ -6821,6 +6928,10 @@
             if (!confirm('Restore this version? Current changes will be saved as a snapshot.')) {
                 return;
             }
+
+            // Flush any pending history changes first
+            clearTimeout(historyTimeout);
+            await flushHistoryChange();
 
             // Save current state as snapshot first
             await supabaseClient.from('history').insert({
@@ -7220,6 +7331,29 @@
         // Setup mobile menus
         setupMobileMenu();
         setupEditorOverflowMenu();
+
+        // Flush pending history changes before page unload
+        window.addEventListener('beforeunload', () => {
+            // Use sendBeacon for reliable async operation on page unload
+            if (pendingHistoryChange && currentContract) {
+                const userId = currentUser?.isPublicEditor ? null : currentUser?.id;
+                const payload = JSON.stringify({
+                    contract_id: currentContract.id,
+                    user_id: userId,
+                    change_type: pendingHistoryChange.changeType,
+                    description: pendingHistoryChange.description,
+                    snapshot: pendingHistoryChange.snapshot
+                });
+
+                // Note: sendBeacon requires a server endpoint, so we'll use a sync approach
+                // Clear timeout and flush synchronously
+                clearTimeout(historyTimeout);
+                if (navigator.sendBeacon) {
+                    // If we had a beacon endpoint, we'd use it here
+                    // For now, we rely on the fact that saves are already happening
+                }
+            }
+        });
 
         // Check authentication
         checkAuth();

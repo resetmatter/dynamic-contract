@@ -199,6 +199,10 @@ CREATE POLICY "Users can view history for accessible contracts"
                     WHERE contract_shares.contract_id = contracts.id
                     AND contract_shares.shared_with_email = auth.jwt()->>'email'
                 )
+                OR (
+                    -- Allow public users to view history for public contracts
+                    contracts.is_public = TRUE
+                )
             )
         )
     );
@@ -217,6 +221,12 @@ CREATE POLICY "Users can create history for editable contracts"
                     WHERE contract_shares.contract_id = contracts.id
                     AND contract_shares.shared_with_email = auth.jwt()->>'email'
                     AND contract_shares.role = 'editor'
+                )
+                OR (
+                    -- Allow public editors to insert history with null user_id
+                    contracts.is_public = TRUE
+                    AND contracts.public_share_role = 'editor'
+                    AND history.user_id IS NULL
                 )
             )
         )
