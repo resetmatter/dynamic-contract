@@ -1867,8 +1867,8 @@
                 list: (f) => `
                     <div class="list-container">
                         ${(f.items || []).map((item, itemIndex) => `
-                            <div class="list-item">
-                                <span class="drag-handle">⋮⋮</span>
+                            <div class="list-item" draggable="true" data-item-index="${itemIndex}">
+                                <span class="drag-handle">🎀</span>
                                 <input type="text" value="${item}" data-item-index="${itemIndex}">
                                 <button class="remove-btn" onclick="removeListItem(${sectionIndex}, ${fieldIndex}, ${itemIndex})">✕</button>
                             </div>
@@ -1882,7 +1882,8 @@
             const renderFunc = fieldTypes[fieldType] || fieldTypes.textarea;
 
             return `
-                <div class="field-group" data-field-index="${fieldIndex}">
+                <div class="field-group" data-field-index="${fieldIndex}" draggable="true">
+                    <span class="drag-handle">🎀</span>
                     <label contenteditable="true" data-field-label>${field.label || 'Field'}</label>
                     ${renderFunc(field)}
                     <button class="remove-btn" onclick="removeField(${sectionIndex}, ${fieldIndex})" style="margin-top: 10px;">Remove Field</button>
