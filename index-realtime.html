@@ -437,8 +437,21 @@
         .contract-header {
             text-align: center;
             margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(139, 0, 0, 0.6);
             position: relative;
             z-index: 1;
+        }
+
+        .contract-header::after {
+            content: '⛓️ 🎀 ⛓️';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98));
+            padding: 0 20px;
         }
 
         .contract-display-title {
