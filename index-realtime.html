@@ -6606,6 +6606,12 @@
         }
 
         async function handleNewHistoryEntry(newEntry) {
+            // Skip pointless "No changes detected" entries
+            if (newEntry.description === 'No changes detected') {
+                console.log('Skipping "No changes detected" history entry');
+                return;
+            }
+
             // Check if this entry already exists in our array (prevent duplicates)
             const existingIndex = allHistoryItems.findIndex(item => item.id === newEntry.id);
             if (existingIndex !== -1) {
@@ -6729,6 +6735,7 @@
                 .from('history')
                 .select('*')
                 .eq('contract_id', currentContract.id)
+                .neq('description', 'No changes detected') // Filter out pointless entries
                 .order('created_at', { ascending: false })
                 .range(historyOffset, historyOffset + historyLimit - 1);
 
@@ -6737,11 +6744,14 @@
                 return;
             }
 
+            // Filter out any "No changes detected" entries that might have slipped through
+            const filteredData = data.filter(item => item.description !== 'No changes detected');
+
             // Add to all items if loading more, otherwise replace
             if (loadMore) {
-                allHistoryItems.push(...data);
+                allHistoryItems.push(...filteredData);
             } else {
-                allHistoryItems = data;
+                allHistoryItems = filteredData;
             }
 
             historyOffset += data.length;
