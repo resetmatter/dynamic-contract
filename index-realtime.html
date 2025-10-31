@@ -1568,12 +1568,30 @@
             document.getElementById('app-screen').style.display = 'block';
             document.getElementById('user-email').textContent = currentUser.email;
             loadContracts();
-            setupPresence();
+            // Don't setup presence here - wait until a contract is opened
         }
 
         function showContractList() {
             document.getElementById('contract-list').style.display = 'block';
             document.getElementById('contract-editor').style.display = 'none';
+
+            // Hide presence indicator when not viewing a contract
+            const presenceIndicator = document.getElementById('presence-indicator');
+            if (presenceIndicator) {
+                presenceIndicator.style.display = 'none';
+            }
+
+            // Clean up presence channel
+            if (presenceChannel) {
+                supabaseClient.removeChannel(presenceChannel);
+                presenceChannel = null;
+            }
+
+            // Remove presence UI elements
+            const warningEl = document.getElementById('multi-editor-warning');
+            const listEl = document.getElementById('presence-detail-list');
+            if (warningEl) warningEl.remove();
+            if (listEl) listEl.remove();
 
             // Clean up sync connections
             if (realtimeChannel) {
@@ -1591,6 +1609,12 @@
         function showContractEditor() {
             document.getElementById('contract-list').style.display = 'none';
             document.getElementById('contract-editor').style.display = 'block';
+
+            // Show presence indicator in header
+            const presenceIndicator = document.getElementById('presence-indicator');
+            if (presenceIndicator) {
+                presenceIndicator.style.display = 'flex';
+            }
         }
 
         document.getElementById('back-to-list-btn').addEventListener('click', showContractList);
