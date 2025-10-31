@@ -849,12 +849,31 @@
             font-size: 20px;
             margin-right: 8px;
             user-select: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             vertical-align: middle;
+            background: rgba(255, 105, 180, 0.15);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            border-radius: 6px;
+            padding: 4px 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .drag-handle:hover {
+            background: rgba(255, 105, 180, 0.25);
+            border-color: rgba(255, 105, 180, 0.5);
+            box-shadow: 0 2px 5px rgba(255, 105, 180, 0.3);
+            transform: scale(1.05);
         }
 
         .drag-handle:active {
             cursor: grabbing;
+            background: rgba(255, 105, 180, 0.35);
+            border-color: var(--accent-pink);
+            transform: scale(0.98);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
         .field-group {
