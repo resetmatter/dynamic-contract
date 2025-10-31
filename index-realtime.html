@@ -2955,12 +2955,159 @@
                 return `"${formatText(singleLine, maxLength)}"`;
             }
 
+            // Compute text diff to show what was added/removed/changed
+            function getTextDiff(oldText, newText) {
+                oldText = oldText || '';
+                newText = newText || '';
+
+                // Simple case: one is empty
+                if (!oldText && newText) {
+                    return { type: 'added', text: newText };
+                }
+                if (oldText && !newText) {
+                    return { type: 'removed', text: oldText };
+                }
+                if (oldText === newText) {
+                    return { type: 'unchanged' };
+                }
+
+                // Check for simple append
+                if (newText.startsWith(oldText)) {
+                    const added = newText.substring(oldText.length).trim();
+                    if (added) {
+                        return { type: 'appended', text: added, context: formatText(oldText, 40) };
+                    }
+                }
+
+                // Check for simple prepend
+                if (newText.endsWith(oldText)) {
+                    const added = newText.substring(0, newText.length - oldText.length).trim();
+                    if (added) {
+                        return { type: 'prepended', text: added, context: formatText(oldText, 40) };
+                    }
+                }
+
+                // Check for simple truncation from end
+                if (oldText.startsWith(newText)) {
+                    const removed = oldText.substring(newText.length).trim();
+                    if (removed) {
+                        return { type: 'truncated_end', text: removed, context: formatText(newText, 40) };
+                    }
+                }
+
+                // Check for simple truncation from beginning
+                if (oldText.endsWith(newText)) {
+                    const removed = oldText.substring(0, oldText.length - newText.length).trim();
+                    if (removed) {
+                        return { type: 'truncated_start', text: removed, context: formatText(newText, 40) };
+                    }
+                }
+
+                // For more complex changes, try word-level diff
+                const oldWords = oldText.split(/\s+/);
+                const newWords = newText.split(/\s+/);
+
+                // Find common prefix
+                let commonPrefixLength = 0;
+                while (commonPrefixLength < oldWords.length &&
+                       commonPrefixLength < newWords.length &&
+                       oldWords[commonPrefixLength] === newWords[commonPrefixLength]) {
+                    commonPrefixLength++;
+                }
+
+                // Find common suffix
+                let commonSuffixLength = 0;
+                while (commonSuffixLength < oldWords.length - commonPrefixLength &&
+                       commonSuffixLength < newWords.length - commonPrefixLength &&
+                       oldWords[oldWords.length - 1 - commonSuffixLength] === newWords[newWords.length - 1 - commonSuffixLength]) {
+                    commonSuffixLength++;
+                }
+
+                const removedWords = oldWords.slice(commonPrefixLength, oldWords.length - commonSuffixLength);
+                const addedWords = newWords.slice(commonPrefixLength, newWords.length - commonSuffixLength);
+
+                if (removedWords.length > 0 && addedWords.length === 0) {
+                    // Only removals
+                    const context = commonPrefixLength > 0 ? oldWords.slice(Math.max(0, commonPrefixLength - 3), commonPrefixLength).join(' ') : '';
+                    return {
+                        type: 'removed_words',
+                        text: removedWords.join(' '),
+                        context: context
+                    };
+                } else if (addedWords.length > 0 && removedWords.length === 0) {
+                    // Only additions
+                    const context = commonPrefixLength > 0 ? oldWords.slice(Math.max(0, commonPrefixLength - 3), commonPrefixLength).join(' ') : '';
+                    return {
+                        type: 'added_words',
+                        text: addedWords.join(' '),
+                        context: context
+                    };
+                } else if (removedWords.length > 0 && addedWords.length > 0) {
+                    // Replacement
+                    return {
+                        type: 'replaced',
+                        oldText: removedWords.join(' '),
+                        newText: addedWords.join(' ')
+                    };
+                }
+
+                // Fallback: show both values
+                return {
+                    type: 'changed',
+                    oldText: formatText(oldText, 50),
+                    newText: formatText(newText, 50)
+                };
+            }
+
+            // Format diff result into readable text
+            function formatDiff(fieldLabel, diff) {
+                const label = formatText(fieldLabel);
+
+                switch (diff.type) {
+                    case 'added':
+                        return `📝 Set "${label}" to ${formatValue(diff.text)}`;
+
+                    case 'removed':
+                        return `🗑️ Cleared "${label}" (was ${formatValue(diff.text)})`;
+
+                    case 'appended':
+                        return `➕ Added to "${label}": ${formatValue(diff.text)}`;
+
+                    case 'prepended':
+                        return `➕ Added at start of "${label}": ${formatValue(diff.text)}`;
+
+                    case 'truncated_end':
+                        return `➖ Removed from end of "${label}": ${formatValue(diff.text)}`;
+
+                    case 'truncated_start':
+                        return `➖ Removed from start of "${label}": ${formatValue(diff.text)}`;
+
+                    case 'added_words':
+                        const addContext = diff.context ? `after "...${diff.context}"` : '';
+                        return `➕ Added to "${label}" ${addContext}: ${formatValue(diff.text)}`;
+
+                    case 'removed_words':
+                        const remContext = diff.context ? `after "...${diff.context}"` : '';
+                        return `➖ Removed from "${label}" ${remContext}: ${formatValue(diff.text)}`;
+
+                    case 'replaced':
+                        return `✏️ Changed in "${label}": ${formatValue(diff.oldText)} → ${formatValue(diff.newText)}`;
+
+                    case 'changed':
+                        return `✏️ Updated "${label}" from ${formatValue(diff.oldText)} to ${formatValue(diff.newText)}`;
+
+                    case 'unchanged':
+                    default:
+                        return null;
+                }
+            }
+
             // Check title change
             if (oldContract?.title !== newContract.title) {
-                if (!oldContract?.title) {
-                    changes.push(`Set contract title to ${formatValue(newContract.title)}`);
-                } else {
-                    changes.push(`Changed contract title from ${formatValue(oldContract.title)} to ${formatValue(newContract.title)}`);
+                const diff = getTextDiff(oldContract?.title || '', newContract.title);
+                const diffText = formatDiff('Contract Title', diff);
+                if (diffText) {
+                    changes.push(diffText);
                 }
             }
 
@@ -3062,13 +3209,10 @@
                         const newValue = newField.value || '';
 
                         if (oldValue !== newValue) {
-                            if (!oldValue && newValue) {
-                                changes.push(`📝 Set "${formatText(fieldLabel)}" to ${formatValue(newValue)}`);
-                            } else if (oldValue && !newValue) {
-                                changes.push(`🗑️ Cleared "${formatText(fieldLabel)}" (was ${formatValue(oldValue)})`);
-                            } else {
-                                // Show the actual change
-                                changes.push(`✏️ Updated "${formatText(fieldLabel)}" from ${formatValue(oldValue)} to ${formatValue(newValue)}`);
+                            const diff = getTextDiff(oldValue, newValue);
+                            const diffText = formatDiff(fieldLabel, diff);
+                            if (diffText) {
+                                changes.push(diffText);
                             }
                         }
                     }
@@ -3098,7 +3242,34 @@
                         const minItemLength = Math.min(oldItems.length, newItems.length);
                         for (let k = 0; k < minItemLength; k++) {
                             if (oldItems[k] !== newItems[k]) {
-                                changes.push(`✏️ Modified in ${formatText(fieldLabel)}: ${formatValue(oldItems[k], 60)} → ${formatValue(newItems[k], 60)}`);
+                                const diff = getTextDiff(oldItems[k], newItems[k]);
+
+                                // For list items, provide more context about which item changed
+                                switch (diff.type) {
+                                    case 'appended':
+                                        changes.push(`➕ Extended item in ${formatText(fieldLabel)}: added ${formatValue(diff.text)}`);
+                                        break;
+                                    case 'prepended':
+                                        changes.push(`➕ Extended item in ${formatText(fieldLabel)}: added ${formatValue(diff.text)} at start`);
+                                        break;
+                                    case 'truncated_end':
+                                        changes.push(`➖ Shortened item in ${formatText(fieldLabel)}: removed ${formatValue(diff.text)} from end`);
+                                        break;
+                                    case 'truncated_start':
+                                        changes.push(`➖ Shortened item in ${formatText(fieldLabel)}: removed ${formatValue(diff.text)} from start`);
+                                        break;
+                                    case 'added_words':
+                                        changes.push(`➕ Added to item in ${formatText(fieldLabel)}: ${formatValue(diff.text)}`);
+                                        break;
+                                    case 'removed_words':
+                                        changes.push(`➖ Removed from item in ${formatText(fieldLabel)}: ${formatValue(diff.text)}`);
+                                        break;
+                                    case 'replaced':
+                                        changes.push(`✏️ Changed item in ${formatText(fieldLabel)}: ${formatValue(diff.oldText)} → ${formatValue(diff.newText)}`);
+                                        break;
+                                    default:
+                                        changes.push(`✏️ Modified item in ${formatText(fieldLabel)}: ${formatValue(oldItems[k], 60)} → ${formatValue(newItems[k], 60)}`);
+                                }
                             }
                         }
                     }
