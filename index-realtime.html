@@ -15,6 +15,7 @@
             --background: #1a0000;
             --text-light: #fff5f5;
             --border-accent: #ff1493;
+            --app-header-height: 70px;
         }
 
         * {
@@ -549,7 +550,7 @@
             border-radius: 12px;
             border: 1px solid rgba(255, 105, 180, 0.2);
             position: sticky;
-            top: -1px;
+            top: calc(var(--app-header-height) - 1px);
             z-index: 90;
             transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
         }
@@ -1434,7 +1435,7 @@
                 gap: 10px;
                 margin-bottom: 15px;
                 position: sticky;
-                top: -1px;
+                top: calc(var(--app-header-height) - 1px);
                 z-index: 90;
                 border-radius: 8px;
             }
@@ -6676,17 +6677,18 @@
 
         function setupStickyHeaderEffect() {
             const editorHeader = document.querySelector('.editor-header');
+            const appHeader = document.querySelector('.app-header');
             if (!editorHeader) return;
 
-            let lastScrollY = window.scrollY;
             let ticking = false;
+            const appHeaderHeight = appHeader ? appHeader.offsetHeight : 70;
 
             function updateHeaderState() {
-                const scrollY = window.scrollY;
-                const editorRect = document.querySelector('.contract-editor')?.getBoundingClientRect();
+                const headerRect = editorHeader.getBoundingClientRect();
 
-                // Check if editor is visible and we've scrolled past the header's original position
-                if (editorRect && editorRect.top <= 0 && scrollY > 100) {
+                // Check if the editor header is stuck (positioned at the app header height)
+                // This means we've scrolled enough for it to be in its sticky position
+                if (headerRect.top <= appHeaderHeight + 5) {
                     editorHeader.classList.add('scrolled');
                 } else {
                     editorHeader.classList.remove('scrolled');
@@ -6696,7 +6698,6 @@
             }
 
             function onScroll() {
-                lastScrollY = window.scrollY;
                 if (!ticking) {
                     window.requestAnimationFrame(updateHeaderState);
                     ticking = true;
