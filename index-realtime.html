@@ -544,9 +544,20 @@
             margin-bottom: 25px;
             gap: 20px;
             padding: 20px;
-            background: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
             border-radius: 12px;
-            border: 1px solid rgba(255, 105, 180, 0.1);
+            border: 1px solid rgba(255, 105, 180, 0.2);
+            position: sticky;
+            top: -1px;
+            z-index: 90;
+            transition: box-shadow 0.3s, background 0.3s, border-color 0.3s;
+        }
+
+        .editor-header.scrolled {
+            background: rgba(0, 0, 0, 0.95);
+            border-color: rgba(255, 105, 180, 0.4);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 105, 180, 0.3);
         }
 
         .editor-title {
@@ -1422,6 +1433,10 @@
                 padding: 12px;
                 gap: 10px;
                 margin-bottom: 15px;
+                position: sticky;
+                top: -1px;
+                z-index: 90;
+                border-radius: 8px;
             }
 
             .editor-title {
@@ -6656,11 +6671,53 @@
         }
 
         // ============================================
+        // STICKY HEADER ENHANCEMENT
+        // ============================================
+
+        function setupStickyHeaderEffect() {
+            const editorHeader = document.querySelector('.editor-header');
+            if (!editorHeader) return;
+
+            let lastScrollY = window.scrollY;
+            let ticking = false;
+
+            function updateHeaderState() {
+                const scrollY = window.scrollY;
+                const editorRect = document.querySelector('.contract-editor')?.getBoundingClientRect();
+
+                // Check if editor is visible and we've scrolled past the header's original position
+                if (editorRect && editorRect.top <= 0 && scrollY > 100) {
+                    editorHeader.classList.add('scrolled');
+                } else {
+                    editorHeader.classList.remove('scrolled');
+                }
+
+                ticking = false;
+            }
+
+            function onScroll() {
+                lastScrollY = window.scrollY;
+                if (!ticking) {
+                    window.requestAnimationFrame(updateHeaderState);
+                    ticking = true;
+                }
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            // Initial check
+            updateHeaderState();
+        }
+
+        // ============================================
         // INITIALIZATION
         // ============================================
 
         // Initialize undo/redo system
         initUndoRedoSystem();
+
+        // Setup sticky header enhancement
+        setupStickyHeaderEffect();
 
         // Check authentication
         checkAuth();
