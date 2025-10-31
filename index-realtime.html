@@ -2880,6 +2880,7 @@
         let historyChannel = null;
         let saveTimeout = null;
         let isSyncing = false;
+        let isApplyingRemoteUpdate = false; // Flag to prevent save during sync updates
         let lastSaveTimestamp = 0;
         let pollingInterval = null;
         let usePolling = false;
@@ -3877,6 +3878,12 @@
 
         // Debounced save function
         function debouncedSave() {
+            // Don't save if we're currently applying a remote update
+            if (isApplyingRemoteUpdate) {
+                console.log('⏭️ Skipping save - applying remote update');
+                return;
+            }
+
             clearTimeout(saveTimeout);
             updateSyncStatus('syncing');
 
@@ -4145,14 +4152,21 @@
                     if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                         console.log('📥 Polling detected changes');
 
-                        // Update contract data with selective updates
-                        const oldContract = JSON.parse(JSON.stringify(currentContract));
-                        currentContract = data;
-                        updateFieldsSelectively(oldContract, data);
-                        updateSyncStatus('synced');
+                        // Set flag to prevent auto-save during update
+                        isApplyingRemoteUpdate = true;
 
-                        // Show notification
-                        showSyncNotification('Contract updated by another user');
+                        try {
+                            // Update contract data with selective updates
+                            const oldContract = JSON.parse(JSON.stringify(currentContract));
+                            currentContract = data;
+                            updateFieldsSelectively(oldContract, data);
+                            updateSyncStatus('synced');
+
+                            // Show notification
+                            showSyncNotification('Contract updated by another user');
+                        } finally {
+                            isApplyingRemoteUpdate = false;
+                        }
                     }
                 } catch (err) {
                     console.error('Polling failed:', err);
@@ -4265,17 +4279,26 @@
             if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                 console.log('📥 APPLYING UPDATE from another user/device');
 
-                // Update contract data
-                const oldContract = JSON.parse(JSON.stringify(currentContract));
-                currentContract = latestData;
+                // Set flag to prevent auto-save during update
+                isApplyingRemoteUpdate = true;
 
-                // Smart selective update that preserves focus
-                updateFieldsSelectively(oldContract, latestData);
+                try {
+                    // Update contract data
+                    const oldContract = JSON.parse(JSON.stringify(currentContract));
+                    currentContract = latestData;
 
-                updateSyncStatus('synced');
+                    // Smart selective update that preserves focus
+                    updateFieldsSelectively(oldContract, latestData);
 
-                // Show notification that data was updated
-                showSyncNotification('Contract updated by another user');
+                    updateSyncStatus('synced');
+
+                    // Show notification that data was updated
+                    showSyncNotification('Contract updated by another user');
+                } finally {
+                    // Always reset flag, even if error occurs
+                    isApplyingRemoteUpdate = false;
+                    console.log('✅ Remote update applied, auto-save re-enabled');
+                }
             } else {
                 console.log('⏭️ No changes detected after', attempts, 'attempts');
             }
@@ -4328,17 +4351,24 @@
             if (dataChanged || titleChanged || dominantChanged || submissiveChanged) {
                 console.log('📥 APPLYING UPDATE from another user/device');
 
-                // Update contract data
-                const oldContract = JSON.parse(JSON.stringify(currentContract));
-                currentContract = newData;
+                // Set flag to prevent auto-save during update
+                isApplyingRemoteUpdate = true;
 
-                // Smart selective update that preserves focus
-                updateFieldsSelectively(oldContract, newData);
+                try {
+                    // Update contract data
+                    const oldContract = JSON.parse(JSON.stringify(currentContract));
+                    currentContract = newData;
 
-                updateSyncStatus('synced');
+                    // Smart selective update that preserves focus
+                    updateFieldsSelectively(oldContract, newData);
 
-                // Show notification that data was updated
-                showSyncNotification('Contract updated by another user');
+                    updateSyncStatus('synced');
+
+                    // Show notification that data was updated
+                    showSyncNotification('Contract updated by another user');
+                } finally {
+                    isApplyingRemoteUpdate = false;
+                }
             } else {
                 console.log('⏭️ No changes detected, skipping update');
             }
