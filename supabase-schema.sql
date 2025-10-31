@@ -14,6 +14,12 @@ CREATE TABLE IF NOT EXISTS contracts (
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
     title TEXT NOT NULL DEFAULT 'Untitled Contract',
     data JSONB NOT NULL DEFAULT '{"sections": []}'::jsonb,
+    dominant_name TEXT DEFAULT 'Matthew',
+    submissive_name TEXT DEFAULT 'Shailah',
+    owner_signature TEXT,
+    owner_signature_date DATE,
+    submissive_signature TEXT,
+    submissive_signature_date DATE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

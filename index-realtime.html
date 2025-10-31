@@ -347,7 +347,7 @@
             flex: 1;
         }
 
-        .editor-title input {
+        .editor-title > input {
             width: 100%;
             max-width: 500px;
             padding: 12px;
@@ -358,6 +358,40 @@
             font-family: 'Cinzel', serif;
             font-size: 1.5em;
             font-weight: 700;
+        }
+
+        .editor-subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: var(--dusty-pink);
+            font-style: italic;
+            margin-top: 15px;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .inline-name-input {
+            border: none;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            font-style: italic;
+            color: var(--pink-text);
+            text-align: center;
+            padding: 5px 12px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .inline-name-input:focus {
+            outline: none;
+            border-bottom-color: var(--accent-pink);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
+        }
+
+        .inline-name-input::placeholder {
+            color: rgba(212, 118, 143, 0.5);
         }
 
         .editor-actions {
@@ -967,6 +1001,7 @@
             padding-bottom: 30px;
             border-bottom: 2px solid rgba(139, 0, 0, 0.6);
             position: relative;
+            font-family: 'Crimson Text', serif;
         }
 
         .preview-subtitle::after {
@@ -978,6 +1013,24 @@
             font-size: 20px;
             background: linear-gradient(135deg, rgba(20, 10, 10, 0.95), rgba(30, 15, 15, 0.98));
             padding: 0 20px;
+        }
+
+        .preview-inline-name-input {
+            border: none;
+            border-bottom: 1px solid rgba(139, 0, 0, 0.6);
+            background: rgba(255, 255, 255, 0.03);
+            font-family: 'Crimson Text', serif;
+            font-size: 16px;
+            font-style: italic;
+            color: #ff6b9d;
+            text-align: center;
+            padding: 5px 12px;
+            min-width: 120px;
+            cursor: default;
+        }
+
+        .preview-inline-name-input:focus {
+            outline: none;
         }
 
         .preview-divider {
@@ -1497,6 +1550,12 @@
             <div class="editor-header">
                 <div class="editor-title">
                     <input type="text" id="contract-title" placeholder="Contract Title">
+                    <div class="editor-subtitle">
+                        Between Dom
+                        <input type="text" id="dominant-name" placeholder="Name" class="inline-name-input">
+                        and his sub
+                        <input type="text" id="submissive-name" placeholder="Name" class="inline-name-input">
+                    </div>
                 </div>
                 <div class="editor-actions">
                     <div class="sync-status">
@@ -1778,8 +1837,10 @@
                     if (contractList) contractList.style.display = 'none';
                     if (contractEditor) contractEditor.style.display = 'block';
 
-                    // Set contract title
+                    // Set contract title and names
                     document.getElementById('contract-title').value = currentContract.title;
+                    document.getElementById('dominant-name').value = currentContract.dominant_name || 'Matthew';
+                    document.getElementById('submissive-name').value = currentContract.submissive_name || 'Shailah';
 
                     // Load signatures
                     document.getElementById('owner-signature').value = currentContract.owner_signature || '';
@@ -2295,6 +2356,8 @@
 
         function renderContractEditor() {
             document.getElementById('contract-title').value = currentContract.title || '';
+            document.getElementById('dominant-name').value = currentContract.dominant_name || 'Matthew';
+            document.getElementById('submissive-name').value = currentContract.submissive_name || 'Shailah';
 
             const sectionsContainer = document.getElementById('contract-sections');
             const sections = currentContract.data?.sections || [];
@@ -2637,6 +2700,17 @@
             debouncedSave();
         });
 
+        // Name field event listeners
+        document.getElementById('dominant-name').addEventListener('input', (e) => {
+            currentContract.dominant_name = e.target.value;
+            debouncedSave();
+        });
+
+        document.getElementById('submissive-name').addEventListener('input', (e) => {
+            currentContract.submissive_name = e.target.value;
+            debouncedSave();
+        });
+
         // Signature field event listeners
         ['owner-signature', 'owner-signature-date', 'submissive-signature', 'submissive-signature-date'].forEach(id => {
             document.getElementById(id).addEventListener('input', debouncedSave);
@@ -2720,7 +2794,7 @@
             // Fetch the current state from database for change detection (before we update it)
             const { data: currentDbState } = await supabaseClient
                 .from('contracts')
-                .select('title, data, owner_signature, submissive_signature')
+                .select('title, data, owner_signature, submissive_signature, dominant_name, submissive_name')
                 .eq('id', currentContract.id)
                 .single();
 
@@ -2732,7 +2806,9 @@
                 title: currentContract.title,
                 data: currentContract.data,
                 owner_signature: ownerSig,
-                submissive_signature: subSig
+                submissive_signature: subSig,
+                dominant_name: currentContract.dominant_name,
+                submissive_name: currentContract.submissive_name
             };
 
             // Generate change description
@@ -2743,6 +2819,8 @@
                 .update({
                     title: currentContract.title,
                     data: currentContract.data,
+                    dominant_name: currentContract.dominant_name,
+                    submissive_name: currentContract.submissive_name,
                     owner_signature: ownerSig,
                     owner_signature_date: ownerDate,
                     submissive_signature: subSig,
@@ -3519,21 +3597,9 @@
             const title = currentContract.title || 'D/s Dynamic Contract';
             const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
-            // Extract party names from first section if available
-            let domName = 'Matthew';
-            let subName = 'Shailah';
-            if (sections.length > 0 && sections[0].type === 'parties' && sections[0].fields) {
-                const domField = sections[0].fields[0];
-                const subField = sections[0].fields[1];
-                if (domField && domField.value) {
-                    const match = domField.value.match(/^([^-\n]+)/);
-                    if (match) domName = match[1].trim();
-                }
-                if (subField && subField.value) {
-                    const match = subField.value.match(/^([^-\n]+)/);
-                    if (match) subName = match[1].trim();
-                }
-            }
+            // Get party names from contract data
+            const domName = currentContract.dominant_name || 'Matthew';
+            const subName = currentContract.submissive_name || 'Shailah';
 
             let html = `
                 <div class="preview-bow preview-bow-top-left">🎀</div>
@@ -3541,7 +3607,12 @@
                 <div class="preview-bow preview-bow-bottom-left">🎀</div>
                 <div class="preview-bow preview-bow-bottom-right">🎀</div>
                 <h1>${escapeHtml(title)}</h1>
-                <p class="preview-subtitle">Between Dom ${escapeHtml(domName)} and his sub ${escapeHtml(subName)}</p>
+                <p class="preview-subtitle">
+                    Between Dom
+                    <input type="text" class="preview-inline-name-input" value="${escapeHtml(domName)}" readonly>
+                    and his sub
+                    <input type="text" class="preview-inline-name-input" value="${escapeHtml(subName)}" readonly>
+                </p>
 
                 <div class="preview-terms-notice">
                     This contract establishes a Total Power Exchange (TPE) dynamic where the submissive willingly surrenders complete control and authority to the Dominant. The submissive acknowledges the Dominant's absolute authority in all matters and agrees to obey without question. All activities remain bound by established safe words and hard limits. Either party may terminate this agreement, though renegotiation requires the Dominant's approval.
