@@ -1882,6 +1882,7 @@
             /* List items touch friendly */
             .list-item {
                 padding: 14px;
+                padding-left: 40px; /* Preserve space for drag handle */
                 margin-bottom: 12px;
             }
 
@@ -1890,11 +1891,18 @@
                 font-size: 16px;
             }
 
-            /* Drag handle touch friendly */
+            /* Drag handle touch friendly - increase tap area without affecting layout */
             .drag-handle {
                 touch-action: none;
-                padding: 8px;
-                margin: -8px 8px -8px -8px;
+            }
+
+            .drag-handle::before {
+                content: '';
+                position: absolute;
+                top: -8px;
+                bottom: -8px;
+                left: -8px;
+                right: -8px;
             }
 
             /* Improved readability */
