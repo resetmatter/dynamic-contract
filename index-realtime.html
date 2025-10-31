@@ -4083,10 +4083,252 @@
 
             // Check if data actually changed
             if (JSON.stringify(newData.data) !== JSON.stringify(currentContract.data)) {
+                console.log('📥 Received realtime update from another user/device');
+
+                // Update contract data
+                const oldContract = JSON.parse(JSON.stringify(currentContract));
                 currentContract = newData;
-                renderContractEditor();
+
+                // Smart selective update that preserves focus
+                updateFieldsSelectively(oldContract, newData);
+
                 updateSyncStatus('synced');
+
+                // Show notification that data was updated
+                showSyncNotification('Contract updated by another user');
             }
+        }
+
+        function updateFieldsSelectively(oldContract, newContract) {
+            // Get currently focused element to preserve it
+            const focusedElement = document.activeElement;
+            const focusedField = focusedElement?.dataset?.fieldValue !== undefined ||
+                                focusedElement?.dataset?.fieldLabel !== undefined ||
+                                focusedElement?.dataset?.itemIndex !== undefined;
+
+            // If user is typing in a field, don't interrupt them
+            const preserveFocus = focusedField &&
+                                (focusedElement.tagName === 'INPUT' ||
+                                 focusedElement.tagName === 'TEXTAREA' ||
+                                 focusedElement.isContentEditable);
+
+            // Update title if changed and not focused
+            const titleInput = document.getElementById('contract-title');
+            if (titleInput &&
+                newContract.title !== oldContract.title &&
+                document.activeElement !== titleInput) {
+                titleInput.value = newContract.title || '';
+                document.getElementById('contract-display-title').textContent = newContract.title || 'D/s Dynamic Contract';
+            }
+
+            // Update dominant name if changed and not focused
+            const dominantInput = document.getElementById('dominant-name');
+            if (dominantInput &&
+                newContract.dominant_name !== oldContract.dominant_name &&
+                document.activeElement !== dominantInput) {
+                dominantInput.value = newContract.dominant_name || '';
+            }
+
+            // Update submissive name if changed and not focused
+            const submissiveInput = document.getElementById('submissive-name');
+            if (submissiveInput &&
+                newContract.submissive_name !== oldContract.submissive_name &&
+                document.activeElement !== submissiveInput) {
+                submissiveInput.value = newContract.submissive_name || '';
+            }
+
+            // Check if sections structure changed (added/removed sections or fields)
+            const oldSections = oldContract.data?.sections || [];
+            const newSections = newContract.data?.sections || [];
+
+            const structureChanged = oldSections.length !== newSections.length ||
+                                   oldSections.some((s, i) =>
+                                       !newSections[i] ||
+                                       s.fields.length !== newSections[i].fields.length
+                                   );
+
+            if (structureChanged) {
+                // Full re-render if structure changed, but try to preserve focus
+                const focusPath = preserveFocus ? getFocusPath(focusedElement) : null;
+                renderContractEditor();
+                if (focusPath) {
+                    restoreFocus(focusPath);
+                }
+                return;
+            }
+
+            // Selectively update field values without full re-render
+            newSections.forEach((section, sectionIndex) => {
+                const oldSection = oldSections[sectionIndex];
+                if (!oldSection) return;
+
+                // Update section title if changed
+                const sectionHeader = document.querySelector(`[data-section-index="${sectionIndex}"] h2`);
+                if (sectionHeader &&
+                    section.title !== oldSection.title &&
+                    document.activeElement !== sectionHeader) {
+                    sectionHeader.textContent = section.title;
+                }
+
+                // Update fields
+                section.fields.forEach((field, fieldIndex) => {
+                    const oldField = oldSection.fields[fieldIndex];
+                    if (!oldField) return;
+
+                    // Update field label
+                    const labelElement = document.querySelector(
+                        `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] label[data-field-label]`
+                    );
+                    if (labelElement &&
+                        field.label !== oldField.label &&
+                        document.activeElement !== labelElement) {
+                        labelElement.textContent = field.label;
+                    }
+
+                    // Update field value based on type
+                    if (field.type === 'list') {
+                        // Update list items
+                        const listItems = field.items || [];
+                        const oldListItems = oldField.items || [];
+
+                        // If list length changed, re-render the whole section
+                        if (listItems.length !== oldListItems.length) {
+                            const focusPath = preserveFocus ? getFocusPath(focusedElement) : null;
+                            renderContractEditor();
+                            if (focusPath) {
+                                restoreFocus(focusPath);
+                            }
+                            return;
+                        }
+
+                        // Update individual list items
+                        listItems.forEach((item, itemIndex) => {
+                            const itemInput = document.querySelector(
+                                `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] input[data-item-index="${itemIndex}"]`
+                            );
+                            if (itemInput &&
+                                item !== oldListItems[itemIndex] &&
+                                document.activeElement !== itemInput) {
+                                itemInput.value = item || '';
+                            }
+                        });
+                    } else {
+                        // Update text or textarea field
+                        const fieldInput = document.querySelector(
+                            `[data-section-index="${sectionIndex}"] [data-field-index="${fieldIndex}"] [data-field-value]`
+                        );
+                        if (fieldInput &&
+                            field.value !== oldField.value &&
+                            document.activeElement !== fieldInput) {
+                            if (fieldInput.tagName === 'INPUT') {
+                                fieldInput.value = field.value || '';
+                            } else if (fieldInput.tagName === 'TEXTAREA') {
+                                fieldInput.value = field.value || '';
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function getFocusPath(element) {
+            if (!element) return null;
+
+            // Find the section and field indices
+            const section = element.closest('[data-section-index]');
+            const field = element.closest('[data-field-index]');
+            const item = element.closest('[data-item-index]');
+
+            if (!section) return null;
+
+            const path = {
+                sectionIndex: section.dataset.sectionIndex,
+                fieldIndex: field?.dataset.fieldIndex,
+                itemIndex: item?.dataset.itemIndex,
+                tagName: element.tagName,
+                selectionStart: element.selectionStart,
+                selectionEnd: element.selectionEnd,
+                isContentEditable: element.isContentEditable
+            };
+
+            return path;
+        }
+
+        function restoreFocus(path) {
+            if (!path) return;
+
+            try {
+                let selector = `[data-section-index="${path.sectionIndex}"]`;
+
+                if (path.fieldIndex !== undefined) {
+                    selector += ` [data-field-index="${path.fieldIndex}"]`;
+                }
+
+                if (path.itemIndex !== undefined) {
+                    selector += ` input[data-item-index="${path.itemIndex}"]`;
+                } else if (path.tagName === 'H2') {
+                    selector += ' h2';
+                } else if (path.tagName === 'LABEL') {
+                    selector += ' label[data-field-label]';
+                } else {
+                    selector += ' [data-field-value]';
+                }
+
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.focus();
+
+                    // Restore cursor position
+                    if (element.setSelectionRange && path.selectionStart !== undefined) {
+                        element.setSelectionRange(path.selectionStart, path.selectionEnd);
+                    }
+                }
+            } catch (err) {
+                console.log('Could not restore focus:', err);
+            }
+        }
+
+        function showSyncNotification(message) {
+            // Create or update sync notification
+            let notification = document.getElementById('sync-notification');
+
+            if (!notification) {
+                notification = document.createElement('div');
+                notification.id = 'sync-notification';
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: linear-gradient(135deg, #dc143c, #ff1744);
+                    color: white;
+                    padding: 12px 18px;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
+                    z-index: 10000;
+                    font-size: 13px;
+                    font-weight: 500;
+                    animation: slideInRight 0.3s ease-out;
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                `;
+                document.body.appendChild(notification);
+            }
+
+            notification.innerHTML = `
+                <span style="font-size: 16px;">🔄</span>
+                <span>${message}</span>
+            `;
+            notification.style.display = 'flex';
+
+            // Auto-hide after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease-out';
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 300);
+            }, 3000);
         }
 
         function updateSyncStatus(status) {
