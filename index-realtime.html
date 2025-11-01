@@ -1800,33 +1800,32 @@
             /* Preview Mode - Mobile */
             .preview-header {
                 padding: 12px;
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
                 gap: 10px;
                 align-items: center;
-                justify-content: space-between;
             }
 
             .preview-header h3 {
                 text-align: center;
                 font-size: 1.1em;
                 margin: 0;
-                order: 3;
-                width: 100%;
-                flex-basis: 100%;
+                grid-column: 1 / -1;
+                grid-row: 2;
             }
 
             .preview-presence-section {
-                order: 1;
+                grid-column: 1;
+                grid-row: 1;
             }
 
             .preview-actions {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 6px;
-                order: 2;
-                flex: 1;
-                min-width: 200px;
+                grid-column: 2;
+                grid-row: 1;
             }
 
             .preview-actions .btn {
@@ -2128,32 +2127,32 @@
             /* Preview Mode - Phones */
             .preview-header {
                 padding: 15px;
-                display: flex;
-                flex-wrap: wrap;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
                 gap: 12px;
                 align-items: center;
-                justify-content: space-between;
             }
 
             .preview-header h3 {
                 text-align: center;
                 font-size: 1.2em;
-                order: 3;
-                width: 100%;
-                flex-basis: 100%;
+                grid-column: 1 / -1;
+                grid-row: 2;
             }
 
             .preview-presence-section {
-                order: 1;
+                grid-column: 1;
+                grid-row: 1;
             }
 
             .preview-actions {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
-                justify-content: center;
-                order: 2;
-                flex: 1;
+                justify-content: flex-end;
+                grid-column: 2;
+                grid-row: 1;
             }
 
             .preview-actions .btn {
