@@ -4660,8 +4660,9 @@
             const textareas = document.querySelectorAll('#contract-sections textarea');
             textareas.forEach(textarea => {
                 textarea.style.height = 'auto';
-                // Add significant buffer for bottom spacing
-                textarea.style.height = (textarea.scrollHeight + 40) + 'px';
+                // Smart calculation: add proportional buffer based on content size
+                const buffer = Math.max(40, Math.ceil(textarea.scrollHeight * 0.15));
+                textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
             });
         }
 
@@ -4820,8 +4821,9 @@
                     // Auto-expand textareas to fit content
                     if (target.tagName === 'TEXTAREA') {
                         target.style.height = 'auto';
-                        // Add significant buffer for bottom spacing
-                        target.style.height = (target.scrollHeight + 40) + 'px';
+                        // Smart calculation: add proportional buffer based on content size
+                        const buffer = Math.max(40, Math.ceil(target.scrollHeight * 0.15));
+                        target.style.height = (target.scrollHeight + buffer) + 'px';
                     }
                 }
 
@@ -6575,9 +6577,11 @@
             textareas.forEach(textarea => {
                 // Reset height to get accurate scrollHeight
                 textarea.style.height = 'auto';
-                // Add significant buffer for bottom breathing room
-                // scrollHeight with box-sizing:border-box includes padding, need extra space for visual breathing room
-                textarea.style.height = (textarea.scrollHeight + 40) + 'px';
+                // Smart calculation: add proportional buffer based on content size
+                // For small content (< 100px), add 40px buffer
+                // For larger content, add 15% of scrollHeight to ensure proper spacing
+                const buffer = Math.max(40, Math.ceil(textarea.scrollHeight * 0.15));
+                textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
             });
         }
 
