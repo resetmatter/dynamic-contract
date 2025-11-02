@@ -1615,6 +1615,7 @@
             /* Hide ALL non-essential buttons on mobile */
             #share-btn,
             #save-snapshot-btn,
+            #manage-snapshots-btn,
             #history-btn,
             #back-to-list-btn {
                 display: none !important;
@@ -2007,6 +2008,7 @@
             /* Hide non-essential buttons */
             #share-btn,
             #save-snapshot-btn,
+            #manage-snapshots-btn,
             #history-btn,
             #back-to-list-btn {
                 display: none !important;
@@ -3070,6 +3072,304 @@
             }
         }
 
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a0000 100%);
+            border: 2px solid var(--border-accent);
+            border-radius: 10px;
+            padding: 15px 20px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-color: #2ecc71;
+        }
+
+        .toast.error {
+            border-color: #e74c3c;
+        }
+
+        .toast.info {
+            border-color: var(--accent-pink);
+        }
+
+        .toast-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast-message {
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
+        /* Snapshot Badge in History */
+        .snapshot-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, var(--accent-pink) 0%, #ff1493 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(255, 105, 180, 0.3);
+        }
+
+        .history-item.snapshot-item {
+            border-left: 3px solid var(--accent-pink);
+            background: linear-gradient(90deg, rgba(255, 105, 180, 0.1) 0%, transparent 100%);
+        }
+
+        /* Snapshot Manager */
+        .snapshot-manager-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2500;
+            overflow-y: auto;
+        }
+
+        .snapshot-manager-overlay.open {
+            display: block;
+        }
+
+        .snapshot-manager {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #000 100%);
+            border: 2px solid var(--border-accent);
+            border-radius: 15px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .snapshot-manager-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .snapshot-manager-header h2 {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-pink);
+            margin: 0;
+            font-size: 2em;
+        }
+
+        .snapshot-stats {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background: rgba(139, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: var(--accent-pink);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .snapshot-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .snapshot-controls input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+
+        .snapshot-controls select {
+            padding: 10px;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .snapshot-card {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .snapshot-card:hover {
+            border-color: var(--accent-pink);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .snapshot-card.selected {
+            border-color: var(--accent-pink);
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.2) 0%, rgba(139, 0, 0, 0.3) 100%);
+        }
+
+        .snapshot-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .snapshot-icon {
+            font-size: 2em;
+            color: var(--accent-pink);
+        }
+
+        .snapshot-date {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .snapshot-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin: 10px 0;
+            word-break: break-word;
+        }
+
+        .snapshot-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .snapshot-meta-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85em;
+            color: var(--text-secondary);
+        }
+
+        .snapshot-card-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .snapshot-card-actions .btn {
+            flex: 1;
+            min-width: 70px;
+            padding: 8px;
+            font-size: 0.85em;
+        }
+
+        .snapshot-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
+        }
+
+        .snapshot-empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .snapshot-manager {
+                margin: 0;
+                padding: 20px;
+                min-height: 100vh;
+                border-radius: 0;
+            }
+
+            .snapshot-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .snapshot-stats {
+                justify-content: space-around;
+            }
+        }
+
         /* Print Styles */
         @media print {
             .app-header,
@@ -3294,6 +3594,7 @@
                     <button class="btn btn-secondary" id="history-btn">📜 History</button>
                     <button class="btn btn-secondary" id="share-btn">🔗 Share</button>
                     <button class="btn" id="save-snapshot-btn">📸 Snapshot</button>
+                    <button class="btn btn-secondary" id="manage-snapshots-btn">🗂️ Manage Snapshots</button>
                     <button class="btn btn-secondary" id="back-to-list-btn">← Back</button>
                 </div>
             </div>
@@ -3325,6 +3626,10 @@
                     <div class="mobile-menu-item" id="mobile-snapshot-btn">
                         <span>📸</span>
                         <span>Snapshot</span>
+                    </div>
+                    <div class="mobile-menu-item" id="mobile-manage-snapshots-btn">
+                        <span>🗂️</span>
+                        <span>Manage Snapshots</span>
                     </div>
                     <div class="mobile-menu-item" id="mobile-back-btn">
                         <span>←</span>
@@ -3417,6 +3722,20 @@
             </div>
         </div>
 
+        <!-- Export/Import Controls -->
+        <div style="padding: 15px; background: rgba(139, 0, 0, 0.2); border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" id="export-all-snapshots-btn" style="flex: 1; min-width: 140px; font-size: 0.9em;">
+                📦 Export All Snapshots
+            </button>
+            <button class="btn btn-secondary" id="export-current-btn" style="flex: 1; min-width: 140px; font-size: 0.9em;">
+                💾 Export Current State
+            </button>
+            <button class="btn btn-secondary" id="import-backup-btn" style="flex: 1; min-width: 140px; font-size: 0.9em;">
+                📥 Import Backup
+            </button>
+            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        </div>
+
         <div class="history-timeline" id="history-timeline">
             <!-- History items will be loaded here -->
         </div>
@@ -3476,6 +3795,85 @@
             <div class="dialog-actions">
                 <button class="btn btn-secondary" id="cancel-share-btn">Cancel</button>
                 <button class="btn" id="confirm-share-btn">Share</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snapshot Dialog -->
+    <div class="dialog-overlay" id="snapshot-dialog">
+        <div class="dialog">
+            <h3>📸 Create Snapshot</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Save the current state of your contract. You can restore this version later from the history panel.
+            </p>
+            <div class="form-group">
+                <label for="snapshot-description">Snapshot Description</label>
+                <input type="text" id="snapshot-description" placeholder="e.g., Before major revision, Final draft, etc." maxlength="200">
+                <small style="color: var(--text-secondary); margin-top: 5px; display: block;">
+                    Give this snapshot a meaningful name so you can find it later
+                </small>
+            </div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="cancel-snapshot-btn">Cancel</button>
+                <button class="btn" id="confirm-snapshot-btn">
+                    <span id="snapshot-btn-text">Create Snapshot</span>
+                    <span id="snapshot-btn-loader" style="display: none;">Creating...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Snapshot Manager -->
+    <div class="snapshot-manager-overlay" id="snapshot-manager-overlay">
+        <div class="snapshot-manager">
+            <div class="snapshot-manager-header">
+                <h2>📸 Snapshot Manager</h2>
+                <button class="btn btn-secondary" id="close-snapshot-manager-btn">✕ Close</button>
+            </div>
+
+            <!-- Snapshot Stats -->
+            <div class="snapshot-stats" id="snapshot-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-total">0</div>
+                    <div class="stat-label">Total Snapshots</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-this-month">0</div>
+                    <div class="stat-label">This Month</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-oldest">-</div>
+                    <div class="stat-label">Oldest</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stats-newest">-</div>
+                    <div class="stat-label">Newest</div>
+                </div>
+            </div>
+
+            <!-- Snapshot Controls -->
+            <div class="snapshot-controls">
+                <input type="text" id="snapshot-search" placeholder="🔍 Search snapshots...">
+                <select id="snapshot-sort">
+                    <option value="date-desc">📅 Newest First</option>
+                    <option value="date-asc">📅 Oldest First</option>
+                    <option value="name-asc">🔤 Name (A-Z)</option>
+                    <option value="name-desc">🔤 Name (Z-A)</option>
+                </select>
+                <button class="btn btn-secondary" id="refresh-snapshots-btn">🔄 Refresh</button>
+            </div>
+
+            <!-- Snapshot Grid -->
+            <div class="snapshot-grid" id="snapshot-grid">
+                <!-- Snapshot cards will be loaded here -->
+            </div>
+
+            <!-- Empty State -->
+            <div class="snapshot-empty" id="snapshot-empty" style="display: none;">
+                <div class="snapshot-empty-icon">📸</div>
+                <h3>No Snapshots Yet</h3>
+                <p>Create your first snapshot to save the current state of your contract.</p>
+                <button class="btn" id="create-first-snapshot-btn">Create Snapshot</button>
             </div>
         </div>
     </div>
@@ -3565,6 +3963,41 @@
         let pendingHistoryChange = null;
         let lastHistoryTimestamp = 0;
         const HISTORY_DEBOUNCE_MS = 3000; // Wait 3 seconds after last edit before creating history entry
+
+        // ============================================
+        // TOAST NOTIFICATION SYSTEM
+        // ============================================
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || icons.info}</div>
+                <div class="toast-message">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Auto-remove after duration
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    container.removeChild(toast);
+                }, 300);
+            }, duration);
+        }
 
         // ============================================
         // UNDO/REDO SYSTEM
@@ -4030,11 +4463,13 @@
                     const shareBtn = document.getElementById('share-btn');
                     const historyBtn = document.getElementById('history-btn');
                     const snapshotBtn = document.getElementById('save-snapshot-btn');
+                    const manageSnapshotsBtn = document.getElementById('manage-snapshots-btn');
 
                     if (backBtn) backBtn.style.display = 'none';
                     if (shareBtn) shareBtn.style.display = 'none';
                     if (historyBtn) historyBtn.style.display = 'none';
                     if (snapshotBtn) snapshotBtn.style.display = 'none';
+                    if (manageSnapshotsBtn) manageSnapshotsBtn.style.display = 'none';
 
                     renderContractEditor();
                     setupRealtimeSync();
@@ -6780,16 +7215,33 @@
                   '</ul>'
                 : `<div style="margin: 5px 0;">${item.description}</div>`;
 
+            // Add snapshot badge if this is a snapshot
+            const snapshotBadge = item.is_snapshot
+                ? '<span class="snapshot-badge">📸 Snapshot</span>'
+                : '';
+
+            // Action buttons for snapshots
+            const snapshotActions = item.is_snapshot ? `
+                <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="flex: 1; min-width: 120px;" onclick="restoreSnapshot('${item.id}')">
+                        🔄 Restore
+                    </button>
+                    <button class="btn btn-secondary" style="flex: 1; min-width: 120px;" onclick="exportSnapshot('${item.id}')">
+                        💾 Download
+                    </button>
+                </div>
+            ` : '';
+
             return `
-                <div class="history-item" data-history-id="${item.id}">
-                    <div class="timestamp">${timeStr}</div>
+                <div class="history-item ${item.is_snapshot ? 'snapshot-item' : ''}" data-history-id="${item.id}">
+                    <div class="timestamp">${timeStr}${snapshotBadge}</div>
                     <div class="change">
                         ${changeHtml}
                     </div>
                     <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
                         by <span class="user">${userName}</span>
                     </div>
-                    ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
+                    ${snapshotActions}
                 </div>
             `;
         }
@@ -6970,70 +7422,733 @@
             items.classList.toggle('collapsed');
         };
 
-        document.getElementById('save-snapshot-btn').addEventListener('click', async () => {
-            const description = prompt('Snapshot description:');
-            if (!description) return;
+        // Open snapshot dialog
+        document.getElementById('save-snapshot-btn').addEventListener('click', () => {
+            const dialog = document.getElementById('snapshot-dialog');
+            const input = document.getElementById('snapshot-description');
+            input.value = ''; // Clear previous input
+            dialog.classList.add('open');
+            setTimeout(() => input.focus(), 100); // Focus the input
+        });
 
-            // Flush any pending history changes first
-            clearTimeout(historyTimeout);
-            await flushHistoryChange();
+        // Cancel snapshot
+        document.getElementById('cancel-snapshot-btn').addEventListener('click', () => {
+            document.getElementById('snapshot-dialog').classList.remove('open');
+        });
 
-            const { error } = await supabaseClient
-                .from('history')
-                .insert({
-                    contract_id: currentContract.id,
-                    user_id: currentUser.id,
-                    change_type: 'snapshot',
-                    description: `Snapshot: ${description}`,
-                    snapshot: currentContract.data,
-                    is_snapshot: true
-                });
+        // Create snapshot
+        document.getElementById('confirm-snapshot-btn').addEventListener('click', async () => {
+            const description = document.getElementById('snapshot-description').value.trim();
 
-            if (error) {
-                console.error('Error creating snapshot:', error);
-                alert('Failed to create snapshot');
-            } else {
-                alert('Snapshot created!');
+            if (!description) {
+                showToast('Please enter a description for the snapshot', 'error');
+                return;
+            }
+
+            // Show loading state
+            const btnText = document.getElementById('snapshot-btn-text');
+            const btnLoader = document.getElementById('snapshot-btn-loader');
+            const confirmBtn = document.getElementById('confirm-snapshot-btn');
+
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline';
+            confirmBtn.disabled = true;
+
+            try {
+                // Flush any pending history changes first
+                clearTimeout(historyTimeout);
+                await flushHistoryChange();
+
+                const { error } = await supabaseClient
+                    .from('history')
+                    .insert({
+                        contract_id: currentContract.id,
+                        user_id: currentUser.id,
+                        change_type: 'snapshot',
+                        description: `Snapshot: ${description}`,
+                        snapshot: currentContract.data,
+                        is_snapshot: true
+                    });
+
+                if (error) {
+                    console.error('Error creating snapshot:', error);
+                    showToast('Failed to create snapshot', 'error');
+                } else {
+                    showToast('Snapshot created successfully!', 'success');
+                    document.getElementById('snapshot-dialog').classList.remove('open');
+
+                    // Refresh history panel if it's open
+                    const historyPanel = document.getElementById('history-panel');
+                    if (historyPanel.classList.contains('open')) {
+                        await loadHistory();
+                    }
+                }
+            } finally {
+                // Reset button state
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+                confirmBtn.disabled = false;
+            }
+        });
+
+        // Allow Enter key to create snapshot
+        document.getElementById('snapshot-description').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('confirm-snapshot-btn').click();
             }
         });
 
         window.restoreSnapshot = async function(historyId) {
-            if (!confirm('Restore this version? Current changes will be saved as a snapshot.')) {
+            if (!confirm('Restore this version? Your current state will be saved as an auto-snapshot before restoring.')) {
                 return;
             }
 
-            // Flush any pending history changes first
-            clearTimeout(historyTimeout);
-            await flushHistoryChange();
+            showToast('Restoring snapshot...', 'info', 2000);
 
-            // Save current state as snapshot first
-            await supabaseClient.from('history').insert({
-                contract_id: currentContract.id,
-                user_id: currentUser.id,
-                change_type: 'snapshot',
-                description: 'Auto-snapshot before restore',
-                snapshot: currentContract.data,
-                is_snapshot: true
+            try {
+                // Flush any pending history changes first
+                clearTimeout(historyTimeout);
+                await flushHistoryChange();
+
+                // Save current state as snapshot first
+                const { error: saveError } = await supabaseClient.from('history').insert({
+                    contract_id: currentContract.id,
+                    user_id: currentUser.id,
+                    change_type: 'snapshot',
+                    description: 'Auto-snapshot before restore',
+                    snapshot: currentContract.data,
+                    is_snapshot: true
+                });
+
+                if (saveError) {
+                    console.error('Error saving current state:', saveError);
+                    showToast('Failed to save current state', 'error');
+                    return;
+                }
+
+                // Load the snapshot
+                const { data, error } = await supabaseClient
+                    .from('history')
+                    .select('snapshot')
+                    .eq('id', historyId)
+                    .single();
+
+                if (error) {
+                    console.error('Error loading snapshot:', error);
+                    showToast('Failed to restore snapshot', 'error');
+                    return;
+                }
+
+                // Restore the data
+                currentContract.data = data.snapshot;
+                await saveContract();
+                renderContractEditor();
+
+                showToast('Snapshot restored successfully!', 'success');
+
+                // Refresh history panel
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error during restore:', err);
+                showToast('An error occurred while restoring', 'error');
+            }
+        };
+
+        // ============================================
+        // BACKUP & EXPORT
+        // ============================================
+
+        /**
+         * Download a file to user's computer
+         */
+        function downloadFile(filename, content, mimeType = 'application/json') {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        /**
+         * Export a single snapshot
+         */
+        window.exportSnapshot = async function(historyId) {
+            try {
+                showToast('Preparing snapshot for download...', 'info', 2000);
+
+                // Fetch the snapshot
+                const { data, error } = await supabaseClient
+                    .from('history')
+                    .select('*')
+                    .eq('id', historyId)
+                    .single();
+
+                if (error) {
+                    console.error('Error fetching snapshot:', error);
+                    showToast('Failed to export snapshot', 'error');
+                    return;
+                }
+
+                // Create export object
+                const exportData = {
+                    type: 'dynamic-contract-snapshot',
+                    version: '1.0',
+                    exported_at: new Date().toISOString(),
+                    snapshot: {
+                        id: data.id,
+                        description: data.description,
+                        created_at: data.created_at,
+                        contract_data: data.snapshot,
+                        contract_id: data.contract_id,
+                        user_id: data.user_id
+                    },
+                    contract_info: {
+                        title: currentContract.data.title || 'Untitled Contract',
+                        parties: currentContract.data.parties
+                    }
+                };
+
+                // Generate filename
+                const timestamp = new Date(data.created_at).toISOString().split('T')[0];
+                const description = data.description
+                    .replace(/^Snapshot:\s*/i, '')
+                    .replace(/[^a-zA-Z0-9]/g, '_')
+                    .substring(0, 30);
+                const filename = `contract_snapshot_${timestamp}_${description}.json`;
+
+                // Download
+                downloadFile(filename, JSON.stringify(exportData, null, 2));
+                showToast('Snapshot downloaded successfully!', 'success');
+            } catch (err) {
+                console.error('Error exporting snapshot:', err);
+                showToast('Failed to export snapshot', 'error');
+            }
+        };
+
+        /**
+         * Export current contract state
+         */
+        document.getElementById('export-current-btn').addEventListener('click', () => {
+            try {
+                const exportData = {
+                    type: 'dynamic-contract-state',
+                    version: '1.0',
+                    exported_at: new Date().toISOString(),
+                    contract: {
+                        id: currentContract.id,
+                        data: currentContract.data,
+                        updated_at: currentContract.updated_at
+                    }
+                };
+
+                const timestamp = new Date().toISOString().split('T')[0];
+                const title = currentContract.data.title || 'Untitled';
+                const filename = `contract_${title.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.json`;
+
+                downloadFile(filename, JSON.stringify(exportData, null, 2));
+                showToast('Current state exported successfully!', 'success');
+            } catch (err) {
+                console.error('Error exporting current state:', err);
+                showToast('Failed to export current state', 'error');
+            }
+        });
+
+        /**
+         * Export all snapshots
+         */
+        document.getElementById('export-all-snapshots-btn').addEventListener('click', async () => {
+            try {
+                showToast('Fetching all snapshots...', 'info', 2000);
+
+                // Fetch all snapshots for this contract
+                const { data: snapshots, error } = await supabaseClient
+                    .from('history')
+                    .select('*')
+                    .eq('contract_id', currentContract.id)
+                    .eq('is_snapshot', true)
+                    .order('created_at', { ascending: true });
+
+                if (error) {
+                    console.error('Error fetching snapshots:', error);
+                    showToast('Failed to fetch snapshots', 'error');
+                    return;
+                }
+
+                if (!snapshots || snapshots.length === 0) {
+                    showToast('No snapshots found to export', 'info');
+                    return;
+                }
+
+                // Create export object
+                const exportData = {
+                    type: 'dynamic-contract-snapshots-collection',
+                    version: '1.0',
+                    exported_at: new Date().toISOString(),
+                    contract_info: {
+                        id: currentContract.id,
+                        title: currentContract.data.title || 'Untitled Contract',
+                        parties: currentContract.data.parties
+                    },
+                    snapshots: snapshots.map(s => ({
+                        id: s.id,
+                        description: s.description,
+                        created_at: s.created_at,
+                        contract_data: s.snapshot,
+                        user_id: s.user_id
+                    })),
+                    count: snapshots.length
+                };
+
+                const timestamp = new Date().toISOString().split('T')[0];
+                const title = currentContract.data.title || 'Untitled';
+                const filename = `contract_all_snapshots_${title.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.json`;
+
+                downloadFile(filename, JSON.stringify(exportData, null, 2));
+                showToast(`Exported ${snapshots.length} snapshot${snapshots.length !== 1 ? 's' : ''} successfully!`, 'success');
+            } catch (err) {
+                console.error('Error exporting all snapshots:', err);
+                showToast('Failed to export snapshots', 'error');
+            }
+        });
+
+        /**
+         * Import backup file
+         */
+        document.getElementById('import-backup-btn').addEventListener('click', () => {
+            document.getElementById('import-file-input').click();
+        });
+
+        document.getElementById('import-file-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                showToast('Reading backup file...', 'info', 2000);
+
+                const text = await file.text();
+                const importData = JSON.parse(text);
+
+                // Validate format
+                if (!importData.type || !importData.type.startsWith('dynamic-contract')) {
+                    showToast('Invalid backup file format', 'error');
+                    return;
+                }
+
+                // Handle different import types
+                if (importData.type === 'dynamic-contract-snapshot') {
+                    await importSingleSnapshot(importData);
+                } else if (importData.type === 'dynamic-contract-state') {
+                    await importContractState(importData);
+                } else if (importData.type === 'dynamic-contract-snapshots-collection') {
+                    await importSnapshotsCollection(importData);
+                } else {
+                    showToast('Unknown backup file type', 'error');
+                }
+            } catch (err) {
+                console.error('Error importing backup:', err);
+                showToast('Failed to import backup file', 'error');
+            } finally {
+                // Clear file input
+                e.target.value = '';
+            }
+        });
+
+        /**
+         * Import a single snapshot
+         */
+        async function importSingleSnapshot(importData) {
+            if (!confirm('Import this snapshot? It will be added to your history.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('history')
+                    .insert({
+                        contract_id: currentContract.id,
+                        user_id: currentUser.id,
+                        change_type: 'snapshot',
+                        description: `${importData.snapshot.description} (Imported)`,
+                        snapshot: importData.snapshot.contract_data,
+                        is_snapshot: true
+                    });
+
+                if (error) {
+                    console.error('Error importing snapshot:', error);
+                    showToast('Failed to import snapshot', 'error');
+                    return;
+                }
+
+                showToast('Snapshot imported successfully!', 'success');
+
+                // Refresh history if open
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error importing snapshot:', err);
+                showToast('Failed to import snapshot', 'error');
+            }
+        }
+
+        /**
+         * Import contract state
+         */
+        async function importContractState(importData) {
+            if (!confirm('Import this contract state? This will replace your current contract data.')) {
+                return;
+            }
+
+            try {
+                // Save current state as snapshot first
+                await supabaseClient.from('history').insert({
+                    contract_id: currentContract.id,
+                    user_id: currentUser.id,
+                    change_type: 'snapshot',
+                    description: 'Auto-snapshot before import',
+                    snapshot: currentContract.data,
+                    is_snapshot: true
+                });
+
+                // Update contract with imported data
+                currentContract.data = importData.contract.data;
+                await saveContract();
+                renderContractEditor();
+
+                showToast('Contract state imported successfully!', 'success');
+
+                // Refresh history if open
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error importing contract state:', err);
+                showToast('Failed to import contract state', 'error');
+            }
+        }
+
+        /**
+         * Import snapshots collection
+         */
+        async function importSnapshotsCollection(importData) {
+            const count = importData.snapshots.length;
+            if (!confirm(`Import ${count} snapshot${count !== 1 ? 's' : ''}? They will be added to your history.`)) {
+                return;
+            }
+
+            try {
+                showToast(`Importing ${count} snapshots...`, 'info', 3000);
+
+                // Import each snapshot
+                const importPromises = importData.snapshots.map(snapshot =>
+                    supabaseClient.from('history').insert({
+                        contract_id: currentContract.id,
+                        user_id: currentUser.id,
+                        change_type: 'snapshot',
+                        description: `${snapshot.description} (Imported)`,
+                        snapshot: snapshot.contract_data,
+                        is_snapshot: true
+                    })
+                );
+
+                const results = await Promise.all(importPromises);
+                const errors = results.filter(r => r.error);
+
+                if (errors.length > 0) {
+                    console.error('Some imports failed:', errors);
+                    showToast(`Imported ${count - errors.length}/${count} snapshots`, 'error');
+                } else {
+                    showToast(`All ${count} snapshots imported successfully!`, 'success');
+                }
+
+                // Refresh history if open
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error importing snapshots:', err);
+                showToast('Failed to import snapshots', 'error');
+            }
+        }
+
+        // ============================================
+        // SNAPSHOT MANAGER
+        // ============================================
+
+        let allSnapshots = [];
+        let filteredSnapshots = [];
+
+        // Open snapshot manager
+        document.getElementById('manage-snapshots-btn').addEventListener('click', async () => {
+            document.getElementById('snapshot-manager-overlay').classList.add('open');
+            await loadSnapshotManager();
+        });
+
+        // Close snapshot manager
+        document.getElementById('close-snapshot-manager-btn').addEventListener('click', () => {
+            document.getElementById('snapshot-manager-overlay').classList.remove('open');
+        });
+
+        // Create first snapshot from empty state
+        document.getElementById('create-first-snapshot-btn').addEventListener('click', () => {
+            document.getElementById('snapshot-manager-overlay').classList.remove('open');
+            document.getElementById('save-snapshot-btn').click();
+        });
+
+        // Refresh snapshots
+        document.getElementById('refresh-snapshots-btn').addEventListener('click', async () => {
+            await loadSnapshotManager();
+            showToast('Snapshots refreshed', 'success', 2000);
+        });
+
+        // Search snapshots
+        document.getElementById('snapshot-search').addEventListener('input', (e) => {
+            filterAndRenderSnapshots(e.target.value);
+        });
+
+        // Sort snapshots
+        document.getElementById('snapshot-sort').addEventListener('change', () => {
+            filterAndRenderSnapshots();
+        });
+
+        /**
+         * Load snapshot manager data
+         */
+        async function loadSnapshotManager() {
+            try {
+                showToast('Loading snapshots...', 'info', 1500);
+
+                const { data: snapshots, error } = await supabaseClient
+                    .from('history')
+                    .select('*')
+                    .eq('contract_id', currentContract.id)
+                    .eq('is_snapshot', true)
+                    .order('created_at', { ascending: false });
+
+                if (error) {
+                    console.error('Error loading snapshots:', error);
+                    showToast('Failed to load snapshots', 'error');
+                    return;
+                }
+
+                allSnapshots = snapshots || [];
+                updateSnapshotStats(allSnapshots);
+                filterAndRenderSnapshots();
+            } catch (err) {
+                console.error('Error in loadSnapshotManager:', err);
+                showToast('Failed to load snapshots', 'error');
+            }
+        }
+
+        /**
+         * Update snapshot statistics
+         */
+        function updateSnapshotStats(snapshots) {
+            const total = snapshots.length;
+            document.getElementById('stats-total').textContent = total;
+
+            if (total === 0) {
+                document.getElementById('stats-this-month').textContent = '0';
+                document.getElementById('stats-oldest').textContent = '-';
+                document.getElementById('stats-newest').textContent = '-';
+                return;
+            }
+
+            // This month count
+            const now = new Date();
+            const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+            const thisMonth = snapshots.filter(s => new Date(s.created_at) >= thisMonthStart).length;
+            document.getElementById('stats-this-month').textContent = thisMonth;
+
+            // Oldest and newest dates
+            const dates = snapshots.map(s => new Date(s.created_at));
+            const oldest = new Date(Math.min(...dates));
+            const newest = new Date(Math.max(...dates));
+
+            document.getElementById('stats-oldest').textContent = oldest.toLocaleDateString();
+            document.getElementById('stats-newest').textContent = newest.toLocaleDateString();
+        }
+
+        /**
+         * Filter and render snapshots
+         */
+        function filterAndRenderSnapshots(searchTerm = '') {
+            const searchValue = searchTerm || document.getElementById('snapshot-search').value;
+            const sortValue = document.getElementById('snapshot-sort').value;
+
+            // Filter by search
+            filteredSnapshots = allSnapshots.filter(snapshot => {
+                if (!searchValue) return true;
+                const desc = snapshot.description.toLowerCase();
+                const search = searchValue.toLowerCase();
+                return desc.includes(search);
             });
 
-            // Load the snapshot
-            const { data, error } = await supabaseClient
-                .from('history')
-                .select('snapshot')
-                .eq('id', historyId)
-                .single();
+            // Sort
+            filteredSnapshots.sort((a, b) => {
+                switch (sortValue) {
+                    case 'date-desc':
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    case 'date-asc':
+                        return new Date(a.created_at) - new Date(b.created_at);
+                    case 'name-asc':
+                        return a.description.localeCompare(b.description);
+                    case 'name-desc':
+                        return b.description.localeCompare(a.description);
+                    default:
+                        return 0;
+                }
+            });
 
-            if (error) {
-                console.error('Error loading snapshot:', error);
-                alert('Failed to restore snapshot');
+            renderSnapshotGrid();
+        }
+
+        /**
+         * Render snapshot grid
+         */
+        function renderSnapshotGrid() {
+            const grid = document.getElementById('snapshot-grid');
+            const empty = document.getElementById('snapshot-empty');
+
+            if (filteredSnapshots.length === 0) {
+                grid.style.display = 'none';
+                empty.style.display = 'block';
                 return;
             }
 
-            // Restore the data
-            currentContract.data = data.snapshot;
-            await saveContract();
-            renderContractEditor();
-            alert('Snapshot restored!');
+            grid.style.display = 'grid';
+            empty.style.display = 'none';
+
+            grid.innerHTML = filteredSnapshots.map(snapshot => renderSnapshotCard(snapshot)).join('');
+        }
+
+        /**
+         * Render a single snapshot card
+         */
+        function renderSnapshotCard(snapshot) {
+            const date = new Date(snapshot.created_at);
+            const dateStr = date.toLocaleDateString();
+            const timeStr = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            // Clean up description
+            const description = snapshot.description.replace(/^Snapshot:\s*/i, '');
+
+            // Calculate some metadata
+            const sections = Object.keys(snapshot.snapshot).length;
+            const dataSize = JSON.stringify(snapshot.snapshot).length;
+            const sizeKB = (dataSize / 1024).toFixed(1);
+
+            return `
+                <div class="snapshot-card" data-snapshot-id="${snapshot.id}">
+                    <div class="snapshot-card-header">
+                        <div class="snapshot-icon">📸</div>
+                        <div class="snapshot-date">${dateStr}<br>${timeStr}</div>
+                    </div>
+                    <div class="snapshot-title">${description}</div>
+                    <div class="snapshot-meta">
+                        <div class="snapshot-meta-item">
+                            <span>Sections:</span>
+                            <span>${sections}</span>
+                        </div>
+                        <div class="snapshot-meta-item">
+                            <span>Size:</span>
+                            <span>${sizeKB} KB</span>
+                        </div>
+                    </div>
+                    <div class="snapshot-card-actions">
+                        <button class="btn btn-secondary" onclick="restoreSnapshotFromManager('${snapshot.id}')">
+                            🔄 Restore
+                        </button>
+                        <button class="btn btn-secondary" onclick="exportSnapshot('${snapshot.id}')">
+                            💾 Export
+                        </button>
+                        <button class="btn btn-secondary" onclick="renameSnapshot('${snapshot.id}')">
+                            ✏️ Rename
+                        </button>
+                        <button class="btn btn-secondary" onclick="deleteSnapshot('${snapshot.id}')">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Restore snapshot from manager
+         */
+        window.restoreSnapshotFromManager = async function(historyId) {
+            document.getElementById('snapshot-manager-overlay').classList.remove('open');
+            await restoreSnapshot(historyId);
+        };
+
+        /**
+         * Rename snapshot
+         */
+        window.renameSnapshot = async function(historyId) {
+            const snapshot = allSnapshots.find(s => s.id === historyId);
+            if (!snapshot) return;
+
+            const currentDesc = snapshot.description.replace(/^Snapshot:\s*/i, '');
+            const newDesc = prompt('Enter new snapshot name:', currentDesc);
+
+            if (!newDesc || newDesc === currentDesc) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('history')
+                    .update({ description: `Snapshot: ${newDesc}` })
+                    .eq('id', historyId);
+
+                if (error) {
+                    console.error('Error renaming snapshot:', error);
+                    showToast('Failed to rename snapshot', 'error');
+                    return;
+                }
+
+                showToast('Snapshot renamed successfully!', 'success');
+                await loadSnapshotManager();
+            } catch (err) {
+                console.error('Error renaming snapshot:', err);
+                showToast('Failed to rename snapshot', 'error');
+            }
+        };
+
+        /**
+         * Delete snapshot
+         */
+        window.deleteSnapshot = async function(historyId) {
+            if (!confirm('Delete this snapshot? This action cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('history')
+                    .delete()
+                    .eq('id', historyId);
+
+                if (error) {
+                    console.error('Error deleting snapshot:', error);
+                    showToast('Failed to delete snapshot', 'error');
+                    return;
+                }
+
+                showToast('Snapshot deleted successfully!', 'success');
+                await loadSnapshotManager();
+            } catch (err) {
+                console.error('Error deleting snapshot:', err);
+                showToast('Failed to delete snapshot', 'error');
+            }
         };
 
         // ============================================
@@ -7383,6 +8498,15 @@
                 });
             }
 
+            const mobileManageSnapshotsBtn = document.getElementById('mobile-manage-snapshots-btn');
+            const manageSnapshotsBtn = document.getElementById('manage-snapshots-btn');
+            if (mobileManageSnapshotsBtn && manageSnapshotsBtn) {
+                mobileManageSnapshotsBtn.addEventListener('click', () => {
+                    closeOverflowMenu();
+                    manageSnapshotsBtn.click();
+                });
+            }
+
             if (mobileBackBtn && backBtn) {
                 mobileBackBtn.addEventListener('click', () => {
                     closeOverflowMenu();
@@ -7431,5 +8555,8 @@
         // Check authentication
         checkAuth();
     </script>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
 </body>
 </html>
