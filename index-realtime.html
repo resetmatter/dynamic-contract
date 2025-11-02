@@ -3070,6 +3070,97 @@
             }
         }
 
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a0000 100%);
+            border: 2px solid var(--border-accent);
+            border-radius: 10px;
+            padding: 15px 20px;
+            min-width: 300px;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.3s ease;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            border-color: #2ecc71;
+        }
+
+        .toast.error {
+            border-color: #e74c3c;
+        }
+
+        .toast.info {
+            border-color: var(--accent-pink);
+        }
+
+        .toast-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .toast-message {
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        @media (max-width: 768px) {
+            .toast-container {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+            }
+
+            .toast {
+                min-width: auto;
+                max-width: none;
+            }
+        }
+
+        /* Snapshot Badge in History */
+        .snapshot-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, var(--accent-pink) 0%, #ff1493 100%);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            font-weight: bold;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(255, 105, 180, 0.3);
+        }
+
+        .history-item.snapshot-item {
+            border-left: 3px solid var(--accent-pink);
+            background: linear-gradient(90deg, rgba(255, 105, 180, 0.1) 0%, transparent 100%);
+        }
+
         /* Print Styles */
         @media print {
             .app-header,
@@ -3480,6 +3571,30 @@
         </div>
     </div>
 
+    <!-- Snapshot Dialog -->
+    <div class="dialog-overlay" id="snapshot-dialog">
+        <div class="dialog">
+            <h3>📸 Create Snapshot</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                Save the current state of your contract. You can restore this version later from the history panel.
+            </p>
+            <div class="form-group">
+                <label for="snapshot-description">Snapshot Description</label>
+                <input type="text" id="snapshot-description" placeholder="e.g., Before major revision, Final draft, etc." maxlength="200">
+                <small style="color: var(--text-secondary); margin-top: 5px; display: block;">
+                    Give this snapshot a meaningful name so you can find it later
+                </small>
+            </div>
+            <div class="dialog-actions">
+                <button class="btn btn-secondary" id="cancel-snapshot-btn">Cancel</button>
+                <button class="btn" id="confirm-snapshot-btn">
+                    <span id="snapshot-btn-text">Create Snapshot</span>
+                    <span id="snapshot-btn-loader" style="display: none;">Creating...</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Preview Overlay -->
     <div class="preview-overlay" id="preview-overlay">
         <div class="preview-header">
@@ -3565,6 +3680,41 @@
         let pendingHistoryChange = null;
         let lastHistoryTimestamp = 0;
         const HISTORY_DEBOUNCE_MS = 3000; // Wait 3 seconds after last edit before creating history entry
+
+        // ============================================
+        // TOAST NOTIFICATION SYSTEM
+        // ============================================
+        function showToast(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️'
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || icons.info}</div>
+                <div class="toast-message">${message}</div>
+            `;
+
+            container.appendChild(toast);
+
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Auto-remove after duration
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    container.removeChild(toast);
+                }, 300);
+            }, duration);
+        }
 
         // ============================================
         // UNDO/REDO SYSTEM
@@ -6780,16 +6930,21 @@
                   '</ul>'
                 : `<div style="margin: 5px 0;">${item.description}</div>`;
 
+            // Add snapshot badge if this is a snapshot
+            const snapshotBadge = item.is_snapshot
+                ? '<span class="snapshot-badge">📸 Snapshot</span>'
+                : '';
+
             return `
-                <div class="history-item" data-history-id="${item.id}">
-                    <div class="timestamp">${timeStr}</div>
+                <div class="history-item ${item.is_snapshot ? 'snapshot-item' : ''}" data-history-id="${item.id}">
+                    <div class="timestamp">${timeStr}${snapshotBadge}</div>
                     <div class="change">
                         ${changeHtml}
                     </div>
                     <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
                         by <span class="user">${userName}</span>
                     </div>
-                    ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">Restore</button>' : ''}
+                    ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">🔄 Restore This Version</button>' : ''}
                 </div>
             `;
         }
@@ -6970,70 +7125,139 @@
             items.classList.toggle('collapsed');
         };
 
-        document.getElementById('save-snapshot-btn').addEventListener('click', async () => {
-            const description = prompt('Snapshot description:');
-            if (!description) return;
+        // Open snapshot dialog
+        document.getElementById('save-snapshot-btn').addEventListener('click', () => {
+            const dialog = document.getElementById('snapshot-dialog');
+            const input = document.getElementById('snapshot-description');
+            input.value = ''; // Clear previous input
+            dialog.classList.add('open');
+            setTimeout(() => input.focus(), 100); // Focus the input
+        });
 
-            // Flush any pending history changes first
-            clearTimeout(historyTimeout);
-            await flushHistoryChange();
+        // Cancel snapshot
+        document.getElementById('cancel-snapshot-btn').addEventListener('click', () => {
+            document.getElementById('snapshot-dialog').classList.remove('open');
+        });
 
-            const { error } = await supabaseClient
-                .from('history')
-                .insert({
-                    contract_id: currentContract.id,
-                    user_id: currentUser.id,
-                    change_type: 'snapshot',
-                    description: `Snapshot: ${description}`,
-                    snapshot: currentContract.data,
-                    is_snapshot: true
-                });
+        // Create snapshot
+        document.getElementById('confirm-snapshot-btn').addEventListener('click', async () => {
+            const description = document.getElementById('snapshot-description').value.trim();
 
-            if (error) {
-                console.error('Error creating snapshot:', error);
-                alert('Failed to create snapshot');
-            } else {
-                alert('Snapshot created!');
+            if (!description) {
+                showToast('Please enter a description for the snapshot', 'error');
+                return;
+            }
+
+            // Show loading state
+            const btnText = document.getElementById('snapshot-btn-text');
+            const btnLoader = document.getElementById('snapshot-btn-loader');
+            const confirmBtn = document.getElementById('confirm-snapshot-btn');
+
+            btnText.style.display = 'none';
+            btnLoader.style.display = 'inline';
+            confirmBtn.disabled = true;
+
+            try {
+                // Flush any pending history changes first
+                clearTimeout(historyTimeout);
+                await flushHistoryChange();
+
+                const { error } = await supabaseClient
+                    .from('history')
+                    .insert({
+                        contract_id: currentContract.id,
+                        user_id: currentUser.id,
+                        change_type: 'snapshot',
+                        description: `Snapshot: ${description}`,
+                        snapshot: currentContract.data,
+                        is_snapshot: true
+                    });
+
+                if (error) {
+                    console.error('Error creating snapshot:', error);
+                    showToast('Failed to create snapshot', 'error');
+                } else {
+                    showToast('Snapshot created successfully!', 'success');
+                    document.getElementById('snapshot-dialog').classList.remove('open');
+
+                    // Refresh history panel if it's open
+                    const historyPanel = document.getElementById('history-panel');
+                    if (historyPanel.classList.contains('open')) {
+                        await loadHistory();
+                    }
+                }
+            } finally {
+                // Reset button state
+                btnText.style.display = 'inline';
+                btnLoader.style.display = 'none';
+                confirmBtn.disabled = false;
+            }
+        });
+
+        // Allow Enter key to create snapshot
+        document.getElementById('snapshot-description').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('confirm-snapshot-btn').click();
             }
         });
 
         window.restoreSnapshot = async function(historyId) {
-            if (!confirm('Restore this version? Current changes will be saved as a snapshot.')) {
+            if (!confirm('Restore this version? Your current state will be saved as an auto-snapshot before restoring.')) {
                 return;
             }
 
-            // Flush any pending history changes first
-            clearTimeout(historyTimeout);
-            await flushHistoryChange();
+            showToast('Restoring snapshot...', 'info', 2000);
 
-            // Save current state as snapshot first
-            await supabaseClient.from('history').insert({
-                contract_id: currentContract.id,
-                user_id: currentUser.id,
-                change_type: 'snapshot',
-                description: 'Auto-snapshot before restore',
-                snapshot: currentContract.data,
-                is_snapshot: true
-            });
+            try {
+                // Flush any pending history changes first
+                clearTimeout(historyTimeout);
+                await flushHistoryChange();
 
-            // Load the snapshot
-            const { data, error } = await supabaseClient
-                .from('history')
-                .select('snapshot')
-                .eq('id', historyId)
-                .single();
+                // Save current state as snapshot first
+                const { error: saveError } = await supabaseClient.from('history').insert({
+                    contract_id: currentContract.id,
+                    user_id: currentUser.id,
+                    change_type: 'snapshot',
+                    description: 'Auto-snapshot before restore',
+                    snapshot: currentContract.data,
+                    is_snapshot: true
+                });
 
-            if (error) {
-                console.error('Error loading snapshot:', error);
-                alert('Failed to restore snapshot');
-                return;
+                if (saveError) {
+                    console.error('Error saving current state:', saveError);
+                    showToast('Failed to save current state', 'error');
+                    return;
+                }
+
+                // Load the snapshot
+                const { data, error } = await supabaseClient
+                    .from('history')
+                    .select('snapshot')
+                    .eq('id', historyId)
+                    .single();
+
+                if (error) {
+                    console.error('Error loading snapshot:', error);
+                    showToast('Failed to restore snapshot', 'error');
+                    return;
+                }
+
+                // Restore the data
+                currentContract.data = data.snapshot;
+                await saveContract();
+                renderContractEditor();
+
+                showToast('Snapshot restored successfully!', 'success');
+
+                // Refresh history panel
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error during restore:', err);
+                showToast('An error occurred while restoring', 'error');
             }
-
-            // Restore the data
-            currentContract.data = data.snapshot;
-            await saveContract();
-            renderContractEditor();
-            alert('Snapshot restored!');
         };
 
         // ============================================
@@ -7431,5 +7655,8 @@
         // Check authentication
         checkAuth();
     </script>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
 </body>
 </html>
