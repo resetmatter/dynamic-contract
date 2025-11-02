@@ -4660,8 +4660,8 @@
             const textareas = document.querySelectorAll('#contract-sections textarea');
             textareas.forEach(textarea => {
                 textarea.style.height = 'auto';
-                // Smart calculation: add proportional buffer based on content size
-                const buffer = Math.max(40, Math.ceil(textarea.scrollHeight * 0.15));
+                // Smart calculation: 25% buffer with 30px minimum
+                const buffer = Math.max(30, Math.ceil(textarea.scrollHeight * 0.25));
                 textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
             });
         }
@@ -4821,8 +4821,8 @@
                     // Auto-expand textareas to fit content
                     if (target.tagName === 'TEXTAREA') {
                         target.style.height = 'auto';
-                        // Smart calculation: add proportional buffer based on content size
-                        const buffer = Math.max(40, Math.ceil(target.scrollHeight * 0.15));
+                        // Smart calculation: 25% buffer with 30px minimum
+                        const buffer = Math.max(30, Math.ceil(target.scrollHeight * 0.25));
                         target.style.height = (target.scrollHeight + buffer) + 'px';
                     }
                 }
@@ -6577,10 +6577,9 @@
             textareas.forEach(textarea => {
                 // Reset height to get accurate scrollHeight
                 textarea.style.height = 'auto';
-                // Smart calculation: add proportional buffer based on content size
-                // For small content (< 100px), add 40px buffer
-                // For larger content, add 15% of scrollHeight to ensure proper spacing
-                const buffer = Math.max(40, Math.ceil(textarea.scrollHeight * 0.15));
+                // Smart calculation: add proportional buffer that scales with content
+                // Use 25% buffer with minimum of 30px to ensure proper bottom spacing
+                const buffer = Math.max(30, Math.ceil(textarea.scrollHeight * 0.25));
                 textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
             });
         }
