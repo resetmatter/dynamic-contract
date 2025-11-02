@@ -4176,6 +4176,9 @@
             document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
             document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
 
+            // Auto-populate today's date if signature dates are empty
+            setTodaysDateIfEmpty();
+
             // Re-render the contract editor
             renderContractEditor();
         }
@@ -4458,6 +4461,9 @@
                     document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
                     document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
 
+                    // Auto-populate today's date if signature dates are empty
+                    setTodaysDateIfEmpty();
+
                     // Hide buttons that shouldn't be available to public editors
                     const backBtn = document.getElementById('back-to-list-btn');
                     const shareBtn = document.getElementById('share-btn');
@@ -4707,6 +4713,21 @@
         function hideAuthMessages() {
             document.getElementById('auth-error').style.display = 'none';
             document.getElementById('auth-success').style.display = 'none';
+        }
+
+        // Set today's date in signature fields if empty
+        function setTodaysDateIfEmpty() {
+            const today = new Date().toISOString().split('T')[0];
+            const ownerDate = document.getElementById('owner-signature-date');
+            const subDate = document.getElementById('submissive-signature-date');
+
+            // Only set if field exists and is empty
+            if (ownerDate && !ownerDate.value) {
+                ownerDate.value = today;
+            }
+            if (subDate && !subDate.value) {
+                subDate.value = today;
+            }
         }
 
         // ============================================
@@ -4975,6 +4996,9 @@
             document.getElementById('owner-signature-date').value = currentContract.owner_signature_date || '';
             document.getElementById('submissive-signature').value = currentContract.submissive_signature || '';
             document.getElementById('submissive-signature-date').value = currentContract.submissive_signature_date || '';
+
+            // Auto-populate today's date if signature dates are empty
+            setTodaysDateIfEmpty();
 
             renderContractEditor();
             setupRealtimeSync();
