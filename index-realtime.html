@@ -843,7 +843,6 @@
             resize: vertical;
             min-height: 100px;
             overflow: hidden;
-            padding-bottom: 20px;
         }
 
         /* List Items */
@@ -974,7 +973,6 @@
             resize: none;
             overflow: hidden;
             min-height: 44px;
-            padding-bottom: 20px;
         }
 
         .remove-btn {
@@ -2855,7 +2853,6 @@
             min-height: 80px;
             resize: none;
             overflow: hidden;
-            padding-bottom: 20px;
         }
 
         .preview-list-container {
@@ -4663,7 +4660,8 @@
             const textareas = document.querySelectorAll('#contract-sections textarea');
             textareas.forEach(textarea => {
                 textarea.style.height = 'auto';
-                textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+                // Add buffer for bottom spacing
+                textarea.style.height = (textarea.scrollHeight + 18) + 'px';
             });
         }
 
@@ -4822,7 +4820,8 @@
                     // Auto-expand textareas to fit content
                     if (target.tagName === 'TEXTAREA') {
                         target.style.height = 'auto';
-                        target.style.height = (target.scrollHeight + 2) + 'px';
+                        // Add buffer for bottom spacing
+                        target.style.height = (target.scrollHeight + 18) + 'px';
                     }
                 }
 
@@ -6576,8 +6575,9 @@
             textareas.forEach(textarea => {
                 // Reset height to get accurate scrollHeight
                 textarea.style.height = 'auto';
-                // Set height to scrollHeight + minimal buffer (CSS padding-bottom handles spacing)
-                textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+                // Add extra pixels for bottom breathing room (box-sizing: border-box accounts for padding)
+                // Adding 15-20px ensures text doesn't sit right on the bottom edge
+                textarea.style.height = (textarea.scrollHeight + 18) + 'px';
             });
         }
 
