@@ -3508,6 +3508,20 @@
             </div>
         </div>
 
+        <!-- Export/Import Controls -->
+        <div style="padding: 15px; background: rgba(139, 0, 0, 0.2); border-bottom: 1px solid var(--border-color); display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-secondary" id="export-all-snapshots-btn" style="flex: 1; min-width: 140px; font-size: 0.9em;">
+                📦 Export All Snapshots
+            </button>
+            <button class="btn btn-secondary" id="export-current-btn" style="flex: 1; min-width: 140px; font-size: 0.9em;">
+                💾 Export Current State
+            </button>
+            <button class="btn btn-secondary" id="import-backup-btn" style="flex: 1; min-width: 140px; font-size: 0.9em;">
+                📥 Import Backup
+            </button>
+            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+        </div>
+
         <div class="history-timeline" id="history-timeline">
             <!-- History items will be loaded here -->
         </div>
@@ -6935,6 +6949,18 @@
                 ? '<span class="snapshot-badge">📸 Snapshot</span>'
                 : '';
 
+            // Action buttons for snapshots
+            const snapshotActions = item.is_snapshot ? `
+                <div style="display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" style="flex: 1; min-width: 120px;" onclick="restoreSnapshot('${item.id}')">
+                        🔄 Restore
+                    </button>
+                    <button class="btn btn-secondary" style="flex: 1; min-width: 120px;" onclick="exportSnapshot('${item.id}')">
+                        💾 Download
+                    </button>
+                </div>
+            ` : '';
+
             return `
                 <div class="history-item ${item.is_snapshot ? 'snapshot-item' : ''}" data-history-id="${item.id}">
                     <div class="timestamp">${timeStr}${snapshotBadge}</div>
@@ -6944,7 +6970,7 @@
                     <div style="margin-top: 5px; font-size: 0.85em; color: var(--accent-light-pink);">
                         by <span class="user">${userName}</span>
                     </div>
-                    ${item.is_snapshot ? '<button class="btn btn-secondary" style="margin-top: 10px;" onclick="restoreSnapshot(\'' + item.id + '\')">🔄 Restore This Version</button>' : ''}
+                    ${snapshotActions}
                 </div>
             `;
         }
@@ -7259,6 +7285,330 @@
                 showToast('An error occurred while restoring', 'error');
             }
         };
+
+        // ============================================
+        // BACKUP & EXPORT
+        // ============================================
+
+        /**
+         * Download a file to user's computer
+         */
+        function downloadFile(filename, content, mimeType = 'application/json') {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        /**
+         * Export a single snapshot
+         */
+        window.exportSnapshot = async function(historyId) {
+            try {
+                showToast('Preparing snapshot for download...', 'info', 2000);
+
+                // Fetch the snapshot
+                const { data, error } = await supabaseClient
+                    .from('history')
+                    .select('*')
+                    .eq('id', historyId)
+                    .single();
+
+                if (error) {
+                    console.error('Error fetching snapshot:', error);
+                    showToast('Failed to export snapshot', 'error');
+                    return;
+                }
+
+                // Create export object
+                const exportData = {
+                    type: 'dynamic-contract-snapshot',
+                    version: '1.0',
+                    exported_at: new Date().toISOString(),
+                    snapshot: {
+                        id: data.id,
+                        description: data.description,
+                        created_at: data.created_at,
+                        contract_data: data.snapshot,
+                        contract_id: data.contract_id,
+                        user_id: data.user_id
+                    },
+                    contract_info: {
+                        title: currentContract.data.title || 'Untitled Contract',
+                        parties: currentContract.data.parties
+                    }
+                };
+
+                // Generate filename
+                const timestamp = new Date(data.created_at).toISOString().split('T')[0];
+                const description = data.description
+                    .replace(/^Snapshot:\s*/i, '')
+                    .replace(/[^a-zA-Z0-9]/g, '_')
+                    .substring(0, 30);
+                const filename = `contract_snapshot_${timestamp}_${description}.json`;
+
+                // Download
+                downloadFile(filename, JSON.stringify(exportData, null, 2));
+                showToast('Snapshot downloaded successfully!', 'success');
+            } catch (err) {
+                console.error('Error exporting snapshot:', err);
+                showToast('Failed to export snapshot', 'error');
+            }
+        };
+
+        /**
+         * Export current contract state
+         */
+        document.getElementById('export-current-btn').addEventListener('click', () => {
+            try {
+                const exportData = {
+                    type: 'dynamic-contract-state',
+                    version: '1.0',
+                    exported_at: new Date().toISOString(),
+                    contract: {
+                        id: currentContract.id,
+                        data: currentContract.data,
+                        updated_at: currentContract.updated_at
+                    }
+                };
+
+                const timestamp = new Date().toISOString().split('T')[0];
+                const title = currentContract.data.title || 'Untitled';
+                const filename = `contract_${title.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.json`;
+
+                downloadFile(filename, JSON.stringify(exportData, null, 2));
+                showToast('Current state exported successfully!', 'success');
+            } catch (err) {
+                console.error('Error exporting current state:', err);
+                showToast('Failed to export current state', 'error');
+            }
+        });
+
+        /**
+         * Export all snapshots
+         */
+        document.getElementById('export-all-snapshots-btn').addEventListener('click', async () => {
+            try {
+                showToast('Fetching all snapshots...', 'info', 2000);
+
+                // Fetch all snapshots for this contract
+                const { data: snapshots, error } = await supabaseClient
+                    .from('history')
+                    .select('*')
+                    .eq('contract_id', currentContract.id)
+                    .eq('is_snapshot', true)
+                    .order('created_at', { ascending: true });
+
+                if (error) {
+                    console.error('Error fetching snapshots:', error);
+                    showToast('Failed to fetch snapshots', 'error');
+                    return;
+                }
+
+                if (!snapshots || snapshots.length === 0) {
+                    showToast('No snapshots found to export', 'info');
+                    return;
+                }
+
+                // Create export object
+                const exportData = {
+                    type: 'dynamic-contract-snapshots-collection',
+                    version: '1.0',
+                    exported_at: new Date().toISOString(),
+                    contract_info: {
+                        id: currentContract.id,
+                        title: currentContract.data.title || 'Untitled Contract',
+                        parties: currentContract.data.parties
+                    },
+                    snapshots: snapshots.map(s => ({
+                        id: s.id,
+                        description: s.description,
+                        created_at: s.created_at,
+                        contract_data: s.snapshot,
+                        user_id: s.user_id
+                    })),
+                    count: snapshots.length
+                };
+
+                const timestamp = new Date().toISOString().split('T')[0];
+                const title = currentContract.data.title || 'Untitled';
+                const filename = `contract_all_snapshots_${title.replace(/[^a-zA-Z0-9]/g, '_')}_${timestamp}.json`;
+
+                downloadFile(filename, JSON.stringify(exportData, null, 2));
+                showToast(`Exported ${snapshots.length} snapshot${snapshots.length !== 1 ? 's' : ''} successfully!`, 'success');
+            } catch (err) {
+                console.error('Error exporting all snapshots:', err);
+                showToast('Failed to export snapshots', 'error');
+            }
+        });
+
+        /**
+         * Import backup file
+         */
+        document.getElementById('import-backup-btn').addEventListener('click', () => {
+            document.getElementById('import-file-input').click();
+        });
+
+        document.getElementById('import-file-input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                showToast('Reading backup file...', 'info', 2000);
+
+                const text = await file.text();
+                const importData = JSON.parse(text);
+
+                // Validate format
+                if (!importData.type || !importData.type.startsWith('dynamic-contract')) {
+                    showToast('Invalid backup file format', 'error');
+                    return;
+                }
+
+                // Handle different import types
+                if (importData.type === 'dynamic-contract-snapshot') {
+                    await importSingleSnapshot(importData);
+                } else if (importData.type === 'dynamic-contract-state') {
+                    await importContractState(importData);
+                } else if (importData.type === 'dynamic-contract-snapshots-collection') {
+                    await importSnapshotsCollection(importData);
+                } else {
+                    showToast('Unknown backup file type', 'error');
+                }
+            } catch (err) {
+                console.error('Error importing backup:', err);
+                showToast('Failed to import backup file', 'error');
+            } finally {
+                // Clear file input
+                e.target.value = '';
+            }
+        });
+
+        /**
+         * Import a single snapshot
+         */
+        async function importSingleSnapshot(importData) {
+            if (!confirm('Import this snapshot? It will be added to your history.')) {
+                return;
+            }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('history')
+                    .insert({
+                        contract_id: currentContract.id,
+                        user_id: currentUser.id,
+                        change_type: 'snapshot',
+                        description: `${importData.snapshot.description} (Imported)`,
+                        snapshot: importData.snapshot.contract_data,
+                        is_snapshot: true
+                    });
+
+                if (error) {
+                    console.error('Error importing snapshot:', error);
+                    showToast('Failed to import snapshot', 'error');
+                    return;
+                }
+
+                showToast('Snapshot imported successfully!', 'success');
+
+                // Refresh history if open
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error importing snapshot:', err);
+                showToast('Failed to import snapshot', 'error');
+            }
+        }
+
+        /**
+         * Import contract state
+         */
+        async function importContractState(importData) {
+            if (!confirm('Import this contract state? This will replace your current contract data.')) {
+                return;
+            }
+
+            try {
+                // Save current state as snapshot first
+                await supabaseClient.from('history').insert({
+                    contract_id: currentContract.id,
+                    user_id: currentUser.id,
+                    change_type: 'snapshot',
+                    description: 'Auto-snapshot before import',
+                    snapshot: currentContract.data,
+                    is_snapshot: true
+                });
+
+                // Update contract with imported data
+                currentContract.data = importData.contract.data;
+                await saveContract();
+                renderContractEditor();
+
+                showToast('Contract state imported successfully!', 'success');
+
+                // Refresh history if open
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error importing contract state:', err);
+                showToast('Failed to import contract state', 'error');
+            }
+        }
+
+        /**
+         * Import snapshots collection
+         */
+        async function importSnapshotsCollection(importData) {
+            const count = importData.snapshots.length;
+            if (!confirm(`Import ${count} snapshot${count !== 1 ? 's' : ''}? They will be added to your history.`)) {
+                return;
+            }
+
+            try {
+                showToast(`Importing ${count} snapshots...`, 'info', 3000);
+
+                // Import each snapshot
+                const importPromises = importData.snapshots.map(snapshot =>
+                    supabaseClient.from('history').insert({
+                        contract_id: currentContract.id,
+                        user_id: currentUser.id,
+                        change_type: 'snapshot',
+                        description: `${snapshot.description} (Imported)`,
+                        snapshot: snapshot.contract_data,
+                        is_snapshot: true
+                    })
+                );
+
+                const results = await Promise.all(importPromises);
+                const errors = results.filter(r => r.error);
+
+                if (errors.length > 0) {
+                    console.error('Some imports failed:', errors);
+                    showToast(`Imported ${count - errors.length}/${count} snapshots`, 'error');
+                } else {
+                    showToast(`All ${count} snapshots imported successfully!`, 'success');
+                }
+
+                // Refresh history if open
+                const historyPanel = document.getElementById('history-panel');
+                if (historyPanel.classList.contains('open')) {
+                    await loadHistory();
+                }
+            } catch (err) {
+                console.error('Error importing snapshots:', err);
+                showToast('Failed to import snapshots', 'error');
+            }
+        }
 
         // ============================================
         // SHARING
