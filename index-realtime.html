@@ -6573,8 +6573,8 @@
             textareas.forEach(textarea => {
                 // Reset height to get accurate scrollHeight
                 textarea.style.height = 'auto';
-                // Set height to scrollHeight + extra padding for breathing room (12px bottom padding)
-                textarea.style.height = (textarea.scrollHeight + 12) + 'px';
+                // Set height to scrollHeight + extra padding for breathing room (20px for proper spacing)
+                textarea.style.height = (textarea.scrollHeight + 20) + 'px';
             });
         }
 
