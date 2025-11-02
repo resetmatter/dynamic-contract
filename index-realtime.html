@@ -5051,8 +5051,8 @@
                         field.value = valueEl.value;
                     }
 
-                    // Update list items - only select input elements to avoid selecting parent divs
-                    const listItems = fieldEl.querySelectorAll('input[data-item-index]');
+                    // Update list items - select both input and textarea elements with data-item-index
+                    const listItems = fieldEl.querySelectorAll('input[data-item-index], textarea[data-item-index]');
                     if (listItems.length > 0) {
                         // Replace the array entirely to avoid stale items
                         field.items = Array.from(listItems).map(item => item.value);
@@ -6503,32 +6503,30 @@
                     html += `<div class="preview-field-group">`;
                     html += `<label class="preview-field-label">${escapeHtml(field.label || 'Field')}</label>`;
 
-                    if (field.type === 'list') {
-                        // Render list items as readonly inputs
+                    if (field.type === 'list' && field.items && Array.isArray(field.items) && field.items.length > 0) {
+                        // Render list items as readonly textareas
                         html += `<div class="preview-list-container">`;
-                        if (field.items && Array.isArray(field.items) && field.items.length > 0) {
-                            field.items.forEach(item => {
-                                if (item && typeof item === 'string' && item.trim()) {
-                                    html += `
-                                        <div class="preview-list-item">
-                                            <span class="preview-list-bow">🎀</span>
-                                            <input type="text" class="preview-readonly-input" value="${escapeHtml(item)}" readonly>
-                                        </div>
-                                    `;
-                                }
-                            });
-                        } else {
-                            html += `<p class="preview-empty">[No items]</p>`;
-                        }
+                        field.items.forEach(item => {
+                            if (item && typeof item === 'string' && item.trim()) {
+                                html += `
+                                    <div class="preview-list-item">
+                                        <span class="preview-list-bow">🎀</span>
+                                        <textarea class="preview-readonly-textarea" readonly>${escapeHtml(item)}</textarea>
+                                    </div>
+                                `;
+                            }
+                        });
                         html += `</div>`;
                     } else if (field.type === 'text') {
                         // Render text input as readonly
                         const value = field.value || '';
                         html += `<input type="text" class="preview-readonly-input" value="${escapeHtml(value)}" readonly>`;
                     } else {
-                        // Render textarea as readonly
+                        // Render textarea as readonly (for both textarea type and list type with no items)
                         const value = field.value || '';
-                        html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
+                        if (value.trim()) {
+                            html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
+                        }
                     }
 
                     html += `</div>`;
