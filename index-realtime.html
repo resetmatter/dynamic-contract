@@ -4660,7 +4660,7 @@
             const textareas = document.querySelectorAll('#contract-sections textarea');
             textareas.forEach(textarea => {
                 textarea.style.height = 'auto';
-                textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+                textarea.style.height = (textarea.scrollHeight + 12) + 'px';
             });
         }
 
@@ -4819,7 +4819,7 @@
                     // Auto-expand textareas to fit content
                     if (target.tagName === 'TEXTAREA') {
                         target.style.height = 'auto';
-                        target.style.height = (target.scrollHeight + 2) + 'px';
+                        target.style.height = (target.scrollHeight + 12) + 'px';
                     }
                 }
 
@@ -6573,8 +6573,8 @@
             textareas.forEach(textarea => {
                 // Reset height to get accurate scrollHeight
                 textarea.style.height = 'auto';
-                // Set height to scrollHeight + extra padding for breathing room
-                textarea.style.height = (textarea.scrollHeight + 6) + 'px';
+                // Set height to scrollHeight + extra padding for breathing room (12px bottom padding)
+                textarea.style.height = (textarea.scrollHeight + 12) + 'px';
             });
         }
 
