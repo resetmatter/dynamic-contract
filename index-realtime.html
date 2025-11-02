@@ -842,6 +842,7 @@
         .field-group textarea {
             resize: vertical;
             min-height: 100px;
+            overflow: hidden;
         }
 
         /* List Items */
@@ -966,6 +967,12 @@
             padding: 10px;
             color: var(--text-light);
             font-family: 'Crimson Text', serif;
+        }
+
+        .list-item textarea {
+            resize: none;
+            overflow: hidden;
+            min-height: 44px;
         }
 
         .remove-btn {
@@ -1760,7 +1767,8 @@
                 transform: translateY(-50%) scale(1.02);
             }
 
-            .list-item input {
+            .list-item input,
+            .list-item textarea {
                 width: 100%;
             }
 
@@ -2104,7 +2112,8 @@
                 left: -34px;
             }
 
-            .list-item input {
+            .list-item input,
+            .list-item textarea {
                 flex: 1;
                 min-width: 200px;
             }
@@ -2372,7 +2381,8 @@
                 margin-bottom: 12px;
             }
 
-            .list-item input {
+            .list-item input,
+            .list-item textarea {
                 min-height: 44px;
                 font-size: 16px;
             }
@@ -4641,6 +4651,17 @@
             ).join('');
 
             setupSectionListeners();
+
+            // Auto-expand all textareas to fit their initial content
+            autoExpandEditorTextareas();
+        }
+
+        function autoExpandEditorTextareas() {
+            const textareas = document.querySelectorAll('#contract-sections textarea');
+            textareas.forEach(textarea => {
+                textarea.style.height = 'auto';
+                textarea.style.height = (textarea.scrollHeight + 2) + 'px';
+            });
         }
 
         function renderSection(section, index) {
@@ -4669,7 +4690,7 @@
                         ${(f.items || []).map((item, itemIndex) => `
                             <div class="list-item" data-item-index="${itemIndex}">
                                 <span class="drag-handle" draggable="true">🎀</span>
-                                <input type="text" value="${item || ''}" data-item-index="${itemIndex}">
+                                <textarea data-item-index="${itemIndex}">${item || ''}</textarea>
                                 <button class="remove-btn" onclick="removeListItem(${sectionIndex}, ${fieldIndex}, ${itemIndex})">✕</button>
                             </div>
                         `).join('')}
@@ -4794,6 +4815,12 @@
                     // Handle regular input fields
                     debouncedSave();
                     hasUncapturedEdits = true;
+
+                    // Auto-expand textareas to fit content
+                    if (target.tagName === 'TEXTAREA') {
+                        target.style.height = 'auto';
+                        target.style.height = (target.scrollHeight + 2) + 'px';
+                    }
                 }
 
                 // Capture state after user stops typing for 1 second
