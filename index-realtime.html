@@ -4653,7 +4653,10 @@
             setupSectionListeners();
 
             // Auto-expand all textareas to fit their initial content
-            autoExpandEditorTextareas();
+            // Use setTimeout to ensure DOM is fully rendered
+            setTimeout(() => {
+                autoExpandEditorTextareas();
+            }, 100);
         }
 
         function autoExpandEditorTextareas() {
@@ -6568,7 +6571,10 @@
             document.getElementById('preview-content').innerHTML = html;
 
             // Auto-expand all textareas to fit content
-            autoExpandTextareas();
+            // Use setTimeout to ensure DOM is fully rendered
+            setTimeout(() => {
+                autoExpandTextareas();
+            }, 100);
         }
 
         function autoExpandTextareas() {
