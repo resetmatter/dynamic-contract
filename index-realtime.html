@@ -842,6 +842,7 @@
         .field-group textarea {
             resize: vertical;
             min-height: 100px;
+            overflow: hidden;
         }
 
         /* List Items */
@@ -966,6 +967,12 @@
             padding: 10px;
             color: var(--text-light);
             font-family: 'Crimson Text', serif;
+        }
+
+        .list-item textarea {
+            resize: none;
+            overflow: hidden;
+            min-height: 44px;
         }
 
         .remove-btn {
@@ -1760,7 +1767,8 @@
                 transform: translateY(-50%) scale(1.02);
             }
 
-            .list-item input {
+            .list-item input,
+            .list-item textarea {
                 width: 100%;
             }
 
@@ -1800,22 +1808,32 @@
             /* Preview Mode - Mobile */
             .preview-header {
                 padding: 12px;
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
                 gap: 10px;
-                align-items: stretch;
+                align-items: center;
             }
 
             .preview-header h3 {
                 text-align: center;
                 font-size: 1.1em;
                 margin: 0;
+                grid-column: 1 / -1;
+                grid-row: 2;
+            }
+
+            .preview-presence-section {
+                grid-column: 1;
+                grid-row: 1;
             }
 
             .preview-actions {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 6px;
-                width: 100%;
+                grid-column: 2;
+                grid-row: 1;
             }
 
             .preview-actions .btn {
@@ -2094,7 +2112,8 @@
                 left: -34px;
             }
 
-            .list-item input {
+            .list-item input,
+            .list-item textarea {
                 flex: 1;
                 min-width: 200px;
             }
@@ -2117,20 +2136,32 @@
             /* Preview Mode - Phones */
             .preview-header {
                 padding: 15px;
-                flex-direction: column;
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
                 gap: 12px;
+                align-items: center;
             }
 
             .preview-header h3 {
                 text-align: center;
                 font-size: 1.2em;
+                grid-column: 1 / -1;
+                grid-row: 2;
+            }
+
+            .preview-presence-section {
+                grid-column: 1;
+                grid-row: 1;
             }
 
             .preview-actions {
                 display: flex;
                 flex-wrap: wrap;
                 gap: 8px;
-                justify-content: center;
+                justify-content: flex-end;
+                grid-column: 2;
+                grid-row: 1;
             }
 
             .preview-actions .btn {
@@ -2350,7 +2381,8 @@
                 margin-bottom: 12px;
             }
 
-            .list-item input {
+            .list-item input,
+            .list-item textarea {
                 min-height: 44px;
                 font-size: 16px;
             }
@@ -2820,6 +2852,7 @@
         .preview-readonly-textarea {
             min-height: 80px;
             resize: none;
+            overflow: hidden;
         }
 
         .preview-list-container {
@@ -4575,8 +4608,8 @@
                         type: 'duties',
                         title: 'Required Duties & Service',
                         fields: [
-                            { label: 'Daily Requirements', type: 'list', items: ['Morning greeting and check-in', 'Evening report of daily activities', 'Maintain personal presentation'] },
-                            { label: 'Ongoing Expectations', type: 'list', items: ['Respectful communication at all times', 'Prompt responses to messages'] },
+                            { label: 'Daily Requirements', type: 'textarea', value: 'Morning greeting and check-in\nEvening report of daily activities\nMaintain personal presentation' },
+                            { label: 'Ongoing Expectations', type: 'textarea', value: 'Respectful communication at all times\nPrompt responses to messages' },
                             { label: 'Service Expectations', type: 'textarea', value: 'The submissive is expected to serve with devotion and eagerness, anticipating needs and seeking to please' }
                         ]
                     },
@@ -4584,17 +4617,17 @@
                         type: 'boundaries',
                         title: 'Boundaries',
                         fields: [
-                            { label: 'Hard Limits (Absolute No)', type: 'list', items: ['Anything illegal', 'Permanent marks or modifications without consent', 'Involvement of others without prior discussion'] },
-                            { label: 'Soft Limits (Requires Discussion)', type: 'list', items: ['Public display beyond agreed comfort levels', 'Extended time constraints'] },
-                            { label: 'Safe Words & Signals', type: 'list', items: ['Red - Stop immediately', 'Yellow - Slow down/check in', 'Green - All is well'] }
+                            { label: 'Hard Limits (Absolute No)', type: 'textarea', value: 'Anything illegal\nPermanent marks or modifications without consent\nInvolvement of others without prior discussion' },
+                            { label: 'Soft Limits (Requires Discussion)', type: 'textarea', value: 'Public display beyond agreed comfort levels\nExtended time constraints' },
+                            { label: 'Safe Words & Signals', type: 'textarea', value: 'Red - Stop immediately\nYellow - Slow down/check in\nGreen - All is well' }
                         ]
                     },
                     {
                         type: 'discipline',
                         title: 'Discipline & Correction',
                         fields: [
-                            { label: 'Rewards for Obedience & Service', type: 'list', items: ['Praise and affection', 'Special privileges', 'Quality time and attention'] },
-                            { label: 'Punishments for Disobedience & Failure', type: 'list', items: ['Loss of privileges', 'Corner time or reflection', 'Physical correction as appropriate'] }
+                            { label: 'Rewards for Obedience & Service', type: 'textarea', value: 'Praise and affection\nSpecial privileges\nQuality time and attention' },
+                            { label: 'Punishments for Disobedience & Failure', type: 'textarea', value: 'Loss of privileges\nCorner time or reflection\nPhysical correction as appropriate' }
                         ]
                     },
                     {
@@ -4618,6 +4651,22 @@
             ).join('');
 
             setupSectionListeners();
+
+            // Auto-expand all textareas to fit their initial content
+            // Use setTimeout to ensure DOM is fully rendered
+            setTimeout(() => {
+                autoExpandEditorTextareas();
+            }, 100);
+        }
+
+        function autoExpandEditorTextareas() {
+            const textareas = document.querySelectorAll('#contract-sections textarea');
+            textareas.forEach(textarea => {
+                textarea.style.height = 'auto';
+                // Tight fit: 10% buffer with 10px minimum
+                const buffer = Math.max(10, Math.ceil(textarea.scrollHeight * 0.10));
+                textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
+            });
         }
 
         function renderSection(section, index) {
@@ -4646,7 +4695,7 @@
                         ${(f.items || []).map((item, itemIndex) => `
                             <div class="list-item" data-item-index="${itemIndex}">
                                 <span class="drag-handle" draggable="true">🎀</span>
-                                <input type="text" value="${item || ''}" data-item-index="${itemIndex}">
+                                <textarea data-item-index="${itemIndex}">${item || ''}</textarea>
                                 <button class="remove-btn" onclick="removeListItem(${sectionIndex}, ${fieldIndex}, ${itemIndex})">✕</button>
                             </div>
                         `).join('')}
@@ -4771,6 +4820,14 @@
                     // Handle regular input fields
                     debouncedSave();
                     hasUncapturedEdits = true;
+
+                    // Auto-expand textareas to fit content
+                    if (target.tagName === 'TEXTAREA') {
+                        target.style.height = 'auto';
+                        // Tight fit: 10% buffer with 10px minimum
+                        const buffer = Math.max(10, Math.ceil(target.scrollHeight * 0.10));
+                        target.style.height = (target.scrollHeight + buffer) + 'px';
+                    }
                 }
 
                 // Capture state after user stops typing for 1 second
@@ -5001,8 +5058,8 @@
                         field.value = valueEl.value;
                     }
 
-                    // Update list items - only select input elements to avoid selecting parent divs
-                    const listItems = fieldEl.querySelectorAll('input[data-item-index]');
+                    // Update list items - select both input and textarea elements with data-item-index
+                    const listItems = fieldEl.querySelectorAll('input[data-item-index], textarea[data-item-index]');
                     if (listItems.length > 0) {
                         // Replace the array entirely to avoid stale items
                         field.items = Array.from(listItems).map(item => item.value);
@@ -6453,32 +6510,30 @@
                     html += `<div class="preview-field-group">`;
                     html += `<label class="preview-field-label">${escapeHtml(field.label || 'Field')}</label>`;
 
-                    if (field.type === 'list') {
-                        // Render list items as readonly inputs
+                    if (field.type === 'list' && field.items && Array.isArray(field.items) && field.items.length > 0) {
+                        // Render list items as readonly textareas
                         html += `<div class="preview-list-container">`;
-                        if (field.items && Array.isArray(field.items) && field.items.length > 0) {
-                            field.items.forEach(item => {
-                                if (item && typeof item === 'string' && item.trim()) {
-                                    html += `
-                                        <div class="preview-list-item">
-                                            <span class="preview-list-bow">🎀</span>
-                                            <input type="text" class="preview-readonly-input" value="${escapeHtml(item)}" readonly>
-                                        </div>
-                                    `;
-                                }
-                            });
-                        } else {
-                            html += `<p class="preview-empty">[No items]</p>`;
-                        }
+                        field.items.forEach(item => {
+                            if (item && typeof item === 'string' && item.trim()) {
+                                html += `
+                                    <div class="preview-list-item">
+                                        <span class="preview-list-bow">🎀</span>
+                                        <textarea class="preview-readonly-textarea" readonly>${escapeHtml(item)}</textarea>
+                                    </div>
+                                `;
+                            }
+                        });
                         html += `</div>`;
                     } else if (field.type === 'text') {
                         // Render text input as readonly
                         const value = field.value || '';
                         html += `<input type="text" class="preview-readonly-input" value="${escapeHtml(value)}" readonly>`;
                     } else {
-                        // Render textarea as readonly
+                        // Render textarea as readonly (for both textarea type and list type with no items)
                         const value = field.value || '';
-                        html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
+                        if (value.trim()) {
+                            html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
+                        }
                     }
 
                     html += `</div>`;
@@ -6514,6 +6569,24 @@
             html += `<div class="preview-date">Contract date: ${date}</div>`;
 
             document.getElementById('preview-content').innerHTML = html;
+
+            // Auto-expand all textareas to fit content
+            // Use setTimeout to ensure DOM is fully rendered
+            setTimeout(() => {
+                autoExpandTextareas();
+            }, 100);
+        }
+
+        function autoExpandTextareas() {
+            // Get all preview textareas and auto-expand them to fit content
+            const textareas = document.querySelectorAll('.preview-readonly-textarea');
+            textareas.forEach(textarea => {
+                // Reset height to get accurate scrollHeight
+                textarea.style.height = 'auto';
+                // Tight fit: 10% buffer with 10px minimum
+                const buffer = Math.max(10, Math.ceil(textarea.scrollHeight * 0.10));
+                textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
+            });
         }
 
         function escapeHtml(text) {
