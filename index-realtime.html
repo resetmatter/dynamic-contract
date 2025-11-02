@@ -4663,8 +4663,8 @@
             const textareas = document.querySelectorAll('#contract-sections textarea');
             textareas.forEach(textarea => {
                 textarea.style.height = 'auto';
-                // Refined calculation: 15% buffer with 15px minimum for tighter fit
-                const buffer = Math.max(15, Math.ceil(textarea.scrollHeight * 0.15));
+                // Tight fit: 10% buffer with 10px minimum
+                const buffer = Math.max(10, Math.ceil(textarea.scrollHeight * 0.10));
                 textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
             });
         }
@@ -4824,8 +4824,8 @@
                     // Auto-expand textareas to fit content
                     if (target.tagName === 'TEXTAREA') {
                         target.style.height = 'auto';
-                        // Refined calculation: 15% buffer with 15px minimum for tighter fit
-                        const buffer = Math.max(15, Math.ceil(target.scrollHeight * 0.15));
+                        // Tight fit: 10% buffer with 10px minimum
+                        const buffer = Math.max(10, Math.ceil(target.scrollHeight * 0.10));
                         target.style.height = (target.scrollHeight + buffer) + 'px';
                     }
                 }
@@ -6583,9 +6583,8 @@
             textareas.forEach(textarea => {
                 // Reset height to get accurate scrollHeight
                 textarea.style.height = 'auto';
-                // Refined calculation: smaller buffer for tighter fit
-                // Use 15% buffer with minimum of 15px for proper spacing without excess
-                const buffer = Math.max(15, Math.ceil(textarea.scrollHeight * 0.15));
+                // Tight fit: 10% buffer with 10px minimum
+                const buffer = Math.max(10, Math.ceil(textarea.scrollHeight * 0.10));
                 textarea.style.height = (textarea.scrollHeight + buffer) + 'px';
             });
         }
