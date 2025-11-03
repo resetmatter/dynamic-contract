@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contract of Submission</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
     <style>
         * {
@@ -1041,119 +1039,15 @@
             }
         }
 
-        /* Flatpickr custom theme */
-        .flatpickr-calendar {
-            background: linear-gradient(135deg, rgba(20, 10, 10, 0.98), rgba(30, 15, 15, 1));
-            border: 2px solid #8b0000;
-            box-shadow: 0 0 30px rgba(139, 0, 0, 0.6);
-            border-radius: 5px;
-        }
-
-        .flatpickr-months {
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            border-bottom: 1px solid rgba(255, 105, 180, 0.3);
-        }
-
-        .flatpickr-current-month {
-            color: #ffb6c1;
-        }
-
-        .flatpickr-current-month .flatpickr-monthDropdown-months {
-            background: rgba(139, 0, 0, 0.5);
-            color: #ffb6c1;
-            border: 1px solid rgba(139, 0, 0, 0.6);
-        }
-
-        .flatpickr-current-month .numInputWrapper input {
-            color: #ffb6c1;
-            background: rgba(139, 0, 0, 0.3);
-        }
-
-        .flatpickr-weekdays {
-            background: rgba(139, 0, 0, 0.2);
-            color: #d4768f;
-        }
-
-        .flatpickr-weekday {
-            color: #d4768f;
-            font-weight: 600;
-        }
-
-        .flatpickr-day {
-            color: #ffb6c1;
-            border-color: rgba(139, 0, 0, 0.2);
-        }
-
-        .flatpickr-day:hover {
-            background: rgba(139, 0, 0, 0.3);
-            border-color: #ff69b4;
-            color: #fff;
-        }
-
-        .flatpickr-day.today {
-            background: rgba(220, 20, 60, 0.3);
-            border-color: #dc143c;
-            color: #fff;
-        }
-
-        .flatpickr-day.selected {
-            background: linear-gradient(135deg, #8b0000, #dc143c);
-            border-color: #ff69b4;
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .flatpickr-day.selected:hover {
-            background: linear-gradient(135deg, #dc143c, #ff1744);
-        }
-
-        .flatpickr-monthDropdown-months:hover,
-        .flatpickr-monthDropdown-months:focus {
-            background: rgba(220, 20, 60, 0.5);
-        }
-
-        span.flatpickr-weekday {
-            color: #d4768f;
-            font-family: 'Cinzel', serif;
-            text-transform: uppercase;
-            font-size: 10px;
-            letter-spacing: 1px;
-        }
-
-        .flatpickr-months .flatpickr-prev-month,
-        .flatpickr-months .flatpickr-next-month {
-            color: #ffb6c1;
-            fill: #ffb6c1;
-        }
-
-        .flatpickr-months .flatpickr-prev-month:hover svg,
-        .flatpickr-months .flatpickr-next-month:hover svg {
-            fill: #fff;
-        }
-
-        .flatpickr-day.prevMonthDay,
-        .flatpickr-day.nextMonthDay {
-            color: rgba(255, 182, 193, 0.3);
-        }
-
-        .flatpickr-current-month .flatpickr-monthDropdown-months {
-            appearance: none;
-            background: rgba(139, 0, 0, 0.5);
-            font-family: 'Cinzel', serif;
-            font-weight: 600;
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
-
         /* Readonly mode styles */
-        body.readonly-mode input:not(#submissive-signature),
+        body.readonly-mode input:not(#submissive-signature):not(#submissive-signature-date),
         body.readonly-mode textarea {
             pointer-events: none;
         }
 
-        body.readonly-mode input:not(#submissive-signature):hover,
+        body.readonly-mode input:not(#submissive-signature):not(#submissive-signature-date):hover,
         body.readonly-mode textarea:hover,
-        body.readonly-mode input:not(#submissive-signature):focus,
+        body.readonly-mode input:not(#submissive-signature):not(#submissive-signature-date):focus,
         body.readonly-mode textarea:focus {
             border-color: rgba(139, 0, 0, 0.4) !important;
             background: rgba(0, 0, 0, 0.3) !important;
@@ -3024,12 +2918,14 @@
                 }
             });
 
-            // Specifically make the submissive date field readonly and set to today
+            // Set today's date for submissive signature date if empty
             const subSignatureDate = document.getElementById('submissive-signature-date');
-            if (subSignatureDate) {
-                subSignatureDate.setAttribute('readonly', 'readonly');
-                subSignatureDate.style.cursor = 'default';
-                subSignatureDate.style.pointerEvents = 'none';
+            if (subSignatureDate && !subSignatureDate.value) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                subSignatureDate.value = `${year}-${month}-${day}`;
             }
 
             // Hide action buttons
@@ -3203,43 +3099,23 @@
 
         // Set today's date in signature fields
         function setTodaysDate() {
-            const today = new Date().toISOString().split('T')[0];
+            // Get today's date in local timezone (not UTC)
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+
             const ownerDate = document.getElementById('owner-signature-date');
             const subDate = document.getElementById('submissive-signature-date');
 
             // Only set if not already filled
             if (ownerDate && !ownerDate.value) {
-                ownerDate.value = today;
+                ownerDate.value = todayStr;
             }
             if (subDate && !subDate.value) {
-                subDate.value = today;
+                subDate.value = todayStr;
             }
-        }
-
-        // Initialize flatpickr date pickers
-        function initDatePickers() {
-            const dateConfig = {
-                dateFormat: "Y-m-d",
-                allowInput: true,
-                defaultDate: new Date(),
-                theme: "dark"
-            };
-
-            // Initialize all date inputs
-            document.querySelectorAll('input[type="date"]').forEach(input => {
-                // In readonly mode, don't initialize flatpickr for submissive date
-                if (isReadOnlyMode() && input.id === 'submissive-signature-date') {
-                    return; // Skip this date picker in readonly mode
-                }
-
-                flatpickr(input, {
-                    ...dateConfig,
-                    onChange: function(selectedDates, dateStr, instance) {
-                        // Trigger autosave when date changes
-                        scheduleAutoSave();
-                    }
-                });
-            });
         }
 
         // Brag Mode Functions
@@ -3785,13 +3661,11 @@
             // Check if brag mode
             if (isBragMode()) {
                 setTodaysDate();
-                initDatePickers();
                 enableBragMode();
             }
             // Check if readonly mode (no password or explicit readonly URL param)
             else if (isReadOnlyMode()) {
                 setTodaysDate(); // Set date after loading saved data
-                initDatePickers(); // Initialize date pickers
                 enableReadOnlyMode();
 
                 // Also track typing in readonly mode (for submissive's signature)
@@ -3801,7 +3675,6 @@
             // Normal edit mode (password authenticated)
             else {
                 setTodaysDate(); // Set date after loading saved data
-                initDatePickers(); // Initialize date pickers
                 initAutoSave();
 
                 // Initialize drag and drop for all existing list items
