@@ -4753,7 +4753,9 @@
 
                     // Show preview for viewers
                     renderPreview();
-                    document.getElementById('preview-overlay').classList.add('open');
+                    const previewOverlay = document.getElementById('preview-overlay');
+                    previewOverlay.classList.add('open');
+                    previewOverlay.setAttribute('data-viewer-mode', 'true'); // Mark as viewer mode to prevent closing
                     setupPresence(); // Enable presence for viewers too
 
                     // Add message to preview
@@ -4762,10 +4764,14 @@
                         previewHeader.innerHTML = '📄 ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Shared View)</span>';
                     }
 
-                    // Hide close button for public viewers - they should stay in preview mode
+                    // Hide close button and print button for public viewers
                     const closeBtn = document.getElementById('close-preview-btn');
+                    const printBtn = document.querySelector('.preview-actions .btn-secondary');
                     if (closeBtn) {
                         closeBtn.style.display = 'none';
+                    }
+                    if (printBtn) {
+                        printBtn.style.display = 'none';
                     }
                 }
             } catch (err) {
@@ -4821,12 +4827,24 @@
 
                 // Show preview (read-only) with filtered data
                 renderPreview();
-                document.getElementById('preview-overlay').classList.add('open');
+                const previewOverlay = document.getElementById('preview-overlay');
+                previewOverlay.classList.add('open');
+                previewOverlay.setAttribute('data-viewer-mode', 'true'); // Mark as viewer mode to prevent closing
 
                 // Update preview header to indicate brag mode
                 const previewHeader = document.querySelector('.preview-header h3');
                 if (previewHeader) {
                     previewHeader.innerHTML = '✨ ' + (contract.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Brag Mode - Personal Info Hidden)</span>';
+                }
+
+                // Hide close button and print button for brag mode viewers
+                const closeBtn = document.getElementById('close-preview-btn');
+                const printBtn = document.querySelector('.preview-actions .btn-secondary');
+                if (closeBtn) {
+                    closeBtn.style.display = 'none';
+                }
+                if (printBtn) {
+                    printBtn.style.display = 'none';
                 }
 
                 // Add additional notice in the preview
@@ -7290,10 +7308,12 @@
             document.getElementById('preview-overlay').classList.remove('open');
         });
 
-        // Click outside to close preview overlay
+        // Click outside to close preview overlay (but not for viewer mode)
         document.getElementById('preview-overlay').addEventListener('click', (e) => {
-            if (e.target.id === 'preview-overlay') {
-                document.getElementById('preview-overlay').classList.remove('open');
+            const previewOverlay = document.getElementById('preview-overlay');
+            // Don't allow closing if in viewer mode (public/brag viewers)
+            if (e.target.id === 'preview-overlay' && !previewOverlay.hasAttribute('data-viewer-mode')) {
+                previewOverlay.classList.remove('open');
             }
         });
 
