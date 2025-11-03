@@ -4747,9 +4747,9 @@
                         isPublicViewer: true
                     };
 
-                    // For viewers, hide the app screen entirely and just show preview
+                    // For viewers, hide both app and auth screens - only show preview overlay
                     document.getElementById('app-screen').style.display = 'none';
-                    document.getElementById('auth-screen').style.display = 'block';
+                    document.getElementById('auth-screen').style.display = 'none';
 
                     // Show preview for viewers
                     renderPreview();
@@ -4808,9 +4808,9 @@
                 lastCapturedState = null;
                 updateUndoRedoUI();
 
-                // Hide auth screen and show main app
+                // Hide both auth and app screens - only show preview overlay for brag mode
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-screen').style.display = 'block';
+                document.getElementById('app-screen').style.display = 'none';
 
                 // Show brag mode banner
                 const banner = document.getElementById('brag-mode-banner');
