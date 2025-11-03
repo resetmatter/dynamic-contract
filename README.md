@@ -9,6 +9,7 @@ A collaborative, real-time contract editor built for D/s relationships with auto
   - WebSocket sync (instant) if Realtime enabled
   - Polling fallback (3 seconds) works automatically
 - **Multi-user Collaboration**: Share contracts with your partner with editor or viewer permissions
+- **Brag Mode** 🆕: Share publicly with personal info securely filtered server-side
 - **Automatic History**: Every change is tracked automatically
 - **Manual Snapshots**: Save important milestones and restore them later
 - **Presence Indicators**: See who's online and editing
@@ -85,6 +86,31 @@ See `SETUP-INSTRUCTIONS.md` for a step-by-step guide with screenshots and troubl
 5. Click **Share**
 
 Your partner will need to create an account with that email to access the contract.
+
+### 🔒 Brag Mode - Secure Public Sharing
+
+**NEW**: Share your contract publicly with personal information securely hidden!
+
+**What is Brag Mode?**
+- Share your dynamic with friends without revealing personal details
+- Names, signatures, and dates are filtered **server-side** (never sent to viewers)
+- **Hide entire sections** (e.g., "Hard Limits", "Punishments", "Safewords")
+- Perfect for showing off your contract structure while maintaining privacy
+
+**How to Use**:
+1. Open a contract
+2. Click **🔗 Share** button
+3. Scroll to **✨ Brag Mode** section
+4. Toggle **Enable Brag Mode**
+5. Configure what to hide:
+   - Personal info (names, signatures, dates)
+   - Specific sections (choose which sections to completely hide)
+6. Click **👁️ Preview Brag Mode** to see what others will see
+7. Copy and share the brag link!
+
+**Security Note**: Unlike CSS hiding, brag mode uses PostgreSQL filtering so personal data **never reaches the viewer's browser**. Even with DevTools, network inspection, or URL manipulation, they cannot access your real information.
+
+**Setup Required**: Run `supabase-brag-mode-migration.sql` before using brag mode. See `BRAG-MODE.md` for detailed setup and security information.
 
 ### Using History & Snapshots
 
