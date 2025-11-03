@@ -3861,14 +3861,14 @@
                         <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔑 Permission Level</h5>
                         <div style="display: flex; flex-direction: column; gap: 10px;">
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
-                                <input type="radio" name="public-share-permission" value="viewer" checked style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'viewer'">
+                                <input type="radio" name="public-share-permission" value="viewer" checked style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'viewer'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
                                 <div style="flex: 1;">
                                     <div style="font-weight: 600; margin-bottom: 3px;">👁️ Viewer (Read-Only)</div>
                                     <div style="font-size: 0.85em; color: var(--text-secondary);">Can view but not edit the contract</div>
                                 </div>
                             </label>
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
-                                <input type="radio" name="public-share-permission" value="editor" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'editor'">
+                                <input type="radio" name="public-share-permission" value="editor" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'editor'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
                                 <div style="flex: 1;">
                                     <div style="font-weight: 600; margin-bottom: 3px;">✏️ Editor (Can Edit)</div>
                                     <div style="font-size: 0.85em; color: var(--text-secondary);">Can make changes to the contract</div>
@@ -4747,6 +4747,10 @@
                         isPublicViewer: true
                     };
 
+                    // For viewers, hide the app screen entirely and just show preview
+                    document.getElementById('app-screen').style.display = 'none';
+                    document.getElementById('auth-screen').style.display = 'block';
+
                     // Show preview for viewers
                     renderPreview();
                     document.getElementById('preview-overlay').classList.add('open');
@@ -4756,6 +4760,12 @@
                     const previewHeader = document.querySelector('.preview-header h3');
                     if (previewHeader) {
                         previewHeader.innerHTML = '📄 ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Shared View)</span>';
+                    }
+
+                    // Hide close button for public viewers - they should stay in preview mode
+                    const closeBtn = document.getElementById('close-preview-btn');
+                    if (closeBtn) {
+                        closeBtn.style.display = 'none';
                     }
                 }
             } catch (err) {
@@ -8680,7 +8690,14 @@
                 container.style.display = 'block';
                 const shareUrl = `${window.location.origin}${window.location.pathname}?share=${currentContract.public_share_token}`;
                 linkInput.value = shareUrl;
-                roleSelect.value = currentContract.public_share_role || 'viewer';
+                const role = currentContract.public_share_role || 'viewer';
+                roleSelect.value = role;
+
+                // Update radio buttons to match the role
+                const radioButtons = document.querySelectorAll('input[name="public-share-permission"]');
+                radioButtons.forEach(radio => {
+                    radio.checked = radio.value === role;
+                });
             } else {
                 container.style.display = 'none';
             }
