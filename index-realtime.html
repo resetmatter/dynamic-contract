@@ -3833,7 +3833,8 @@
 
     <!-- Share Dialog -->
     <div class="dialog-overlay" id="share-dialog">
-        <div class="dialog">
+        <div class="dialog" style="position: relative;">
+            <button onclick="document.getElementById('share-dialog').classList.remove('open')" style="position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 105, 180, 0.4); color: var(--accent-pink); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10;" onmouseover="this.style.background='rgba(255, 105, 180, 0.2)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='rotate(0deg)'">✕</button>
             <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid rgba(255, 105, 180, 0.3);">
                 <h3 style="margin: 0 0 10px; font-size: 1.8em; background: linear-gradient(135deg, var(--accent-pink), var(--hot-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🔗 Share Contract</h3>
                 <p style="color: var(--text-secondary); font-size: 0.9em; margin: 0; line-height: 1.4;">
@@ -4036,7 +4037,8 @@
 
     <!-- Snapshot Dialog -->
     <div class="dialog-overlay" id="snapshot-dialog">
-        <div class="dialog">
+        <div class="dialog" style="position: relative;">
+            <button onclick="document.getElementById('snapshot-dialog').classList.remove('open')" style="position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 105, 180, 0.4); color: var(--accent-pink); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10;" onmouseover="this.style.background='rgba(255, 105, 180, 0.2)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='rotate(0deg)'">✕</button>
             <h3>📸 Create Snapshot</h3>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">
                 Save the current state of your contract. You can restore this version later from the history panel.
@@ -4953,6 +4955,13 @@
 
         document.getElementById('close-settings-btn').addEventListener('click', () => {
             document.getElementById('settings-modal').classList.remove('open');
+        });
+
+        // Click outside to close settings modal
+        document.getElementById('settings-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'settings-modal') {
+                document.getElementById('settings-modal').classList.remove('open');
+            }
         });
 
         document.getElementById('cancel-settings-btn').addEventListener('click', () => {
@@ -7271,6 +7280,13 @@
             document.getElementById('preview-overlay').classList.remove('open');
         });
 
+        // Click outside to close preview overlay
+        document.getElementById('preview-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'preview-overlay') {
+                document.getElementById('preview-overlay').classList.remove('open');
+            }
+        });
+
         function renderPreview() {
             const sections = currentContract.data?.sections || [];
             const title = currentContract.title || 'D/s Dynamic Contract';
@@ -7827,6 +7843,13 @@
             document.getElementById('snapshot-dialog').classList.remove('open');
         });
 
+        // Click outside to close snapshot dialog
+        document.getElementById('snapshot-dialog').addEventListener('click', (e) => {
+            if (e.target.id === 'snapshot-dialog') {
+                document.getElementById('snapshot-dialog').classList.remove('open');
+            }
+        });
+
         // Create snapshot
         document.getElementById('confirm-snapshot-btn').addEventListener('click', async () => {
             const description = document.getElementById('snapshot-description').value.trim();
@@ -8290,6 +8313,13 @@
             document.getElementById('snapshot-manager-overlay').classList.remove('open');
         });
 
+        // Click outside to close snapshot manager
+        document.getElementById('snapshot-manager-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'snapshot-manager-overlay') {
+                document.getElementById('snapshot-manager-overlay').classList.remove('open');
+            }
+        });
+
         // Create first snapshot from empty state
         document.getElementById('create-first-snapshot-btn').addEventListener('click', () => {
             document.getElementById('snapshot-manager-overlay').classList.remove('open');
@@ -8555,6 +8585,13 @@
 
         document.getElementById('cancel-share-btn').addEventListener('click', () => {
             document.getElementById('share-dialog').classList.remove('open');
+        });
+
+        // Click outside to close share dialog
+        document.getElementById('share-dialog').addEventListener('click', (e) => {
+            if (e.target.id === 'share-dialog') {
+                document.getElementById('share-dialog').classList.remove('open');
+            }
         });
 
         document.getElementById('confirm-share-btn').addEventListener('click', async () => {
