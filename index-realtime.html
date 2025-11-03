@@ -3868,6 +3868,13 @@
                                 </div>
                             </label>
                             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="public-share-permission" value="signer" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'signer'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">✍️ Signer (Can Sign)</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Can view and sign the contract (submissive signature only)</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
                                 <input type="radio" name="public-share-permission" value="editor" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'editor'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
                                 <div style="flex: 1;">
                                     <div style="font-weight: 600; margin-bottom: 3px;">✏️ Editor (Can Edit)</div>
@@ -3877,6 +3884,7 @@
                         </div>
                         <select id="public-share-role" style="display: none;">
                             <option value="viewer">Viewer (read-only)</option>
+                            <option value="signer">Signer (can sign)</option>
                             <option value="editor">Editor (can edit)</option>
                         </select>
                     </div>
@@ -4668,7 +4676,9 @@
 
                 // Set as current contract
                 currentContract = data;
-                const isEditor = data.public_share_role === 'editor';
+                const shareRole = data.public_share_role || 'viewer';
+                const isEditor = shareRole === 'editor';
+                const isSigner = shareRole === 'signer';
 
                 // Reset undo/redo stacks for new contract
                 undoStack = [];
@@ -4743,6 +4753,104 @@
                         indicator.textContent = '🌐 Public Editor Mode';
                         editorActions.insertBefore(indicator, editorActions.firstChild);
                     }
+                } else if (isSigner) {
+                    // Signers can view and sign the contract
+                    currentUser = {
+                        id: `signer-${Date.now()}`,
+                        email: 'public-signer@guest',
+                        isPublicSigner: true
+                    };
+
+                    // For signers, hide both app and auth screens - only show preview overlay
+                    document.getElementById('app-screen').style.display = 'none';
+                    document.getElementById('auth-screen').style.display = 'none';
+
+                    // Mark contract as signer mode for rendering
+                    currentContract.isSignerMode = true;
+
+                    // Show preview for signers with editable signature fields
+                    renderPreview();
+                    const previewOverlay = document.getElementById('preview-overlay');
+                    previewOverlay.classList.add('open');
+                    previewOverlay.setAttribute('data-viewer-mode', 'true'); // Mark as viewer mode to prevent closing
+                    setupPresence(); // Enable presence for signers too
+
+                    // Add message to preview
+                    const previewHeader = document.querySelector('.preview-header h3');
+                    if (previewHeader) {
+                        previewHeader.innerHTML = '✍️ ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Ready to Sign)</span>';
+                    }
+
+                    // Hide close button and print button, but add Sign button
+                    const closeBtn = document.getElementById('close-preview-btn');
+                    const printBtn = document.querySelector('.preview-actions .btn-secondary');
+                    if (closeBtn) {
+                        closeBtn.style.display = 'none';
+                    }
+                    if (printBtn) {
+                        printBtn.style.display = 'none';
+                    }
+
+                    // Add Sign button to header
+                    const previewActions = document.querySelector('.preview-actions');
+                    if (previewActions) {
+                        const signBtn = document.createElement('button');
+                        signBtn.className = 'btn';
+                        signBtn.id = 'scroll-to-signature-btn';
+                        signBtn.textContent = '✍️ Sign Contract';
+                        signBtn.style.cssText = 'background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);';
+                        signBtn.onclick = () => {
+                            const signatureSection = document.getElementById('preview-signature-section');
+                            if (signatureSection) {
+                                signatureSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                // Focus on first signature field after scroll
+                                setTimeout(() => {
+                                    const subSigInput = document.getElementById('preview-submissive-signature');
+                                    if (subSigInput) subSigInput.focus();
+                                }, 500);
+                            }
+                        };
+                        previewActions.prepend(signBtn);
+                    }
+
+                    // Set up save signature button handler
+                    // Use event delegation since button is created dynamically
+                    document.addEventListener('click', async function handleSignature(e) {
+                        if (e.target && e.target.id === 'save-signature-btn') {
+                            const subSig = document.getElementById('preview-submissive-signature')?.value || '';
+                            const subDate = document.getElementById('preview-submissive-signature-date')?.value || '';
+
+                            if (!subSig.trim()) {
+                                alert('Please enter your name to sign the contract.');
+                                return;
+                            }
+
+                            // Save signature to database
+                            const { error } = await supabaseClient
+                                .from('contracts')
+                                .update({
+                                    submissive_signature: subSig,
+                                    submissive_signature_date: subDate
+                                })
+                                .eq('id', currentContract.id);
+
+                            if (error) {
+                                console.error('Error saving signature:', error);
+                                alert('Failed to save signature. Please try again.');
+                            } else {
+                                // Update local contract
+                                currentContract.submissive_signature = subSig;
+                                currentContract.submissive_signature_date = subDate;
+
+                                // Show success message
+                                alert('✅ Signature saved successfully!');
+
+                                // Re-render to show signed state
+                                renderPreview();
+                            }
+                        }
+                    });
+                }
                 } else {
                     // Viewers also get presence (but read-only)
                     currentUser = {
@@ -7416,7 +7524,7 @@
                 });
             });
 
-            // Add signature section with readonly inputs
+            // Add signature section with readonly inputs (or editable for signers)
             const ownerSig = currentContract.owner_signature || '';
             const ownerDate = currentContract.owner_signature_date || '';
             const subSig = currentContract.submissive_signature || '';
@@ -7425,18 +7533,43 @@
             const ownerDateFormatted = ownerDate ? new Date(ownerDate).toISOString().split('T')[0] : '';
             const subDateFormatted = subDate ? new Date(subDate).toISOString().split('T')[0] : '';
 
+            // Check if we're in signer mode
+            const isSignerMode = currentContract.isSignerMode || false;
+
+            // Get today's date for signature date default
+            const today = new Date();
+            const todayFormatted = today.toISOString().split('T')[0];
+
             html += `
                 <div class="preview-divider" style="margin-top: 50px;">⛓️ 🎀 ⛓️</div>
-                <div class="preview-signature-section">
+                <div class="preview-signature-section" id="preview-signature-section">
                     <div class="preview-signature-box">
                         <label class="preview-field-label">Owner's Signature</label>
                         <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(ownerSig)}" readonly placeholder="Not signed">
                         <input type="date" class="preview-readonly-input preview-date-input" value="${ownerDateFormatted}" readonly>
                     </div>
-                    <div class="preview-signature-box">
-                        <label class="preview-field-label">Submissive's Acceptance</label>
-                        <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(subSig)}" readonly placeholder="Not signed">
-                        <input type="date" class="preview-readonly-input preview-date-input" value="${subDateFormatted}" readonly>
+                    <div class="preview-signature-box" style="${isSignerMode ? 'border: 2px solid var(--accent-pink); padding: 15px; border-radius: 8px; background: rgba(255, 105, 180, 0.05);' : ''}">
+                        <label class="preview-field-label" style="${isSignerMode ? 'color: var(--hot-pink); font-weight: 700; font-size: 1.1em;' : ''}">
+                            Submissive's Acceptance ${isSignerMode ? '<span style="color: var(--hot-pink);">✍️</span>' : ''}
+                        </label>
+                        <input type="text"
+                            id="preview-submissive-signature"
+                            class="${isSignerMode ? 'preview-signature-input' : 'preview-readonly-input preview-signature-input'}"
+                            value="${escapeHtml(subSig)}"
+                            ${isSignerMode ? '' : 'readonly'}
+                            placeholder="${isSignerMode ? 'Type your name to sign' : 'Not signed'}"
+                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: text; font-family: \'Brush Script MT\', \'Lucida Handwriting\', cursive; font-size: 24px;' : ''}">
+                        <input type="date"
+                            id="preview-submissive-signature-date"
+                            class="${isSignerMode ? 'preview-date-input' : 'preview-readonly-input preview-date-input'}"
+                            value="${isSignerMode && !subDateFormatted ? todayFormatted : subDateFormatted}"
+                            ${isSignerMode ? '' : 'readonly'}
+                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: pointer;' : ''}">
+                        ${isSignerMode ? `
+                            <button class="btn" id="save-signature-btn" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">
+                                ✍️ Save Signature
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             `;
