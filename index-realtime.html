@@ -7548,8 +7548,8 @@
                         <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(ownerSig)}" readonly placeholder="Not signed">
                         <input type="date" class="preview-readonly-input preview-date-input" value="${ownerDateFormatted}" readonly>
                     </div>
-                    <div class="preview-signature-box" style="${isSignerMode ? 'border: 2px solid var(--accent-pink); padding: 15px; border-radius: 8px; background: rgba(255, 105, 180, 0.05);' : ''}">
-                        <label class="preview-field-label" style="${isSignerMode ? 'color: var(--hot-pink); font-weight: 700; font-size: 1.1em;' : ''}">
+                    <div class="preview-signature-box">
+                        <label class="preview-field-label">
                             Submissive's Acceptance ${isSignerMode ? '<span style="color: var(--hot-pink);">✍️</span>' : ''}
                         </label>
                         <input type="text"
@@ -7558,13 +7558,13 @@
                             value="${escapeHtml(subSig)}"
                             ${isSignerMode ? '' : 'readonly'}
                             placeholder="${isSignerMode ? 'Type your name to sign' : 'Not signed'}"
-                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: text; font-family: \'Brush Script MT\', \'Lucida Handwriting\', cursive; font-size: 24px;' : ''}">
+                            style="${isSignerMode ? 'border: none; border-bottom: 2px solid var(--accent-pink); background: transparent; cursor: text; font-family: \'Brush Script MT\', \'Lucida Handwriting\', cursive; font-size: 24px; text-align: center; padding: 10px 0;' : ''}">
                         <input type="date"
                             id="preview-submissive-signature-date"
                             class="${isSignerMode ? 'preview-date-input' : 'preview-readonly-input preview-date-input'}"
                             value="${isSignerMode && !subDateFormatted ? todayFormatted : subDateFormatted}"
                             ${isSignerMode ? '' : 'readonly'}
-                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: pointer;' : ''}">
+                            style="${isSignerMode ? 'border: none; border-bottom: 2px solid var(--accent-pink); background: transparent; cursor: pointer;' : ''}">
                         ${isSignerMode ? `
                             <button class="btn" id="save-signature-btn" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">
                                 ✍️ Save Signature
