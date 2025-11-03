@@ -8,7 +8,7 @@
 ALTER TABLE contracts
 ADD COLUMN IF NOT EXISTS public_share_token TEXT UNIQUE,
 ADD COLUMN IF NOT EXISTS is_public BOOLEAN NOT NULL DEFAULT FALSE,
-ADD COLUMN IF NOT EXISTS public_share_role TEXT DEFAULT 'viewer' CHECK (public_share_role IN ('viewer', 'editor'));
+ADD COLUMN IF NOT EXISTS public_share_role TEXT DEFAULT 'viewer' CHECK (public_share_role IN ('viewer', 'editor', 'signer'));
 
 -- Add signature fields to contracts table
 ALTER TABLE contracts
@@ -39,6 +39,20 @@ CREATE POLICY "Anyone can update public contracts with editor token"
         is_public = TRUE
         AND public_share_token IS NOT NULL
         AND public_share_role = 'editor'
+    );
+
+-- Allow public signers to update signature fields only
+CREATE POLICY "Anyone can update signatures with signer token"
+    ON contracts FOR UPDATE
+    USING (
+        is_public = TRUE
+        AND public_share_token IS NOT NULL
+        AND public_share_role = 'signer'
+    )
+    WITH CHECK (
+        is_public = TRUE
+        AND public_share_token IS NOT NULL
+        AND public_share_role = 'signer'
     );
 
 -- Note: The app will validate the token in the WHERE clause of the query
