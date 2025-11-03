@@ -3428,10 +3428,16 @@
             opacity: 0.8;
         }
 
-        /* Ensure date inputs are clickable */
+        /* Ensure date inputs are clickable throughout entire field */
         input[type="date"]#owner-signature-date,
         input[type="date"]#submissive-signature-date {
-            cursor: pointer;
+            cursor: pointer !important;
+        }
+
+        input[type="date"]#owner-signature-date:hover,
+        input[type="date"]#submissive-signature-date:hover {
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 5px rgba(255, 105, 180, 0.3);
         }
     </style>
 </head>
@@ -4200,6 +4206,9 @@
             // Auto-populate today's date if signature dates are empty
             setTodaysDateIfEmpty();
 
+            // Enable calendar picker on entire field click
+            enableDatePickerOnClick();
+
             // Re-render the contract editor
             renderContractEditor();
         }
@@ -4485,6 +4494,9 @@
                     // Auto-populate today's date if signature dates are empty
                     setTodaysDateIfEmpty();
 
+                    // Enable calendar picker on entire field click
+                    enableDatePickerOnClick();
+
                     // Hide buttons that shouldn't be available to public editors
                     const backBtn = document.getElementById('back-to-list-btn');
                     const shareBtn = document.getElementById('share-btn');
@@ -4757,6 +4769,28 @@
             }
         }
 
+        // Make entire date field clickable to open calendar picker
+        function enableDatePickerOnClick() {
+            const dateInputs = document.querySelectorAll('input[type="date"]#owner-signature-date, input[type="date"]#submissive-signature-date');
+
+            dateInputs.forEach(input => {
+                input.addEventListener('click', function(e) {
+                    // Use showPicker() if available (modern browsers)
+                    if (this.showPicker) {
+                        try {
+                            this.showPicker();
+                        } catch (error) {
+                            // Fallback: just focus the input which may trigger picker
+                            this.focus();
+                        }
+                    } else {
+                        // Older browsers: focus the input
+                        this.focus();
+                    }
+                });
+            });
+        }
+
         // ============================================
         // USER PROFILE MANAGEMENT
         // ============================================
@@ -5026,6 +5060,9 @@
 
             // Auto-populate today's date if signature dates are empty
             setTodaysDateIfEmpty();
+
+            // Enable calendar picker on entire field click
+            enableDatePickerOnClick();
 
             renderContractEditor();
             setupRealtimeSync();
