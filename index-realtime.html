@@ -3854,7 +3854,7 @@
                 </div>
                 <div id="brag-mode-container" style="display: none;">
                     <div class="form-group" style="margin: 10px 0;">
-                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">What to Hide:</label>
+                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">Personal Information to Hide:</label>
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                 <input type="checkbox" id="brag-hide-names" checked style="cursor: pointer;">
@@ -3868,6 +3868,15 @@
                                 <input type="checkbox" id="brag-hide-dates" checked style="cursor: pointer;">
                                 <span>Exact signature dates (show month/year only)</span>
                             </label>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin: 10px 0;">
+                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">Sections to Hide:</label>
+                        <p style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 10px;">
+                            Select specific sections to completely hide from viewers
+                        </p>
+                        <div id="brag-sections-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 15px;">
+                            <!-- Dynamically populated with contract sections -->
                         </div>
                     </div>
                     <div style="margin: 15px 0;">
@@ -8591,6 +8600,7 @@
                 hide_names: true,
                 hide_signatures: true,
                 hide_signature_dates: true,
+                hidden_section_names: [],
                 personal_field_ids: []
             };
 
@@ -8601,6 +8611,9 @@
             document.getElementById('brag-hide-signatures').checked = config.hide_signatures !== false;
             document.getElementById('brag-hide-dates').checked = config.hide_signature_dates !== false;
 
+            // Populate sections list dynamically from current contract
+            populateBragSectionsList(config.hidden_section_names || []);
+
             if (isBragMode && currentContract.brag_mode_token) {
                 container.style.display = 'block';
                 const bragUrl = `${window.location.origin}${window.location.pathname}?brag=${currentContract.brag_mode_token}`;
@@ -8608,6 +8621,39 @@
             } else {
                 container.style.display = 'none';
             }
+        }
+
+        function populateBragSectionsList(hiddenSectionNames = []) {
+            const sectionsList = document.getElementById('brag-sections-list');
+            if (!sectionsList) return;
+
+            const sections = currentContract.data?.sections || [];
+
+            if (sections.length === 0) {
+                sectionsList.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1 / -1;">No sections yet. Add sections to your contract first.</p>';
+                return;
+            }
+
+            sectionsList.innerHTML = sections.map((section, index) => {
+                const sectionName = section.title || `Section ${index + 1}`;
+                const isHidden = hiddenSectionNames.includes(sectionName);
+
+                return `
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; transition: background 0.2s;">
+                        <input type="checkbox"
+                               class="brag-section-checkbox"
+                               data-section-name="${sectionName.replace(/"/g, '&quot;')}"
+                               ${isHidden ? 'checked' : ''}
+                               style="cursor: pointer;">
+                        <span style="font-size: 0.9em;">${sectionName}</span>
+                    </label>
+                `;
+            }).join('');
+
+            // Add event listeners to section checkboxes
+            document.querySelectorAll('.brag-section-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', updateBragModeConfig);
+            });
         }
 
         document.getElementById('brag-mode-toggle').addEventListener('change', async (e) => {
@@ -8635,10 +8681,16 @@
             }
 
             // Get current config
+            const hiddenSectionNames = [];
+            document.querySelectorAll('.brag-section-checkbox:checked').forEach(checkbox => {
+                hiddenSectionNames.push(checkbox.dataset.sectionName);
+            });
+
             const config = {
                 hide_names: document.getElementById('brag-hide-names').checked,
                 hide_signatures: document.getElementById('brag-hide-signatures').checked,
                 hide_signature_dates: document.getElementById('brag-hide-dates').checked,
+                hidden_section_names: hiddenSectionNames,
                 personal_field_ids: [] // Future feature: allow marking specific fields as personal
             };
 
@@ -8669,10 +8721,17 @@
         async function updateBragModeConfig() {
             if (!currentContract.brag_mode_enabled) return;
 
+            // Collect hidden section names from checkboxes
+            const hiddenSectionNames = [];
+            document.querySelectorAll('.brag-section-checkbox:checked').forEach(checkbox => {
+                hiddenSectionNames.push(checkbox.dataset.sectionName);
+            });
+
             const config = {
                 hide_names: document.getElementById('brag-hide-names').checked,
                 hide_signatures: document.getElementById('brag-hide-signatures').checked,
                 hide_signature_dates: document.getElementById('brag-hide-dates').checked,
+                hidden_section_names: hiddenSectionNames,
                 personal_field_ids: []
             };
 

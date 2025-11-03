@@ -16,12 +16,21 @@
 
 ### What Gets Hidden
 
-When brag mode is enabled, the following information is redacted:
+When brag mode is enabled, you can choose what information to redact:
 
+**Personal Information:**
 - ✅ **Names**: Replaced with "Dominant" / "Submissive"
 - ✅ **Signatures**: Replaced with "[Signed]"
 - ✅ **Signature Dates**: Truncated to month/year only (day removed)
-- ✅ **Custom Fields**: Future feature - mark specific fields as personal
+
+**Content Sections:**
+- ✅ **Entire Sections**: Hide specific sections completely (e.g., "Hard Limits", "Punishments", "Daily Duties")
+  - Select which sections to hide from a list of your contract sections
+  - Hidden sections are completely removed server-side, not just blurred
+  - Perfect for sharing the structure while keeping sensitive content private
+
+**Future Features:**
+- ⏳ **Custom Fields**: Mark individual fields as personal (coming soon)
 
 ### Security Guarantee
 
@@ -80,9 +89,17 @@ You should see 3 columns and 2 functions returned.
 3. Scroll to the **✨ Brag Mode** section
 4. Toggle **Enable Brag Mode**
 5. Configure what to hide:
-   - ☑️ Names
-   - ☑️ Signatures
-   - ☑️ Exact signature dates
+
+   **Personal Information:**
+   - ☑️ Names (show "Dominant"/"Submissive" instead)
+   - ☑️ Signatures (show "[Signed]" instead)
+   - ☑️ Exact signature dates (show month/year only)
+
+   **Sections to Hide:**
+   - Select any sections you want to completely hide (e.g., "Hard Limits", "Safewords", "Punishments")
+   - Hidden sections won't appear at all in the brag view
+   - You can hide as many or as few sections as you want
+
 6. Click **👁️ Preview Brag Mode** to see what others will see
 7. Copy the brag mode link and share it!
 
@@ -135,11 +152,17 @@ Brag mode settings are stored as JSONB in the `brag_mode_config` column:
   "hide_names": true,
   "hide_signatures": true,
   "hide_signature_dates": true,
+  "hidden_section_names": ["Hard Limits", "Safewords", "Punishments"],
   "personal_field_ids": []
 }
 ```
 
-The `personal_field_ids` array is reserved for future functionality where users can mark specific contract fields as personal.
+**Configuration Fields:**
+- `hide_names`: Replace names with "Dominant"/"Submissive"
+- `hide_signatures`: Replace signatures with "[Signed]"
+- `hide_signature_dates`: Truncate dates to month/year only
+- `hidden_section_names`: Array of section titles to completely remove
+- `personal_field_ids`: Reserved for future field-level filtering
 
 ### Client-Side Flow
 
@@ -260,16 +283,39 @@ Planned features for brag mode:
 - `BRAG-MODE.md` - This documentation file
 - `supabase-schema.sql` - Base schema (run this first)
 
-## 💡 Example Use Case
+## 💡 Example Use Cases
 
-**Scenario**: You want to show your vanilla friends your D/s dynamic without revealing your real names.
+### Scenario 1: Showing Off to Vanilla Friends
+
+**Goal**: Share your D/s dynamic structure without revealing identities or super personal details.
 
 1. Create your contract with all personal details
 2. Enable brag mode with all privacy options checked
-3. Preview to verify "Matthew" → "Dominant" and "Shailah" → "Submissive"
-4. Share the brag link in your group chat
-5. Friends can see your dynamic structure without personal info
-6. You maintain privacy while bragging about your relationship! ✨
+3. Hide sensitive sections like "Hard Limits", "Safewords", and "Punishments"
+4. Preview to verify names are replaced and sensitive sections are gone
+5. Share the brag link in your group chat
+6. Friends see your contract structure without personal info! ✨
+
+### Scenario 2: Sharing on Social Media
+
+**Goal**: Post your contract to Reddit/Twitter without doxxing yourself.
+
+1. Enable brag mode
+2. Hide names, signatures, and dates
+3. Hide sections like "Daily Duties", "Expectations", "Rewards" that might be too personal
+4. Keep sections like "Introduction" and "Purpose" to show the framework
+5. Preview to make sure nothing identifiable appears
+6. Share screenshot or link publicly with confidence!
+
+### Scenario 3: Showing Template to Other Couples
+
+**Goal**: Help another couple get started with their own contract.
+
+1. Enable brag mode
+2. Replace your names with generic placeholders
+3. Hide personal content sections but keep structural sections
+4. They see your format and structure without your specific rules
+5. They can use it as inspiration for their own contract!
 
 ---
 

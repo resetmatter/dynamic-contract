@@ -18,6 +18,7 @@ ADD COLUMN IF NOT EXISTS brag_mode_config JSONB DEFAULT '{
   "hide_names": true,
   "hide_signatures": true,
   "hide_signature_dates": true,
+  "hidden_section_names": [],
   "personal_field_ids": []
 }'::jsonb;
 
@@ -63,6 +64,8 @@ DECLARE
     filtered_sections JSONB;
     filtered_fields JSONB;
     personal_field_ids TEXT[];
+    hidden_section_names TEXT[];
+    section_title TEXT;
 BEGIN
     -- Find the contract with this brag token
     SELECT * INTO contract_record
@@ -78,6 +81,7 @@ BEGIN
     -- Get brag mode config
     config := contract_record.brag_mode_config;
     personal_field_ids := ARRAY(SELECT jsonb_array_elements_text(config->'personal_field_ids'));
+    hidden_section_names := ARRAY(SELECT jsonb_array_elements_text(config->'hidden_section_names'));
 
     -- Filter the contract data (sections and fields)
     filtered_sections := '[]'::jsonb;
@@ -85,6 +89,14 @@ BEGIN
     IF contract_record.data ? 'sections' THEN
         FOR section IN SELECT * FROM jsonb_array_elements(contract_record.data->'sections')
         LOOP
+            -- Get section title
+            section_title := section->>'title';
+
+            -- Skip this entire section if it's in the hidden list
+            IF section_title = ANY(hidden_section_names) THEN
+                CONTINUE;
+            END IF;
+
             filtered_fields := '[]'::jsonb;
 
             IF section ? 'fields' THEN

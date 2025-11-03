@@ -94,6 +94,7 @@ Your partner will need to create an account with that email to access the contra
 **What is Brag Mode?**
 - Share your dynamic with friends without revealing personal details
 - Names, signatures, and dates are filtered **server-side** (never sent to viewers)
+- **Hide entire sections** (e.g., "Hard Limits", "Punishments", "Safewords")
 - Perfect for showing off your contract structure while maintaining privacy
 
 **How to Use**:
@@ -101,7 +102,9 @@ Your partner will need to create an account with that email to access the contra
 2. Click **🔗 Share** button
 3. Scroll to **✨ Brag Mode** section
 4. Toggle **Enable Brag Mode**
-5. Configure what to hide (names, signatures, dates)
+5. Configure what to hide:
+   - Personal info (names, signatures, dates)
+   - Specific sections (choose which sections to completely hide)
 6. Click **👁️ Preview Brag Mode** to see what others will see
 7. Copy and share the brag link!
 
