@@ -4687,11 +4687,12 @@
                 lastCapturedState = null;
                 updateUndoRedoUI();
 
-                // Hide auth screen and show main app
+                // Hide auth screen
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-screen').style.display = 'block';
 
                 if (isEditor) {
+                    // Show main app for editors
+                    document.getElementById('app-screen').style.display = 'block';
                     // Create a guest user for public editing
                     currentUser = {
                         id: 'public-editor',
