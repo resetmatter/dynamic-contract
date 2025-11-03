@@ -1,0 +1,3688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract of Submission</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* CSS Variables for Theme Colors */
+        :root {
+            --bg-gradient-1: rgba(139, 0, 0, 0.15);
+            --bg-gradient-2: rgba(139, 0, 0, 0.15);
+            --bg-color-1: #1a0a0a;
+            --bg-color-2: #2d1414;
+            --bg-color-3: #1a0a0a;
+
+            --container-bg-1: rgba(20, 10, 10, 0.95);
+            --container-bg-2: rgba(30, 15, 15, 0.98);
+            --container-texture-1: rgba(80, 40, 40, 0.15);
+            --container-texture-2: rgba(80, 40, 40, 0.15);
+            --container-border: #8b0000;
+            --container-border-pink: rgba(255, 105, 180, 0.3);
+            --container-shadow: rgba(139, 0, 0, 0.6);
+
+            --primary-red: #8b0000;
+            --crimson: #dc143c;
+            --hot-pink: #ff69b4;
+            --light-pink: #ffb6c1;
+            --dusty-pink: #d4768f;
+            --pink-text: #ff6b9d;
+
+            --input-bg: rgba(0, 0, 0, 0.3);
+            --input-bg-focus: rgba(0, 0, 0, 0.5);
+            --input-border: rgba(139, 0, 0, 0.4);
+            --input-text: #ffb6c1;
+            --input-placeholder: rgba(255, 182, 193, 0.4);
+
+            --btn-gradient-1: #8b0000;
+            --btn-gradient-2: #dc143c;
+            --btn-gradient-hover-1: #dc143c;
+            --btn-gradient-hover-2: #ff1744;
+            --btn-border: rgba(220, 20, 60, 0.6);
+            --btn-text: #ffb6c1;
+            --btn-shadow: rgba(139, 0, 0, 0.5);
+
+            --border-decorative: rgba(139, 0, 0, 0.6);
+            --list-bg: rgba(0, 0, 0, 0.2);
+            --list-border: rgba(139, 0, 0, 0.3);
+            --list-item-bg: rgba(0, 0, 0, 0.1);
+            --list-item-hover: rgba(139, 0, 0, 0.15);
+        }
+
+        /* Light Mode Theme */
+        body.light-mode {
+            --bg-gradient-1: rgba(255, 182, 193, 0.2);
+            --bg-gradient-2: rgba(255, 192, 203, 0.2);
+            --bg-color-1: #fff5f7;
+            --bg-color-2: #ffe8ec;
+            --bg-color-3: #fff5f7;
+
+            --container-bg-1: rgba(255, 255, 255, 0.95);
+            --container-bg-2: rgba(255, 250, 252, 0.98);
+            --container-texture-1: rgba(255, 182, 193, 0.08);
+            --container-texture-2: rgba(255, 192, 203, 0.08);
+            --container-border: #b8566e;
+            --container-border-pink: rgba(255, 105, 180, 0.4);
+            --container-shadow: rgba(184, 86, 110, 0.3);
+
+            --primary-red: #a8385d;
+            --crimson: #d63864;
+            --hot-pink: #ff69b4;
+            --light-pink: #ff85b8;
+            --dusty-pink: #b8566e;
+            --pink-text: #d63864;
+
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-bg-focus: rgba(255, 255, 255, 1);
+            --input-border: rgba(184, 86, 110, 0.3);
+            --input-text: #6b2e43;
+            --input-placeholder: rgba(184, 86, 110, 0.5);
+
+            --btn-gradient-1: #d63864;
+            --btn-gradient-2: #ff85b8;
+            --btn-gradient-hover-1: #ff85b8;
+            --btn-gradient-hover-2: #ffa3c7;
+            --btn-border: rgba(214, 56, 100, 0.6);
+            --btn-text: #ffffff;
+            --btn-shadow: rgba(184, 86, 110, 0.4);
+
+            --border-decorative: rgba(184, 86, 110, 0.4);
+            --list-bg: rgba(255, 245, 247, 0.6);
+            --list-border: rgba(184, 86, 110, 0.2);
+            --list-item-bg: rgba(255, 255, 255, 0.4);
+            --list-item-hover: rgba(255, 182, 193, 0.3);
+        }
+
+        body {
+            font-family: 'Crimson Text', serif;
+            background:
+                radial-gradient(circle at 20% 50%, var(--bg-gradient-1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, var(--bg-gradient-2) 0%, transparent 50%),
+                linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 50%, var(--bg-color-3) 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.5s ease;
+        }
+
+        .contract-container {
+            max-width: 900px;
+            width: 100%;
+            background:
+                linear-gradient(135deg, var(--container-bg-1), var(--container-bg-2)),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(139, 0, 0, 0.02) 2px,
+                    rgba(139, 0, 0, 0.02) 4px
+                );
+            border: 3px solid var(--container-border);
+            box-shadow:
+                0 0 0 1px var(--container-border-pink),
+                0 0 30px var(--container-shadow),
+                inset 0 0 100px rgba(0, 0, 0, 0.8),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: visible;
+            border-radius: 5px;
+            transition: all 0.5s ease;
+        }
+
+        /* Leather texture */
+        .contract-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                radial-gradient(circle at 30% 40%, var(--container-texture-1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, var(--container-texture-2) 0%, transparent 50%);
+            pointer-events: none;
+            transition: background-image 0.5s ease;
+        }
+
+        /* Pink bows in corners */
+        .bow {
+            position: absolute;
+            font-size: 80px;
+            z-index: 20;
+            filter: drop-shadow(3px 3px 10px rgba(255, 105, 180, 0.5));
+            animation: gentleBounce 3s ease-in-out infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0) rotate(var(--rotate)); }
+            50% { transform: translateY(-5px) rotate(var(--rotate)); }
+        }
+
+        .bow-top-left {
+            top: -30px;
+            left: -30px;
+            --rotate: -15deg;
+        }
+
+        .bow-top-right {
+            top: -30px;
+            right: -30px;
+            --rotate: 15deg;
+        }
+
+        .bow-bottom-left {
+            bottom: -30px;
+            left: -30px;
+            --rotate: 15deg;
+        }
+
+        .bow-bottom-right {
+            bottom: -30px;
+            right: -30px;
+            --rotate: -15deg;
+        }
+
+        /* Subtle pink accent line */
+        .pink-accent {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(255, 105, 180, 0.3), transparent);
+            pointer-events: none;
+        }
+
+        .pink-accent-top {
+            top: 3px;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .pink-accent-bottom {
+            bottom: 3px;
+            left: 0;
+            right: 0;
+            height: 1px;
+        }
+
+        .content {
+            padding: 60px 55px 55px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid var(--border-decorative);
+            position: relative;
+        }
+
+        .header::after {
+            content: '⛓️ 🎀 ⛓️';
+            position: absolute;
+            bottom: -18px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            background: linear-gradient(135deg, var(--container-bg-1), var(--container-bg-2));
+            padding: 0 20px;
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: 44px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-red), var(--hot-pink), var(--primary-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--dusty-pink);
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        .subtitle input {
+            border: none;
+            border-bottom: 1px solid var(--border-decorative);
+            background: rgba(255, 255, 255, 0.03);
+            font-family: inherit;
+            font-size: inherit;
+            font-style: inherit;
+            color: var(--pink-text);
+            text-align: center;
+            padding: 5px 12px;
+            min-width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .subtitle input:focus {
+            outline: none;
+            border-bottom-color: var(--hot-pink);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.2);
+        }
+
+        .section {
+            margin: 35px 0;
+        }
+
+        .section-header {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            color: var(--crimson);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .section-header::before {
+            content: '🎀';
+            font-size: 22px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.5));
+        }
+
+        .section-header::after {
+            content: '🎀';
+            font-size: 22px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.5));
+        }
+
+        .field-group {
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .field-label {
+            font-size: 13px;
+            color: var(--dusty-pink);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .field-input,
+        .field-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            font-family: 'Crimson Text', serif;
+            font-size: 17px;
+            color: var(--input-text);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .field-input::placeholder,
+        .field-textarea::placeholder {
+            color: var(--input-placeholder);
+        }
+
+        .field-input:focus,
+        .field-textarea:focus {
+            outline: none;
+            border-color: var(--hot-pink);
+            background: var(--input-bg-focus);
+            box-shadow:
+                0 0 0 2px rgba(255, 105, 180, 0.2),
+                0 0 15px rgba(255, 105, 180, 0.15),
+                inset 0 0 20px rgba(255, 105, 180, 0.05);
+        }
+
+        .field-textarea {
+            min-height: 95px;
+            resize: vertical;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .field-textarea-small {
+            min-height: 50px;
+            resize: vertical;
+            line-height: 1.6;
+            overflow: hidden;
+        }
+
+        .add-rule-btn {
+            display: block;
+            margin: 25px auto;
+            padding: 12px 35px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            font-family: 'Cinzel', serif;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow:
+                0 4px 15px var(--btn-shadow),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .add-rule-btn::before {
+            content: '🎀 ';
+            filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.8));
+        }
+
+        .add-rule-btn::after {
+            content: ' 🎀';
+            filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.8));
+        }
+
+        .add-rule-btn:hover {
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
+            box-shadow:
+                0 6px 20px rgba(220, 20, 60, 0.7),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .add-rule-btn:active {
+            transform: translateY(0);
+        }
+
+        .signature-section {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 2px solid var(--border-decorative);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+
+        .signature-box {
+            text-align: center;
+            position: relative;
+        }
+
+        .signature-box::before {
+            content: '🎀';
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 28px;
+            filter: drop-shadow(0 0 8px rgba(255, 105, 180, 0.6));
+        }
+
+        .signature-box label {
+            display: block;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            color: var(--crimson);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .signature-input {
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid var(--border-decorative);
+            background: transparent;
+            font-family: 'Brush Script MT', 'Lucida Handwriting', cursive;
+            font-size: 26px;
+            color: var(--pink-text);
+            text-align: center;
+            padding: 10px 0;
+            transition: all 0.3s ease;
+        }
+
+        .signature-input:focus {
+            outline: none;
+            border-bottom-color: var(--hot-pink);
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .date-input {
+            font-family: 'Crimson Text', serif !important;
+            font-size: 14px !important;
+            margin-top: 15px;
+            color: var(--dusty-pink) !important;
+        }
+
+        .decorative-divider {
+            text-align: center;
+            margin: 35px 0;
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        .terms-notice {
+            background: var(--list-item-bg);
+            border: 1px solid var(--list-border);
+            border-left: 4px solid var(--primary-red);
+            padding: 20px;
+            margin: 30px 0;
+            font-size: 16px;
+            color: var(--dusty-pink);
+            font-style: italic;
+            line-height: 1.8;
+            border-radius: 3px;
+        }
+
+        .list-container {
+            background: var(--list-bg);
+            border: 1px solid var(--list-border);
+            border-radius: 4px;
+            padding: 20px;
+            margin-top: 12px;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            animation: fadeIn 0.3s ease;
+            cursor: move;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: var(--list-item-bg);
+        }
+
+        .list-item:hover {
+            background: var(--list-item-hover);
+            transform: translateX(3px);
+        }
+
+        .command-item {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .command-item .field-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .command-item-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: var(--list-item-bg);
+        }
+
+        .command-item-content:hover {
+            background: var(--list-item-hover);
+        }
+
+        .command-item-content .field-textarea {
+            flex: 1;
+        }
+
+        .party-item {
+            margin-bottom: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .party-item .field-label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .party-item-content {
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: var(--list-item-bg);
+        }
+
+        .party-item-content:hover {
+            background: var(--list-item-hover);
+        }
+
+        .list-item.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+            background: rgba(220, 20, 60, 0.2);
+        }
+
+        .list-item.drag-over {
+            border-top: 3px solid #ff69b4;
+            background: rgba(255, 105, 180, 0.15);
+        }
+
+        .list-item::before {
+            content: '🎀';
+            font-size: 16px;
+            flex-shrink: 0;
+            filter: drop-shadow(0 0 3px rgba(255, 105, 180, 0.5));
+            cursor: grab;
+        }
+
+        .list-item.dragging::before {
+            cursor: grabbing;
+        }
+
+        .list-item input,
+        .list-item textarea {
+            flex: 1;
+            margin-bottom: 0 !important;
+            cursor: text;
+        }
+
+        .list-item textarea {
+            min-height: 45px;
+            resize: vertical;
+            padding: 10px 14px;
+            flex: 1;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            border: 1px solid var(--btn-border);
+            color: var(--btn-text);
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 3px;
+            font-family: 'Cinzel', serif;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px var(--btn-shadow);
+            flex-shrink: 0;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .delete-btn:active {
+            transform: translateY(0);
+        }
+
+        .add-item-btn {
+            display: inline-block;
+            margin: 12px 0 0 0;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.6), rgba(220, 20, 60, 0.6));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 2px 8px var(--btn-shadow);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .add-item-btn:hover {
+            background: linear-gradient(135deg, rgba(220, 20, 60, 0.7), rgba(255, 20, 68, 0.7));
+            border-color: rgba(255, 105, 180, 0.5);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
+        }
+
+        .add-item-btn::before {
+            content: '+ ';
+        }
+
+        .autosave-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            box-shadow: 0 4px 15px var(--btn-shadow);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .autosave-indicator.show {
+            opacity: 1;
+        }
+
+        .action-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px var(--btn-shadow);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .readonly-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            padding: 16px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            box-shadow: 0 4px 15px var(--btn-shadow);
+            z-index: 1000;
+            border: 1px solid var(--btn-border);
+            min-width: 220px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #sign-button-container {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        #sign-button-container .action-btn {
+            padding: 12px 24px;
+        }
+
+        .contract-signed-indicator {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, rgba(0, 139, 0, 0.95), rgba(34, 139, 34, 0.95));
+            color: #d4ffd4;
+            padding: 15px 30px;
+            border-radius: 5px;
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            border: 1px solid rgba(144, 238, 144, 0.5);
+            display: none;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .brag-mode-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px var(--btn-shadow);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .brag-mode-btn:hover {
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .brag-mode-btn:active {
+            transform: translateY(0);
+        }
+
+        .brag-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .brag-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #1a0a0a 0%, #2d1414 100%);
+            border: 2px solid #8b0000;
+            box-shadow:
+                0 0 0 1px rgba(255, 105, 180, 0.3),
+                0 0 60px rgba(139, 0, 0, 0.8),
+                inset 0 0 100px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            z-index: 2001;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translate(-50%, -60%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, -50%);
+                opacity: 1;
+            }
+        }
+
+        .brag-modal-header {
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            color: var(--light-pink);
+            text-align: center;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+        }
+
+        .brag-modal-section {
+            margin-bottom: 25px;
+        }
+
+        .brag-modal-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 14px;
+            color: var(--dusty-pink);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border-decorative);
+            padding-bottom: 8px;
+        }
+
+        .brag-checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .brag-checkbox-label {
+            display: flex;
+            align-items: center;
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            color: var(--light-pink);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+
+        .brag-checkbox-label:hover {
+            background: var(--list-item-hover);
+        }
+
+        .brag-checkbox-label input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #dc143c;
+        }
+
+        .brag-radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .brag-radio-label {
+            display: flex;
+            align-items: center;
+            font-family: 'Crimson Text', serif;
+            font-size: 14px;
+            color: var(--light-pink);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 3px;
+            transition: background 0.2s ease;
+        }
+
+        .brag-radio-label:hover {
+            background: var(--list-item-hover);
+        }
+
+        .brag-radio-label input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            accent-color: #dc143c;
+        }
+
+        .brag-modal-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .brag-action-btn {
+            flex: 1;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            font-family: 'Cinzel', serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px var(--btn-shadow);
+            transition: all 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .brag-action-btn:hover {
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            border-color: var(--hot-pink);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+            transform: translateY(-2px);
+        }
+
+        .brag-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: #ffb6c1;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .brag-close-btn:hover {
+            background: rgba(220, 20, 60, 0.3);
+            color: #fff;
+        }
+
+        /* Brag mode visibility styles */
+        .brag-blur {
+            filter: blur(8px);
+            user-select: none;
+        }
+
+        .brag-redacted {
+            background: linear-gradient(135deg, #8b0000, #dc143c);
+            color: transparent !important;
+            border-radius: 3px;
+            user-select: none;
+        }
+
+        .brag-placeholder::before {
+            content: attr(data-placeholder);
+            color: #d4768f;
+            font-style: italic;
+        }
+
+        .brag-placeholder {
+            color: transparent !important;
+        }
+
+        @keyframes slideUp {
+            from {
+                bottom: -100px;
+                opacity: 0;
+            }
+            to {
+                bottom: 20px;
+                opacity: 1;
+            }
+        }
+
+        /* Readonly mode styles */
+        body.readonly-mode input:not(#submissive-signature):not(#submissive-signature-date),
+        body.readonly-mode textarea {
+            pointer-events: none;
+        }
+
+        body.readonly-mode input:not(#submissive-signature):not(#submissive-signature-date):hover,
+        body.readonly-mode textarea:hover,
+        body.readonly-mode input:not(#submissive-signature):not(#submissive-signature-date):focus,
+        body.readonly-mode textarea:focus {
+            border-color: rgba(139, 0, 0, 0.4) !important;
+            background: rgba(0, 0, 0, 0.3) !important;
+            box-shadow: none !important;
+        }
+
+        .signature-input-highlight {
+            animation: signatureGlow 2s ease-in-out 3;
+        }
+
+        @keyframes signatureGlow {
+            0%, 100% {
+                border-bottom-color: rgba(139, 0, 0, 0.6);
+                text-shadow: none;
+            }
+            50% {
+                border-bottom-color: #ff69b4;
+                text-shadow: 0 0 15px rgba(255, 105, 180, 0.8);
+            }
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 0;
+            background: linear-gradient(135deg, #dc143c, #ff69b4);
+            color: #fff;
+            border: 2px solid #ff69b4;
+            font-family: 'Cinzel', serif;
+            font-size: 22px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow:
+                0 0 0 2px rgba(255, 105, 180, 0.3),
+                0 4px 15px rgba(255, 105, 180, 0.4),
+                0 0 20px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Light mode theme toggle colors */
+        body.light-mode .theme-toggle {
+            background: linear-gradient(135deg, #ff85b8, #ffa3c7);
+            border-color: #d63864;
+            box-shadow:
+                0 0 0 2px rgba(214, 56, 100, 0.3),
+                0 4px 15px rgba(214, 56, 100, 0.4),
+                0 0 20px rgba(255, 105, 180, 0.2);
+        }
+
+        .theme-toggle::before {
+            content: '🎀';
+            position: absolute;
+            top: -12px;
+            right: -8px;
+            font-size: 20px;
+            filter: drop-shadow(0 0 5px rgba(255, 105, 180, 0.8));
+            animation: gentleBounce 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .theme-toggle::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, transparent, rgba(255, 105, 180, 0.4), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .theme-toggle:hover {
+            background: linear-gradient(135deg, #ff69b4, #ffb6c1);
+            border-color: #ffb6c1;
+            box-shadow:
+                0 0 0 3px rgba(255, 182, 193, 0.5),
+                0 6px 25px rgba(255, 105, 180, 0.6),
+                0 0 35px rgba(255, 105, 180, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        body.light-mode .theme-toggle:hover {
+            background: linear-gradient(135deg, #ffa3c7, #ffc0db);
+            border-color: #ff85b8;
+            box-shadow:
+                0 0 0 3px rgba(255, 133, 184, 0.5),
+                0 6px 25px rgba(214, 56, 100, 0.5),
+                0 0 35px rgba(255, 105, 180, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.4);
+        }
+
+        .theme-toggle:hover::after {
+            opacity: 1;
+        }
+
+        .theme-toggle:active {
+            transform: translateY(0) scale(1);
+        }
+
+        @media print {
+            body {
+                background:
+                    radial-gradient(circle at 20% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 50%, rgba(139, 0, 0, 0.15) 0%, transparent 50%),
+                    linear-gradient(135deg, #1a0a0a 0%, #2d1414 50%, #1a0a0a 100%);
+                padding: 40px 20px;
+            }
+
+            .theme-toggle {
+                display: none !important;
+            }
+
+            .contract-container {
+                max-width: 100%;
+                box-shadow:
+                    0 0 0 1px rgba(255, 105, 180, 0.3),
+                    0 0 30px rgba(139, 0, 0, 0.6),
+                    inset 0 0 100px rgba(0, 0, 0, 0.8),
+                    0 20px 60px rgba(0, 0, 0, 0.5);
+            }
+
+            .add-rule-btn,
+            .add-item-btn,
+            .autosave-indicator,
+            .action-buttons,
+            .readonly-indicator,
+            #sign-button-container,
+            .contract-signed-indicator,
+            .brag-modal-overlay {
+                display: none !important;
+            }
+
+            @page {
+                margin: 0.5in;
+                size: letter;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 50px 30px 45px;
+            }
+
+            .title {
+                font-size: 34px;
+            }
+
+            .signature-section {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .bow {
+                font-size: 60px;
+            }
+
+            .action-buttons {
+                top: auto;
+                bottom: 20px;
+                right: 10px;
+                left: 10px;
+                flex-direction: row;
+                justify-content: center;
+            }
+
+            .action-btn {
+                flex: 1;
+                font-size: 9px;
+                padding: 10px 12px;
+            }
+
+            .readonly-indicator {
+                top: 10px;
+                right: 10px;
+                left: 10px;
+                text-align: center;
+                font-size: 10px;
+                padding: 10px 15px;
+            }
+
+            #sign-button-container {
+                top: 55px;
+                right: 10px;
+                left: 10px;
+            }
+
+            #sign-button-container .action-btn {
+                width: 100%;
+                font-size: 10px;
+                padding: 10px 15px;
+            }
+
+            .contract-signed-indicator {
+                bottom: 10px;
+                font-size: 12px;
+                padding: 12px 20px;
+                left: 10px;
+                right: 10px;
+                transform: none;
+            }
+
+            .brag-checkbox-group {
+                grid-template-columns: 1fr;
+            }
+
+            .theme-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 18px;
+                top: 10px;
+                left: 10px;
+            }
+
+            .theme-toggle::before {
+                font-size: 16px;
+                top: -10px;
+                right: -6px;
+            }
+        }
+
+        /* Admin/Debug Panel Styles */
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-panel-content {
+            max-width: 900px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--container-bg-1), var(--container-bg-2));
+            border: 3px solid var(--container-border);
+            border-radius: 5px;
+            padding: 40px;
+            box-shadow: 0 0 30px var(--container-shadow);
+        }
+
+        .admin-panel-header {
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            color: var(--crimson);
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .admin-section {
+            margin: 30px 0;
+            padding: 25px;
+            background: var(--list-bg);
+            border: 1px solid var(--list-border);
+            border-radius: 5px;
+        }
+
+        .admin-section-title {
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            color: var(--hot-pink);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .admin-btn {
+            display: inline-block;
+            margin: 10px 10px 10px 0;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--btn-gradient-1), var(--btn-gradient-2));
+            color: var(--btn-text);
+            border: 1px solid var(--btn-border);
+            font-family: 'Cinzel', serif;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 15px var(--btn-shadow);
+            transition: all 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .admin-btn:hover {
+            background: linear-gradient(135deg, var(--btn-gradient-hover-1), var(--btn-gradient-hover-2));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 20, 60, 0.7);
+        }
+
+        .admin-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-red);
+            color: var(--light-pink);
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .admin-close-btn:hover {
+            background: var(--crimson);
+            transform: rotate(90deg);
+        }
+
+        .admin-textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            color: var(--input-text);
+            border: 1px solid var(--input-border);
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border-radius: 3px;
+            resize: vertical;
+        }
+
+        .admin-file-input {
+            display: block;
+            margin: 15px 0;
+            padding: 10px;
+            color: var(--input-text);
+        }
+
+        .admin-info {
+            padding: 15px;
+            background: rgba(139, 0, 0, 0.2);
+            border-left: 4px solid var(--primary-red);
+            color: var(--light-pink);
+            margin: 15px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin/Debug Panel (hidden by default, accessible via ?admin=true or Ctrl+Shift+A) -->
+    <div class="admin-panel" id="admin-panel">
+        <div class="admin-panel-content" style="position: relative;">
+            <button class="admin-close-btn" onclick="closeAdminPanel()">×</button>
+            <h1 class="admin-panel-header">🔧 Admin Panel</h1>
+
+            <div class="admin-info">
+                <strong>Access this panel:</strong><br>
+                • Add <code>?admin=true</code> to the URL<br>
+                • Press <code>Ctrl+Shift+A</code> (or <code>Cmd+Shift+A</code> on Mac)
+            </div>
+
+            <!-- Export Section -->
+            <div class="admin-section">
+                <h2 class="admin-section-title">📤 Export Data</h2>
+                <p style="color: var(--dusty-pink); margin-bottom: 15px;">
+                    Export the current contract data as a JSON file that can be imported later.
+                </p>
+                <button class="admin-btn" onclick="exportContractData()">📥 Download JSON</button>
+            </div>
+
+            <!-- Import Section -->
+            <div class="admin-section">
+                <h2 class="admin-section-title">📥 Import Data</h2>
+                <p style="color: var(--dusty-pink); margin-bottom: 15px;">
+                    Import contract data from a previously exported JSON file. This will replace all current data.
+                </p>
+                <input type="file" id="import-file-input" class="admin-file-input" accept=".json" onchange="importContractData(event)">
+                <div class="admin-info" style="background: rgba(255, 105, 180, 0.1); border-color: var(--hot-pink);">
+                    ⚠️ <strong>Warning:</strong> Importing will overwrite all current contract data. Make sure to export first if you want to keep a backup.
+                </div>
+            </div>
+
+            <!-- View Gist Content Section -->
+            <div class="admin-section">
+                <h2 class="admin-section-title">👁️ View Gist Content</h2>
+                <p style="color: var(--dusty-pink); margin-bottom: 15px;">
+                    View the raw content of the GitHub Gist where contract data is stored.
+                </p>
+                <button class="admin-btn" onclick="viewGistContent()">🔍 Fetch Gist Content</button>
+                <button class="admin-btn" onclick="copyGistContent()">📋 Copy to Clipboard</button>
+                <textarea id="gist-content-display" class="admin-textarea" readonly placeholder="Gist content will appear here..."></textarea>
+            </div>
+
+            <!-- Current Data Preview Section -->
+            <div class="admin-section">
+                <h2 class="admin-section-title">📊 Current Data Preview</h2>
+                <p style="color: var(--dusty-pink); margin-bottom: 15px;">
+                    Preview the current contract data in JSON format (refreshes when you click the button).
+                </p>
+                <button class="admin-btn" onclick="refreshDataPreview()">🔄 Refresh Preview</button>
+                <textarea id="data-preview-display" class="admin-textarea" readonly placeholder="Current data preview will appear here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+        🌙
+    </button>
+
+    <!-- Action Buttons (hidden in readonly mode) -->
+    <div class="action-buttons" id="action-buttons">
+        <button class="action-btn" onclick="saveAsPNG()">💾 Save as PNG</button>
+        <button class="action-btn brag-mode-btn" onclick="openBragModal()">✨ Brag Mode</button>
+    </div>
+
+    <!-- Readonly Indicator and Sign Button (shown in readonly mode) -->
+    <div class="readonly-indicator" id="readonly-indicator" style="display: none;">
+        <div style="text-align: center; margin-bottom: 12px; font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase;">
+            🔒 Read-Only View
+        </div>
+        <button class="action-btn" onclick="promptForPassword()" style="width: 100%; margin-bottom: 8px;">🔓 Enter Password to Edit</button>
+        <button class="action-btn" onclick="scrollToSignature()" style="width: 100%; margin-bottom: 8px;">✍️ Sign Contract</button>
+        <button class="action-btn brag-mode-btn" id="readonly-brag-btn" onclick="openBragModal()" style="width: 100%;">✨ Brag Mode</button>
+    </div>
+
+    <div id="sign-button-container" style="display: none;">
+        <!-- Buttons moved to readonly-indicator -->
+    </div>
+
+    <!-- Contract Signed Indicator -->
+    <div class="contract-signed-indicator" id="contract-signed-indicator">
+        ✓ Contract Signed & Automatically Saved
+    </div>
+
+    <!-- Brag Mode Modal -->
+    <div class="brag-modal-overlay" id="brag-modal-overlay" onclick="closeBragModal()">
+        <div class="brag-modal" onclick="event.stopPropagation()">
+            <button class="brag-close-btn" onclick="closeBragModal()">×</button>
+            <h2 class="brag-modal-header">✨ Brag Mode ✨</h2>
+
+            <div class="brag-modal-section">
+                <div class="brag-modal-section-title">What to Hide</div>
+                <div class="brag-checkbox-group">
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-names" checked>
+                        Names
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-signatures" checked>
+                        Signatures
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-dates">
+                        Dates
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-rules">
+                        Commands/Rules
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-hard-limits" checked>
+                        Hard Limits
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-soft-limits" checked>
+                        Soft Limits
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-safewords" checked>
+                        Safewords
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-punishments">
+                        Punishments
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-rewards">
+                        Rewards
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-duties">
+                        Daily Duties
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-expectations">
+                        Expectations
+                    </label>
+                    <label class="brag-checkbox-label">
+                        <input type="checkbox" id="hide-release">
+                        Release Clause
+                    </label>
+                </div>
+            </div>
+
+            <div class="brag-modal-section">
+                <div class="brag-modal-section-title">How to Hide</div>
+                <div class="brag-radio-group">
+                    <label class="brag-radio-label">
+                        <input type="radio" name="hide-method" value="blur" checked>
+                        Blur Filter (blurred text)
+                    </label>
+                    <label class="brag-radio-label">
+                        <input type="radio" name="hide-method" value="redacted">
+                        Redacted Bars (████████)
+                    </label>
+                    <label class="brag-radio-label">
+                        <input type="radio" name="hide-method" value="placeholder">
+                        Placeholder Text ([REDACTED])
+                    </label>
+                </div>
+            </div>
+
+            <div class="brag-modal-actions">
+                <button class="brag-action-btn" onclick="generateBragLink()">📋 Copy Brag Link</button>
+                <button class="brag-action-btn" onclick="saveBragPNG()">💾 Save Brag PNG</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="contract-container">
+        <!-- Subtle pink accent lines -->
+        <div class="pink-accent pink-accent-top"></div>
+        <div class="pink-accent pink-accent-bottom"></div>
+
+        <!-- Pink bows in corners -->
+        <div class="bow bow-top-left">🎀</div>
+        <div class="bow bow-top-right">🎀</div>
+        <div class="bow bow-bottom-left">🎀</div>
+        <div class="bow bow-bottom-right">🎀</div>
+
+        <div class="content">
+            <div class="header">
+                <h1 class="title">D/s Dynamic Contract</h1>
+                <p class="subtitle">
+                    Between Dom
+                    <input id="subtitle-dominant-name" type="text" value="Matthew" readonly style="cursor: default;" aria-label="Dominant's name">
+                    and his sub
+                    <input id="subtitle-submissive-name" type="text" value="Shailah" readonly style="cursor: default;" aria-label="Submissive's name">
+                </p>
+            </div>
+
+            <div class="terms-notice">
+                This contract establishes a Total Power Exchange (TPE) dynamic where the submissive willingly surrenders complete control and authority to the Dominant. The submissive acknowledges the Dominant's absolute authority in all matters and agrees to obey without question. All activities remain bound by established safe words and hard limits. Either party may terminate this agreement, though renegotiation requires the Dominant's approval.
+            </div>
+
+            <section class="section">
+                <h2 class="section-header">Parties</h2>
+
+                <div class="field-group">
+                    <div class="list-container">
+                        <div class="party-item">
+                            <label class="field-label">Dominant (Owner & Caregiver)</label>
+                            <div class="party-item-content">
+                                <textarea id="dominant-name" class="field-input field-textarea-small" placeholder="Sir, Owner, Daddy..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="party-item">
+                            <label class="field-label">Submissive (Little & Property)</label>
+                            <div class="party-item-content">
+                                <textarea id="submissive-name" class="field-input field-textarea-small" placeholder="little girl, baby girl, princess, pet, toy, belonging..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Commands & Absolute Rules</h2>
+
+                <div class="field-group">
+                    <div class="list-container">
+                        <div id="rules-container">
+                            <div class="command-item">
+                                <label class="field-label">Command 1</label>
+                                <div class="command-item-content">
+                                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                                </div>
+                            </div>
+
+                            <div class="command-item">
+                                <label class="field-label">Command 2</label>
+                                <div class="command-item-content">
+                                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                                </div>
+                            </div>
+
+                            <div class="command-item">
+                                <label class="field-label">Command 3</label>
+                                <div class="command-item-content">
+                                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addRule()">Add Command</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Required Duties & Service</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Daily Requirements</label>
+                    <div class="list-container">
+                        <div id="daily-duties-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addDailyDuty()">Add Daily Requirement</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Ongoing Expectations</label>
+                    <div class="list-container">
+                        <div id="expectations-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addExpectation()">Add Expectation</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Boundaries</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Hard Limits (Absolute No)</label>
+                    <div class="list-container">
+                        <div id="hard-limits-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter hard limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addHardLimit()">Add Hard Limit</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Soft Limits (Requires Discussion)</label>
+                    <div class="list-container">
+                        <div id="soft-limits-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter soft limit..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addSoftLimit()">Add Soft Limit</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Safe Words & Signals</label>
+                    <div class="list-container">
+                        <div id="safewords-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addSafeword()">Add Safe Word/Signal</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Discipline & Correction</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Rewards for Obedience & Service</label>
+                    <div class="list-container">
+                        <div id="rewards-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addReward()">Add Reward</button>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Punishments for Disobedience & Failure</label>
+                    <div class="list-container">
+                        <div id="punishments-container">
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                            <div class="list-item" draggable="true">
+                                <textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea>
+                                <button class="delete-btn" onclick="deleteListItem(this)">✕</button>
+                            </div>
+                        </div>
+                        <button class="add-item-btn" onclick="addPunishment()">Add Punishment</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="decorative-divider">⛓️ 🎀 ⛓️</div>
+
+            <section class="section">
+                <h2 class="section-header">Terms of Ownership</h2>
+
+                <div class="field-group">
+                    <label class="field-label">Effective Date</label>
+                    <input id="effective-date" type="date" class="field-input date-input">
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Duration of Control</label>
+                    <textarea id="duration-control" class="field-input field-textarea-small" placeholder="6 months, 1 year, indefinite, permanent..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Review Schedule (Dominant's Discretion)</label>
+                    <textarea id="review-schedule" class="field-input field-textarea-small" placeholder="When the Dominant chooses to review terms..."></textarea>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label">Release Clause</label>
+                    <textarea id="release-clause" class="field-textarea" placeholder="Conditions under which ownership may be terminated..."></textarea>
+                </div>
+            </section>
+
+            <section class="signature-section">
+                <div class="signature-box">
+                    <label>Owner's Signature</label>
+                    <input id="owner-signature" type="text" class="signature-input" placeholder="Sign here">
+                    <input id="owner-signature-date" type="date" class="field-input date-input" aria-label="Date">
+                </div>
+
+                <div class="signature-box" id="submissive-signature-box">
+                    <label>Submissive's Acceptance</label>
+                    <input id="submissive-signature" type="text" class="signature-input" placeholder="Sign here">
+                    <input id="submissive-signature-date" type="date" class="field-input date-input" aria-label="Date">
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="autosave-indicator" id="autosave-indicator">✓ Saved</div>
+
+    <script>
+        // GLOBAL CONFIGURATION
+        const GLOBAL_GIST_ID = '2f493d0ca0120faa7b82327664bd3b45';
+        const EDIT_PASSWORD = 'chiset'; // Password required to edit the contract
+        // Encrypted GitHub token (decrypted using password)
+        const ENCRYPTED_TOKEN = 'BAAZLAg8KgVdAw5ELiIbPzw7Eh8QMAIRFRAdOjYfVjgTH1EWGgYFRg==';
+
+        // Simple XOR encryption/decryption
+        function decryptToken(encrypted, password) {
+            try {
+                const decoded = atob(encrypted);
+                let result = '';
+                for (let i = 0; i < decoded.length; i++) {
+                    result += String.fromCharCode(decoded.charCodeAt(i) ^ password.charCodeAt(i % password.length));
+                }
+                return result;
+            } catch (e) {
+                console.error('Failed to decrypt token:', e);
+                return null;
+            }
+        }
+
+        // Global variable to store decrypted token
+        let decryptedGithubToken = null;
+
+        let ruleCount = 3;
+        let autosaveTimeout;
+        let gistUpdateTimeout;
+        let lastGistUpdate = 0;
+        let pollingInterval = null;
+        let lastKnownGistTimestamp = null;
+        let userIsTyping = false;
+        let typingTimeout = null;
+        let firstPendingChangeTime = null; // Track when first change was made (for max wait)
+
+        // Theme Toggle Function
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+
+            // Toggle the light-mode class
+            body.classList.toggle('light-mode');
+
+            // Update the icon
+            if (body.classList.contains('light-mode')) {
+                themeToggle.textContent = '☀️';
+                localStorage.setItem('theme', 'light');
+            } else {
+                themeToggle.textContent = '🌙';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme on page load
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeToggle = document.getElementById('theme-toggle');
+
+            if (savedTheme === 'light') {
+                body.classList.add('light-mode');
+                themeToggle.textContent = '☀️';
+            } else {
+                themeToggle.textContent = '🌙';
+            }
+        }
+
+        // ============================================
+        // ADMIN PANEL FUNCTIONS
+        // ============================================
+
+        // Open admin panel
+        function openAdminPanel() {
+            document.getElementById('admin-panel').classList.add('active');
+            refreshDataPreview(); // Auto-refresh data preview when opening
+        }
+
+        // Close admin panel
+        function closeAdminPanel() {
+            document.getElementById('admin-panel').classList.remove('active');
+        }
+
+        // Export contract data as JSON file
+        function exportContractData() {
+            // Use the same logic as autoSave to collect data
+            const contractData = {
+                ruleCount: ruleCount,
+                hardLimits: [],
+                softLimits: [],
+                safewords: [],
+                rewards: [],
+                punishments: [],
+                dailyDuties: [],
+                expectations: [],
+                rules: [],
+                otherFields: {}
+            };
+
+            // Save hard limits
+            document.querySelectorAll('#hard-limits-container .list-item textarea').forEach(textarea => {
+                contractData.hardLimits.push(textarea.value);
+            });
+
+            // Save soft limits
+            document.querySelectorAll('#soft-limits-container .list-item textarea').forEach(textarea => {
+                contractData.softLimits.push(textarea.value);
+            });
+
+            // Save safe words
+            document.querySelectorAll('#safewords-container .list-item textarea').forEach(textarea => {
+                contractData.safewords.push(textarea.value);
+            });
+
+            // Save rewards
+            document.querySelectorAll('#rewards-container .list-item textarea').forEach(textarea => {
+                contractData.rewards.push(textarea.value);
+            });
+
+            // Save punishments
+            document.querySelectorAll('#punishments-container .list-item textarea').forEach(textarea => {
+                contractData.punishments.push(textarea.value);
+            });
+
+            // Save daily duties
+            document.querySelectorAll('#daily-duties-container .list-item textarea').forEach(textarea => {
+                contractData.dailyDuties.push(textarea.value);
+            });
+
+            // Save expectations
+            document.querySelectorAll('#expectations-container .list-item textarea').forEach(textarea => {
+                contractData.expectations.push(textarea.value);
+            });
+
+            // Save rules/commands
+            document.querySelectorAll('#rules-container textarea').forEach(textarea => {
+                contractData.rules.push(textarea.value);
+            });
+
+            // Save all other fields with IDs
+            document.querySelectorAll('input[type="text"]:not(.list-item input), input[type="date"], textarea:not(#rules-container textarea)').forEach(field => {
+                if (field.id || field.getAttribute('aria-label')) {
+                    const key = field.id || field.getAttribute('aria-label') || field.placeholder;
+                    contractData.otherFields[key] = field.value;
+                }
+            });
+
+            // Create download
+            const dataStr = JSON.stringify(contractData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `contract-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            alert('✓ Contract data exported successfully!');
+        }
+
+        // Import contract data from JSON file
+        async function importContractData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const data = JSON.parse(text);
+
+                // Validate the data structure
+                if (!data.hasOwnProperty('hardLimits') || !data.hasOwnProperty('softLimits')) {
+                    alert('❌ Invalid file format. Please select a valid contract data JSON file.');
+                    return;
+                }
+
+                // Confirm before importing
+                if (!confirm('⚠️ This will replace all current data. Continue?')) {
+                    return;
+                }
+
+                // Apply the data using applyContractData function (if it exists)
+                // Otherwise, we'll manually apply it
+                if (typeof applyContractData === 'function') {
+                    applyContractData(data);
+                } else {
+                    // Manual application
+                    // Set rule count
+                    ruleCount = data.ruleCount || 3;
+
+                    // Clear and populate hard limits
+                    const hardLimitsContainer = document.getElementById('hard-limits-container');
+                    hardLimitsContainer.innerHTML = '';
+                    data.hardLimits.forEach(limit => {
+                        if (limit) addHardLimit(limit);
+                    });
+
+                    // Clear and populate soft limits
+                    const softLimitsContainer = document.getElementById('soft-limits-container');
+                    softLimitsContainer.innerHTML = '';
+                    data.softLimits.forEach(limit => {
+                        if (limit) addSoftLimit(limit);
+                    });
+
+                    // Clear and populate safewords
+                    const safewordsContainer = document.getElementById('safewords-container');
+                    safewordsContainer.innerHTML = '';
+                    data.safewords.forEach(word => {
+                        if (word) addSafeword(word);
+                    });
+
+                    // Clear and populate rewards
+                    const rewardsContainer = document.getElementById('rewards-container');
+                    rewardsContainer.innerHTML = '';
+                    data.rewards.forEach(reward => {
+                        if (reward) addReward(reward);
+                    });
+
+                    // Clear and populate punishments
+                    const punishmentsContainer = document.getElementById('punishments-container');
+                    punishmentsContainer.innerHTML = '';
+                    data.punishments.forEach(punishment => {
+                        if (punishment) addPunishment(punishment);
+                    });
+
+                    // Clear and populate daily duties
+                    const dailyDutiesContainer = document.getElementById('daily-duties-container');
+                    dailyDutiesContainer.innerHTML = '';
+                    data.dailyDuties.forEach(duty => {
+                        if (duty) addDailyDuty(duty);
+                    });
+
+                    // Clear and populate expectations
+                    const expectationsContainer = document.getElementById('expectations-container');
+                    expectationsContainer.innerHTML = '';
+                    data.expectations.forEach(expectation => {
+                        if (expectation) addExpectation(expectation);
+                    });
+
+                    // Populate other fields
+                    if (data.otherFields) {
+                        Object.keys(data.otherFields).forEach(key => {
+                            const field = document.getElementById(key) || document.querySelector(`[aria-label="${key}"]`);
+                            if (field) {
+                                field.value = data.otherFields[key];
+                            }
+                        });
+                    }
+                }
+
+                alert('✓ Contract data imported successfully!');
+
+                // Auto-save after import
+                if (typeof autoSave === 'function') {
+                    autoSave();
+                }
+
+                // Refresh the preview
+                refreshDataPreview();
+            } catch (error) {
+                console.error('Import error:', error);
+                alert('❌ Error importing file: ' + error.message);
+            }
+
+            // Reset file input
+            event.target.value = '';
+        }
+
+        // View Gist content
+        async function viewGistContent() {
+            const gistDisplay = document.getElementById('gist-content-display');
+            gistDisplay.value = 'Loading gist content...';
+
+            try {
+                const response = await fetch(`https://api.github.com/gists/${GLOBAL_GIST_ID}`);
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch gist: ${response.status} ${response.statusText}`);
+                }
+
+                const gistData = await response.json();
+
+                // Format the gist data for display
+                const formattedData = {
+                    id: gistData.id,
+                    description: gistData.description,
+                    created_at: gistData.created_at,
+                    updated_at: gistData.updated_at,
+                    files: {}
+                };
+
+                // Get file contents
+                for (const [filename, fileData] of Object.entries(gistData.files)) {
+                    formattedData.files[filename] = {
+                        size: fileData.size,
+                        content: fileData.content
+                    };
+                }
+
+                gistDisplay.value = JSON.stringify(formattedData, null, 2);
+            } catch (error) {
+                console.error('Error fetching gist:', error);
+                gistDisplay.value = `Error: ${error.message}`;
+                alert('❌ Failed to fetch gist content. Check console for details.');
+            }
+        }
+
+        // Copy gist content to clipboard
+        function copyGistContent() {
+            const gistDisplay = document.getElementById('gist-content-display');
+            if (!gistDisplay.value || gistDisplay.value === 'Gist content will appear here...') {
+                alert('⚠️ No gist content to copy. Click "Fetch Gist Content" first.');
+                return;
+            }
+
+            gistDisplay.select();
+            document.execCommand('copy');
+            alert('✓ Gist content copied to clipboard!');
+        }
+
+        // Refresh current data preview
+        function refreshDataPreview() {
+            const previewDisplay = document.getElementById('data-preview-display');
+
+            // Use the same logic as autoSave to collect data
+            const contractData = {
+                ruleCount: ruleCount,
+                hardLimits: [],
+                softLimits: [],
+                safewords: [],
+                rewards: [],
+                punishments: [],
+                dailyDuties: [],
+                expectations: [],
+                rules: [],
+                otherFields: {}
+            };
+
+            // Save hard limits
+            document.querySelectorAll('#hard-limits-container .list-item textarea').forEach(textarea => {
+                contractData.hardLimits.push(textarea.value);
+            });
+
+            // Save soft limits
+            document.querySelectorAll('#soft-limits-container .list-item textarea').forEach(textarea => {
+                contractData.softLimits.push(textarea.value);
+            });
+
+            // Save safe words
+            document.querySelectorAll('#safewords-container .list-item textarea').forEach(textarea => {
+                contractData.safewords.push(textarea.value);
+            });
+
+            // Save rewards
+            document.querySelectorAll('#rewards-container .list-item textarea').forEach(textarea => {
+                contractData.rewards.push(textarea.value);
+            });
+
+            // Save punishments
+            document.querySelectorAll('#punishments-container .list-item textarea').forEach(textarea => {
+                contractData.punishments.push(textarea.value);
+            });
+
+            // Save daily duties
+            document.querySelectorAll('#daily-duties-container .list-item textarea').forEach(textarea => {
+                contractData.dailyDuties.push(textarea.value);
+            });
+
+            // Save expectations
+            document.querySelectorAll('#expectations-container .list-item textarea').forEach(textarea => {
+                contractData.expectations.push(textarea.value);
+            });
+
+            // Save rules/commands
+            document.querySelectorAll('#rules-container textarea').forEach(textarea => {
+                contractData.rules.push(textarea.value);
+            });
+
+            // Save all other fields with IDs
+            document.querySelectorAll('input[type="text"]:not(.list-item input), input[type="date"], textarea:not(#rules-container textarea)').forEach(field => {
+                if (field.id || field.getAttribute('aria-label')) {
+                    const key = field.id || field.getAttribute('aria-label') || field.placeholder;
+                    contractData.otherFields[key] = field.value;
+                }
+            });
+
+            previewDisplay.value = JSON.stringify(contractData, null, 2);
+        }
+
+        // Check if admin mode should be enabled (via URL parameter)
+        function checkAdminMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                openAdminPanel();
+            }
+        }
+
+        // Keyboard shortcut to open admin panel (Ctrl+Shift+A or Cmd+Shift+A)
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+                e.preventDefault();
+                const panel = document.getElementById('admin-panel');
+                if (panel.classList.contains('active')) {
+                    closeAdminPanel();
+                } else {
+                    openAdminPanel();
+                }
+            }
+        });
+
+        // ============================================
+        // END ADMIN PANEL FUNCTIONS
+        // ============================================
+
+        // Auto-save function
+        function autoSave() {
+            const contractData = {
+                ruleCount: ruleCount,
+                hardLimits: [],
+                softLimits: [],
+                safewords: [],
+                rewards: [],
+                punishments: [],
+                dailyDuties: [],
+                expectations: [],
+                rules: [],
+                otherFields: {}
+            };
+
+            // Save hard limits
+            document.querySelectorAll('#hard-limits-container .list-item textarea').forEach(textarea => {
+                contractData.hardLimits.push(textarea.value);
+            });
+
+            // Save soft limits
+            document.querySelectorAll('#soft-limits-container .list-item textarea').forEach(textarea => {
+                contractData.softLimits.push(textarea.value);
+            });
+
+            // Save safe words
+            document.querySelectorAll('#safewords-container .list-item textarea').forEach(textarea => {
+                contractData.safewords.push(textarea.value);
+            });
+
+            // Save rewards
+            document.querySelectorAll('#rewards-container .list-item textarea').forEach(textarea => {
+                contractData.rewards.push(textarea.value);
+            });
+
+            // Save punishments
+            document.querySelectorAll('#punishments-container .list-item textarea').forEach(textarea => {
+                contractData.punishments.push(textarea.value);
+            });
+
+            // Save daily duties
+            document.querySelectorAll('#daily-duties-container .list-item textarea').forEach(textarea => {
+                contractData.dailyDuties.push(textarea.value);
+            });
+
+            // Save expectations
+            document.querySelectorAll('#expectations-container .list-item textarea').forEach(textarea => {
+                contractData.expectations.push(textarea.value);
+            });
+
+            // Save rules/commands
+            document.querySelectorAll('#rules-container textarea').forEach(textarea => {
+                contractData.rules.push(textarea.value);
+            });
+
+            // Save all other fields with IDs
+            document.querySelectorAll('input[type="text"]:not(.list-item input), input[type="date"], textarea:not(#rules-container textarea)').forEach(field => {
+                if (field.id || field.getAttribute('aria-label')) {
+                    const key = field.id || field.getAttribute('aria-label') || field.placeholder;
+                    contractData.otherFields[key] = field.value;
+                }
+            });
+
+            // Only save to Gist, not localStorage
+            syncToGist(contractData);
+        }
+
+        // Show save indicator
+        function showSaveIndicator() {
+            const indicator = document.getElementById('autosave-indicator');
+            indicator.classList.add('show');
+            setTimeout(() => {
+                indicator.classList.remove('show');
+            }, 2000);
+        }
+
+        // Sync contract data to GitHub Gist (with debouncing to avoid excessive API calls)
+        async function syncToGist(contractData) {
+            // Only allow syncing if password authenticated
+            if (!isPasswordAuthenticated()) {
+                console.log('[Sync] ⚠️ Not authenticated. Changes will not be synced.');
+                return;
+            }
+
+            const token = decryptedGithubToken;
+            const gistId = GLOBAL_GIST_ID;
+
+            // If no token, user needs to authenticate
+            if (!token) {
+                console.log('[Sync] ⚠️ No token available. Please authenticate first.');
+                return;
+            }
+
+            // Track when first change was made for max wait
+            if (firstPendingChangeTime === null) {
+                firstPendingChangeTime = Date.now();
+                console.log('[Sync] 🕐 First pending change tracked');
+            }
+
+            // Check if we've exceeded max wait time (5 seconds)
+            const timeSinceFirstChange = Date.now() - firstPendingChangeTime;
+            const MAX_WAIT = 5000; // 5 seconds max wait even during continuous editing
+
+            // Calculate debounce delay
+            let debounceDelay = 1000; // Normal: 1 second after last change
+            if (timeSinceFirstChange >= MAX_WAIT) {
+                debounceDelay = 0; // Force immediate sync if we've been waiting too long
+                console.log('[Sync] ⏰ Max wait time exceeded (', timeSinceFirstChange, 'ms), forcing sync now');
+            }
+
+            // Debounce: wait for delay after last change before syncing
+            clearTimeout(gistUpdateTimeout);
+            gistUpdateTimeout = setTimeout(async () => {
+                // Throttle: don't update more than once every 2 seconds
+                const now = Date.now();
+                const timeSinceLastUpdate = now - lastGistUpdate;
+                if (timeSinceLastUpdate < 2000) {
+                    console.log('[Sync] ⏭️ Skipping sync (throttled, only', timeSinceLastUpdate, 'ms since last)');
+                    // Reschedule to try again after throttle period
+                    setTimeout(() => syncToGist(contractData), 2000 - timeSinceLastUpdate);
+                    return;
+                }
+
+                console.log('[Sync] 📤 Syncing to Gist...');
+
+                try {
+                    const gistData = {
+                        files: {
+                            "contract-data.json": {
+                                content: JSON.stringify(contractData, null, 2)
+                            }
+                        }
+                    };
+
+                    const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Authorization': `token ${token}`,
+                            'Accept': 'application/vnd.github.v3+json'
+                        },
+                        body: JSON.stringify(gistData)
+                    });
+
+                    if (response.ok) {
+                        lastGistUpdate = now;
+                        const result = await response.json();
+                        // Update our timestamp to avoid polling thinking there's a new update
+                        lastKnownGistTimestamp = result.updated_at;
+                        firstPendingChangeTime = null; // Reset max wait timer after successful sync
+                        showSaveIndicator();
+                        console.log('[Sync] ✅ Gist synced successfully. New timestamp:', result.updated_at);
+                    } else {
+                        console.error('[Sync] ❌ Failed to sync gist:', response.status);
+                        firstPendingChangeTime = null; // Reset even on failure
+                    }
+                } catch (error) {
+                    console.error('[Sync] ❌ Error syncing to gist:', error);
+                    firstPendingChangeTime = null; // Reset even on error
+                }
+            }, debounceDelay);
+        }
+
+        // Load saved data (deprecated - now loads from Gist instead)
+        function loadSavedData() {
+            // This function is kept for backwards compatibility but does nothing
+            // Data is now loaded from Gist via loadFromGist()
+            return;
+
+            /* OLD CODE - DISABLED
+            const savedData = localStorage.getItem('contractData');
+            if (!savedData) return;
+
+            try {
+                const contractData = JSON.parse(savedData);
+
+                // Restore rule count
+                if (contractData.ruleCount) {
+                    ruleCount = contractData.ruleCount;
+                }
+
+                // Restore hard limits
+                if (contractData.hardLimits && contractData.hardLimits.length > 0) {
+                    const hardLimitsTextareas = document.querySelectorAll('#hard-limits-container .list-item textarea');
+                    contractData.hardLimits.forEach((value, index) => {
+                        if (index >= hardLimitsTextareas.length) {
+                            addHardLimit();
+                        }
+                    });
+                    // Set values
+                    const updatedTextareas = document.querySelectorAll('#hard-limits-container .list-item textarea');
+                    contractData.hardLimits.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore soft limits
+                if (contractData.softLimits && contractData.softLimits.length > 0) {
+                    const softLimitsTextareas = document.querySelectorAll('#soft-limits-container .list-item textarea');
+                    contractData.softLimits.forEach((value, index) => {
+                        if (index >= softLimitsTextareas.length) {
+                            addSoftLimit();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#soft-limits-container .list-item textarea');
+                    contractData.softLimits.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore safe words
+                if (contractData.safewords && contractData.safewords.length > 0) {
+                    const safewordsTextareas = document.querySelectorAll('#safewords-container .list-item textarea');
+                    contractData.safewords.forEach((value, index) => {
+                        if (index >= safewordsTextareas.length) {
+                            addSafeword();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#safewords-container .list-item textarea');
+                    contractData.safewords.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore rewards
+                if (contractData.rewards && contractData.rewards.length > 0) {
+                    const rewardsTextareas = document.querySelectorAll('#rewards-container .list-item textarea');
+                    contractData.rewards.forEach((value, index) => {
+                        if (index >= rewardsTextareas.length) {
+                            addReward();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#rewards-container .list-item textarea');
+                    contractData.rewards.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore punishments
+                if (contractData.punishments && contractData.punishments.length > 0) {
+                    const punishmentsTextareas = document.querySelectorAll('#punishments-container .list-item textarea');
+                    contractData.punishments.forEach((value, index) => {
+                        if (index >= punishmentsTextareas.length) {
+                            addPunishment();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#punishments-container .list-item textarea');
+                    contractData.punishments.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore daily duties
+                if (contractData.dailyDuties && contractData.dailyDuties.length > 0) {
+                    const dailyDutiesTextareas = document.querySelectorAll('#daily-duties-container .list-item textarea');
+                    contractData.dailyDuties.forEach((value, index) => {
+                        if (index >= dailyDutiesTextareas.length) {
+                            addDailyDuty();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#daily-duties-container .list-item textarea');
+                    contractData.dailyDuties.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore expectations
+                if (contractData.expectations && contractData.expectations.length > 0) {
+                    const expectationsTextareas = document.querySelectorAll('#expectations-container .list-item textarea');
+                    contractData.expectations.forEach((value, index) => {
+                        if (index >= expectationsTextareas.length) {
+                            addExpectation();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#expectations-container .list-item textarea');
+                    contractData.expectations.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore rules/commands
+                if (contractData.rules && contractData.rules.length > 0) {
+                    const rulesTextareas = document.querySelectorAll('#rules-container textarea');
+                    contractData.rules.forEach((value, index) => {
+                        if (index >= rulesTextareas.length) {
+                            addRule();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll('#rules-container textarea');
+                    contractData.rules.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                        }
+                    });
+                }
+
+                // Restore other fields
+                if (contractData.otherFields) {
+                    Object.keys(contractData.otherFields).forEach(key => {
+                        const field = document.getElementById(key) ||
+                                    document.querySelector(`[aria-label="${key}"]`) ||
+                                    document.querySelector(`[placeholder="${key}"]`);
+                        if (field) {
+                            field.value = contractData.otherFields[key];
+                        }
+                    });
+                }
+
+            } catch (e) {
+                console.error('Error loading saved data:', e);
+            }
+            */
+        }
+
+        // Debounced auto-save on input
+        function scheduleAutoSave() {
+            clearTimeout(autosaveTimeout);
+            autosaveTimeout = setTimeout(autoSave, 500);
+        }
+
+        // Add event listeners for auto-save
+        function initAutoSave() {
+            document.addEventListener('input', (e) => {
+                scheduleAutoSave();
+                markUserTyping(); // Track that user is actively editing
+            });
+            document.addEventListener('change', scheduleAutoSave);
+        }
+
+        // Clear saved data (optional)
+        function clearSavedData() {
+            if (confirm('Are you sure you want to clear the global Gist ID? This will disconnect from the shared contract.')) {
+                localStorage.removeItem('globalGistId');
+                location.reload();
+            }
+        }
+
+        function addRule() {
+            ruleCount++;
+            const container = document.getElementById('rules-container');
+            const newRule = document.createElement('div');
+            newRule.className = 'command-item';
+            newRule.innerHTML = `
+                <label class="field-label">Command ${ruleCount}</label>
+                <div class="command-item-content">
+                    <textarea class="field-textarea" placeholder="The Dominant's absolute command or rule. The submissive must obey without hesitation..."></textarea>
+                    <button class="delete-btn" onclick="deleteCommandItem(this)">✕</button>
+                </div>
+            `;
+            container.appendChild(newRule);
+            const textarea = newRule.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            newRule.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addHardLimit() {
+            const container = document.getElementById('hard-limits-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter hard limit..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addSoftLimit() {
+            const container = document.getElementById('soft-limits-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter soft limit..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addSafeword() {
+            const container = document.getElementById('safewords-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Enter safe word or signal..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addReward() {
+            const container = document.getElementById('rewards-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Privileges granted for pleasing the Dominant..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addPunishment() {
+            const container = document.getElementById('punishments-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Consequences for failing to obey or please..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addDailyDuty() {
+            const container = document.getElementById('daily-duties-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Daily task or requirement..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        function addExpectation() {
+            const container = document.getElementById('expectations-container');
+            const listItem = document.createElement('div');
+            listItem.className = 'list-item';
+            listItem.setAttribute('draggable', 'true');
+            listItem.innerHTML = '<textarea class="field-textarea" placeholder="Behavioral expectation or protocol..."></textarea><button class="delete-btn" onclick="deleteListItem(this)">✕</button>';
+            container.appendChild(listItem);
+            const textarea = listItem.querySelector('.field-textarea');
+            initTextareaAutoResize(textarea);
+            initDragAndDrop(listItem);
+            listItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            scheduleAutoSave();
+        }
+
+        // Auto-resize textarea functionality
+        function autoResizeTextarea(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+
+        function initTextareaAutoResize(textarea) {
+            // Initial resize
+            autoResizeTextarea(textarea);
+
+            // Add event listener for future changes
+            textarea.addEventListener('input', function() {
+                autoResizeTextarea(this);
+            });
+        }
+
+        // Delete functionality
+        function deleteCommandItem(button) {
+            const commandItem = button.closest('.command-item');
+            if (commandItem) {
+                commandItem.remove();
+                scheduleAutoSave();
+            }
+        }
+
+        function deleteListItem(button) {
+            const listItem = button.closest('.list-item');
+            if (listItem) {
+                listItem.remove();
+                scheduleAutoSave();
+            }
+        }
+
+        // Drag and drop functionality
+        let draggedItem = null;
+
+        function initDragAndDrop(item) {
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('drop', handleDrop);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+        }
+
+        function handleDragStart(e) {
+            draggedItem = this;
+            this.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('dragging');
+            document.querySelectorAll('.list-item').forEach(item => {
+                item.classList.remove('drag-over');
+            });
+            scheduleAutoSave();
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            if (this !== draggedItem) {
+                this.classList.add('drag-over');
+            }
+        }
+
+        function handleDragLeave(e) {
+            this.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+
+            if (draggedItem !== this) {
+                const parent = this.parentNode;
+                const allItems = [...parent.querySelectorAll('.list-item')];
+                const draggedIndex = allItems.indexOf(draggedItem);
+                const targetIndex = allItems.indexOf(this);
+
+                if (draggedIndex < targetIndex) {
+                    parent.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    parent.insertBefore(draggedItem, this);
+                }
+            }
+
+            return false;
+        }
+
+        // Check if access token has been saved
+        function hasAccessToken() {
+            return localStorage.getItem('githubToken') !== null;
+        }
+
+        // Prompt user for access token on first visit
+        function promptForAccessToken() {
+            const token = prompt('Welcome! To sync this contract, please paste the access code provided to you:');
+
+            if (token && token.trim()) {
+                localStorage.setItem('githubToken', token.trim());
+                alert('Access code saved! The contract will now sync across your devices.');
+                location.reload();
+            } else if (token !== null) {
+                alert('No access code entered. You can view the contract in read-only mode.');
+            }
+        }
+
+        // Check if password has been entered correctly in this session
+        function isPasswordAuthenticated() {
+            return sessionStorage.getItem('editPasswordCorrect') === 'true';
+        }
+
+        // Prompt user for password to enable editing
+        function promptForPassword() {
+            const password = prompt('Enter password to edit the contract:');
+
+            if (password === EDIT_PASSWORD) {
+                // Decrypt the GitHub token using the password
+                decryptedGithubToken = decryptToken(ENCRYPTED_TOKEN, password);
+                if (decryptedGithubToken) {
+                    sessionStorage.setItem('editPasswordCorrect', 'true');
+                    alert('Password correct! Reloading to enable editing with cloud sync...');
+                    location.reload();
+                } else {
+                    alert('Error decrypting token. Please contact support.');
+                }
+            } else if (password !== null) {
+                alert('Incorrect password. You can view the contract in read-only mode.');
+            }
+        }
+
+        // Check if page should be in readonly mode (either URL param OR no password)
+        function isReadOnlyMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlReadonly = urlParams.get('readonly') === 'true';
+            const noPassword = !isPasswordAuthenticated();
+
+            return urlReadonly || noPassword;
+        }
+
+        // Make the page readonly
+        function enableReadOnlyMode() {
+            // Add readonly class to body
+            document.body.classList.add('readonly-mode');
+
+            // Disable all inputs and textareas EXCEPT submissive signature
+            document.querySelectorAll('input, textarea').forEach(field => {
+                if (field.id !== 'submissive-signature') {
+                    field.setAttribute('readonly', 'readonly');
+                    field.style.cursor = 'default';
+                }
+            });
+
+            // Set today's date for submissive signature date if empty
+            const subSignatureDate = document.getElementById('submissive-signature-date');
+            if (subSignatureDate && !subSignatureDate.value) {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                subSignatureDate.value = `${year}-${month}-${day}`;
+            }
+
+            // Hide action buttons
+            const actionButtons = document.getElementById('action-buttons');
+            if (actionButtons) actionButtons.style.display = 'none';
+
+            // Show readonly indicator with all buttons
+            const readonlyIndicator = document.getElementById('readonly-indicator');
+            if (readonlyIndicator) readonlyIndicator.style.display = 'flex';
+
+            // Disable all buttons EXCEPT those in readonly-indicator and theme toggle
+            document.querySelectorAll('button').forEach(button => {
+                // Don't disable buttons in readonly indicator or theme toggle
+                if (!button.closest('#readonly-indicator') && button.id !== 'theme-toggle') {
+                    button.disabled = true;
+                    button.style.display = 'none';
+                }
+            });
+
+            // Disable dragging
+            document.querySelectorAll('.list-item').forEach(item => {
+                item.setAttribute('draggable', 'false');
+                item.style.cursor = 'default';
+            });
+
+            // Enable autosave for submissive signature field only
+            const subSignature = document.getElementById('submissive-signature');
+
+            if (subSignature) {
+                subSignature.addEventListener('input', scheduleAutoSave);
+                subSignature.addEventListener('blur', checkIfContractSigned);
+                subSignature.addEventListener('input', checkIfContractSigned);
+            }
+
+            // Scroll to top of page in readonly mode and check brag button visibility
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+
+                // Check if contract is already signed and show/hide brag button accordingly
+                const readonlyBragBtn = document.getElementById('readonly-brag-btn');
+                if (readonlyBragBtn) {
+                    if (subSignature && subSignature.value.trim() !== '') {
+                        readonlyBragBtn.style.display = 'block';
+                    } else {
+                        readonlyBragBtn.style.display = 'none';
+                    }
+                }
+            }, 100);
+        }
+
+        // Timeout for checking if contract is signed
+        let signCheckTimeout;
+
+        // Check if contract is signed and show confirmation
+        function checkIfContractSigned() {
+            // Clear any existing timeout
+            if (signCheckTimeout) {
+                clearTimeout(signCheckTimeout);
+            }
+
+            const subSignature = document.getElementById('submissive-signature');
+
+            // Check if signature is filled (at least 2 characters to prevent accidental triggers)
+            if (subSignature && subSignature.value.trim().length >= 2) {
+                // Wait 3 seconds after she stops typing
+                signCheckTimeout = setTimeout(() => {
+                    // Show signed indicator
+                    const indicator = document.getElementById('contract-signed-indicator');
+                    indicator.style.display = 'block';
+
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                        indicator.style.display = 'none';
+                    }, 5000);
+
+                    // Update sign button to show it's complete
+                    const signBtn = document.querySelector('#sign-button-container .action-btn');
+                    if (signBtn) {
+                        signBtn.textContent = '✓ Signed';
+                        signBtn.style.background = 'linear-gradient(135deg, #006400, #228b22)';
+                        signBtn.disabled = true;
+                    }
+
+                    // Show brag mode button now that contract is signed
+                    const readonlyBragBtn = document.getElementById('readonly-brag-btn');
+                    if (readonlyBragBtn) {
+                        readonlyBragBtn.style.display = 'block';
+                    }
+                }, 3000); // 3 second delay
+            }
+        }
+
+        // Scroll to and highlight submissive signature section
+        function scrollToSignature() {
+            const signatureBox = document.getElementById('submissive-signature-box');
+            const signatureInput = document.getElementById('submissive-signature');
+
+            // Scroll to signature section
+            signatureBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            // Focus on signature input and add glow to the underline
+            setTimeout(() => {
+                signatureInput.focus();
+                signatureInput.classList.add('signature-input-highlight');
+
+                // Remove highlight after animation completes (3 pulses × 2s = 6s)
+                setTimeout(() => {
+                    signatureInput.classList.remove('signature-input-highlight');
+                }, 6000);
+            }, 500);
+        }
+
+        // Save contract as PNG
+        function saveAsPNG() {
+            // Save current state first
+            autoSave();
+
+            // Hide action buttons temporarily
+            const actionButtons = document.getElementById('action-buttons');
+            const autosaveIndicator = document.getElementById('autosave-indicator');
+            actionButtons.style.display = 'none';
+
+            // Show indicator
+            const indicator = document.getElementById('autosave-indicator');
+            indicator.textContent = '📸 Generating PNG...';
+            indicator.classList.add('show');
+            indicator.style.display = 'block';
+
+            // Wait for DOM to settle
+            setTimeout(() => {
+                indicator.style.display = 'none';
+
+                // Use html-to-image for accurate rendering
+                htmlToImage.toPng(document.querySelector('.contract-container'), {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    cacheBust: true,
+                    style: {
+                        transform: 'scale(1)',
+                        transformOrigin: 'top left'
+                    }
+                }).then(dataUrl => {
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.download = 'contract-' + new Date().toISOString().split('T')[0] + '.png';
+                    link.href = dataUrl;
+                    link.click();
+
+                    // Show success
+                    indicator.style.display = 'block';
+                    indicator.textContent = '✓ PNG Saved!';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+
+                    // Restore buttons
+                    actionButtons.style.display = 'flex';
+                }).catch(err => {
+                    console.error('Error generating PNG:', err);
+                    indicator.style.display = 'block';
+                    indicator.textContent = '❌ Error generating PNG';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+                    actionButtons.style.display = 'flex';
+                });
+            }, 200);
+        }
+
+        // Set today's date in signature fields
+        function setTodaysDate() {
+            // Get today's date in local timezone (not UTC)
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const todayStr = `${year}-${month}-${day}`;
+
+            const ownerDate = document.getElementById('owner-signature-date');
+            const subDate = document.getElementById('submissive-signature-date');
+
+            // Only set if not already filled
+            if (ownerDate && !ownerDate.value) {
+                ownerDate.value = todayStr;
+            }
+            if (subDate && !subDate.value) {
+                subDate.value = todayStr;
+            }
+        }
+
+        // Brag Mode Functions
+        function openBragModal() {
+            document.getElementById('brag-modal-overlay').style.display = 'block';
+        }
+
+        function closeBragModal() {
+            document.getElementById('brag-modal-overlay').style.display = 'none';
+        }
+
+        function getBragOptions() {
+            return {
+                hideNames: document.getElementById('hide-names').checked,
+                hideSignatures: document.getElementById('hide-signatures').checked,
+                hideDates: document.getElementById('hide-dates').checked,
+                hideRules: document.getElementById('hide-rules').checked,
+                hideHardLimits: document.getElementById('hide-hard-limits').checked,
+                hideSoftLimits: document.getElementById('hide-soft-limits').checked,
+                hideSafewords: document.getElementById('hide-safewords').checked,
+                hidePunishments: document.getElementById('hide-punishments').checked,
+                hideRewards: document.getElementById('hide-rewards').checked,
+                hideDuties: document.getElementById('hide-duties').checked,
+                hideExpectations: document.getElementById('hide-expectations').checked,
+                hideRelease: document.getElementById('hide-release').checked,
+                method: document.querySelector('input[name="hide-method"]:checked').value
+            };
+        }
+
+        function generateBragLink() {
+            autoSave();
+            const options = getBragOptions();
+
+            // Build URL parameters
+            const params = new URLSearchParams();
+            params.set('brag', 'true');
+            Object.keys(options).forEach(key => {
+                if (options[key] === true || (key === 'method' && options[key])) {
+                    params.set(key, options[key]);
+                }
+            });
+
+            const baseUrl = window.location.href.split('?')[0];
+            const bragUrl = baseUrl + '?' + params.toString();
+
+            // Copy to clipboard
+            navigator.clipboard.writeText(bragUrl).then(() => {
+                const indicator = document.getElementById('autosave-indicator');
+                indicator.textContent = '✓ Brag Link Copied!';
+                indicator.classList.add('show');
+                setTimeout(() => {
+                    indicator.classList.remove('show');
+                    indicator.textContent = '✓ Saved';
+                }, 3000);
+                closeBragModal();
+            }).catch(err => {
+                alert('Brag link: ' + bragUrl);
+                closeBragModal();
+            });
+        }
+
+        function saveBragPNG() {
+            autoSave();
+            const options = getBragOptions();
+
+            // Hide buttons and indicators FIRST
+            const actionButtons = document.getElementById('action-buttons');
+            const autosaveIndicator = document.getElementById('autosave-indicator');
+            const readonlyIndicator = document.getElementById('readonly-indicator');
+            const signBtnContainer = document.getElementById('sign-button-container');
+
+            if (actionButtons) actionButtons.style.display = 'none';
+            if (readonlyIndicator) readonlyIndicator.style.display = 'none';
+            if (signBtnContainer) signBtnContainer.style.display = 'none';
+            closeBragModal();
+
+            // Show generating indicator
+            const indicator = document.getElementById('autosave-indicator');
+            indicator.textContent = '📸 Generating Brag PNG...';
+            indicator.classList.add('show');
+            indicator.style.display = 'block';
+
+            // Apply brag mode styling
+            applyBragMode(options);
+
+            // Wait for DOM to update and filters to be fully applied
+            setTimeout(() => {
+                // Hide the generating indicator before screenshot
+                indicator.style.display = 'none';
+
+                // Use html-to-image for pixel-perfect rendering with filters
+                htmlToImage.toPng(document.querySelector('.contract-container'), {
+                    quality: 1.0,
+                    pixelRatio: 2,
+                    cacheBust: true,
+                    filter: (node) => {
+                        // Filter out the indicator
+                        return node.id !== 'autosave-indicator';
+                    },
+                    style: {
+                        transform: 'scale(1)',
+                        transformOrigin: 'top left'
+                    }
+                }).then(dataUrl => {
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.download = 'contract-brag-' + new Date().toISOString().split('T')[0] + '.png';
+                    link.href = dataUrl;
+                    link.click();
+
+                    // Show success
+                    indicator.style.display = 'block';
+                    indicator.textContent = '✓ Brag PNG Saved!';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+
+                    // Remove brag mode styling
+                    removeBragMode();
+
+                    // Restore buttons
+                    if (actionButtons) actionButtons.style.display = 'flex';
+                }).catch(err => {
+                    console.error('Error generating PNG:', err);
+                    indicator.style.display = 'block';
+                    indicator.textContent = '❌ Error generating PNG';
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+                    removeBragMode();
+                    if (actionButtons) actionButtons.style.display = 'flex';
+                });
+            }, 500); // Longer delay to ensure all CSS filters are fully applied
+        }
+
+        function applyBragMode(options) {
+            const method = options.method;
+
+            // Names
+            if (options.hideNames) {
+                applyBragStyle('#dominant-name', method, '[Owner Name]');
+                applyBragStyle('#submissive-name', method, '[Submissive Name]');
+                applyBragStyle('#subtitle-dominant-name', method, '[Dom]');
+                applyBragStyle('#subtitle-submissive-name', method, '[Sub]');
+            }
+
+            // Signatures
+            if (options.hideSignatures) {
+                applyBragStyle('#owner-signature', method, '[Signature]');
+                applyBragStyle('#submissive-signature', method, '[Signature]');
+            }
+
+            // Dates
+            if (options.hideDates) {
+                applyBragStyle('#effective-date', method, '[Date]');
+                applyBragStyle('#owner-signature-date', method, '[Date]');
+                applyBragStyle('#submissive-signature-date', method, '[Date]');
+            }
+
+            // Rules
+            if (options.hideRules) {
+                document.querySelectorAll('#rules-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Command]');
+                });
+            }
+
+            // Hard Limits
+            if (options.hideHardLimits) {
+                document.querySelectorAll('#hard-limits-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Hard Limit]');
+                });
+            }
+
+            // Soft Limits
+            if (options.hideSoftLimits) {
+                document.querySelectorAll('#soft-limits-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Soft Limit]');
+                });
+            }
+
+            // Safewords
+            if (options.hideSafewords) {
+                document.querySelectorAll('#safewords-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Safeword]');
+                });
+            }
+
+            // Punishments
+            if (options.hidePunishments) {
+                document.querySelectorAll('#punishments-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Punishment]');
+                });
+            }
+
+            // Rewards
+            if (options.hideRewards) {
+                document.querySelectorAll('#rewards-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Reward]');
+                });
+            }
+
+            // Daily Duties
+            if (options.hideDuties) {
+                document.querySelectorAll('#daily-duties-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Duty]');
+                });
+            }
+
+            // Expectations
+            if (options.hideExpectations) {
+                document.querySelectorAll('#expectations-container .field-textarea').forEach(el => {
+                    applyBragStyle(el, method, '[Expectation]');
+                });
+            }
+
+            // Release Clause
+            if (options.hideRelease) {
+                applyBragStyle('#release-clause', method, '[Release Clause]');
+                applyBragStyle('#duration-control', method, '[Duration]');
+                applyBragStyle('#review-schedule', method, '[Review Schedule]');
+            }
+        }
+
+        function applyBragStyle(selector, method, placeholder) {
+            const el = typeof selector === 'string' ? document.querySelector(selector) : selector;
+            if (!el) return;
+
+            // Store original value
+            el.setAttribute('data-original-value', el.value || '');
+
+            if (method === 'blur') {
+                el.classList.add('brag-blur');
+                // Force a repaint to ensure blur is applied
+                el.offsetHeight;
+            } else if (method === 'redacted') {
+                el.classList.add('brag-redacted');
+                // For redacted, replace with blocks that fill the field
+                const length = el.value ? el.value.length : 15;
+                el.value = '█'.repeat(Math.max(length, 15));
+                // Force a repaint
+                el.offsetHeight;
+            } else if (method === 'placeholder') {
+                el.classList.add('brag-placeholder');
+                el.setAttribute('data-placeholder', placeholder);
+                const originalValue = el.value;
+                el.value = '';
+                // Force rendering of placeholder
+                el.offsetHeight;
+            }
+        }
+
+        function removeBragMode() {
+            document.querySelectorAll('.brag-blur, .brag-redacted, .brag-placeholder').forEach(el => {
+                el.classList.remove('brag-blur', 'brag-redacted', 'brag-placeholder');
+                const originalValue = el.getAttribute('data-original-value');
+                if (originalValue !== null) {
+                    el.value = originalValue;
+                    el.removeAttribute('data-original-value');
+                }
+                el.removeAttribute('data-placeholder');
+            });
+        }
+
+        function isBragMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('brag') === 'true';
+        }
+
+        function enableBragMode() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const options = {
+                hideNames: urlParams.get('hideNames') === 'true',
+                hideSignatures: urlParams.get('hideSignatures') === 'true',
+                hideDates: urlParams.get('hideDates') === 'true',
+                hideRules: urlParams.get('hideRules') === 'true',
+                hideHardLimits: urlParams.get('hideHardLimits') === 'true',
+                hideSoftLimits: urlParams.get('hideSoftLimits') === 'true',
+                hideSafewords: urlParams.get('hideSafewords') === 'true',
+                hidePunishments: urlParams.get('hidePunishments') === 'true',
+                hideRewards: urlParams.get('hideRewards') === 'true',
+                hideDuties: urlParams.get('hideDuties') === 'true',
+                hideExpectations: urlParams.get('hideExpectations') === 'true',
+                hideRelease: urlParams.get('hideRelease') === 'true',
+                method: urlParams.get('method') || 'blur'
+            };
+
+            applyBragMode(options);
+
+            // Hide buttons in brag mode
+            const actionButtons = document.getElementById('action-buttons');
+            const signButtonContainer = document.getElementById('sign-button-container');
+            const readonlyIndicator = document.getElementById('readonly-indicator');
+
+            if (actionButtons) actionButtons.style.display = 'none';
+            if (signButtonContainer) signButtonContainer.style.display = 'none';
+            if (readonlyIndicator) readonlyIndicator.style.display = 'none';
+
+            // Make all fields readonly
+            document.querySelectorAll('input, textarea, button').forEach(el => {
+                el.setAttribute('readonly', 'readonly');
+                el.disabled = true;
+                el.style.pointerEvents = 'none';
+            });
+
+            // Scroll to top of page in brag mode
+            setTimeout(() => {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }, 100);
+        }
+
+        // Load contract data from GitHub Gist
+        async function loadFromGist(gistId, silent = false) {
+            try {
+                // Try to use token if available (needed for private gists)
+                const token = decryptedGithubToken;
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `token ${token}`;
+                }
+
+                const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch gist: ${response.status}`);
+                }
+
+                const gist = await response.json();
+
+                // Track the last known timestamp for polling
+                lastKnownGistTimestamp = gist.updated_at;
+
+                const fileContent = gist.files['contract-data.json'].content;
+                const contractData = JSON.parse(fileContent);
+
+                // Apply the loaded data using the same logic as loadSavedData
+                applyContractData(contractData);
+
+                if (!silent) {
+                    console.log('[Load] 📥 Contract loaded from Gist. Timestamp:', gist.updated_at);
+                } else {
+                    console.log('[Load] 🔄 Contract reloaded (update detected). Timestamp:', gist.updated_at);
+                }
+
+                return true;
+            } catch (error) {
+                console.error('Error loading gist:', error);
+                if (!silent) {
+                    if (!decryptedGithubToken) {
+                        console.log('[Load] ⚠️ No token available - user needs to authenticate');
+                        // Don't show error if we're in read-only mode
+                    } else {
+                        alert('Error loading contract data. Please try again or contact support.');
+                    }
+                }
+                return false;
+            }
+        }
+
+        // Check for updates to the Gist (for real-time syncing)
+        async function checkForGistUpdates() {
+            const gistId = GLOBAL_GIST_ID;
+
+            if (userIsTyping) {
+                console.log('[Polling] User is typing, skipping check');
+                return; // Don't check while user is typing to avoid interrupting them
+            }
+
+            try {
+                // Use token if available (needed for private gists)
+                const token = decryptedGithubToken;
+                const headers = {};
+                if (token) {
+                    headers['Authorization'] = `token ${token}`;
+                }
+
+                const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    console.log('[Polling] Failed to fetch gist:', response.status);
+                    return;
+                }
+
+                const gist = await response.json();
+
+                console.log('[Polling] Checked gist. Last known:', lastKnownGistTimestamp, 'Current:', gist.updated_at);
+
+                // Check if the Gist has been updated since we last loaded it
+                if (lastKnownGistTimestamp && gist.updated_at !== lastKnownGistTimestamp) {
+                    console.log('[Polling] ✅ Gist updated, reloading data...');
+                    await loadFromGist(gistId, true);
+
+                    // Show a subtle indicator that data was refreshed
+                    const indicator = document.getElementById('autosave-indicator');
+                    indicator.textContent = '🔄 Updated';
+                    indicator.classList.add('show');
+                    setTimeout(() => {
+                        indicator.classList.remove('show');
+                        indicator.textContent = '✓ Saved';
+                    }, 2000);
+                }
+            } catch (error) {
+                console.error('[Polling] Error checking for gist updates:', error);
+            }
+        }
+
+        // Start polling for updates
+        function startGistPolling() {
+            // Poll every 2 seconds for near-instant updates
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+            }
+            console.log('[Polling] 🔄 Started polling every 2 seconds');
+            pollingInterval = setInterval(checkForGistUpdates, 2000);
+        }
+
+        // Stop polling
+        function stopGistPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        // Track when user is typing to avoid reloading data mid-edit
+        function markUserTyping() {
+            if (!userIsTyping) {
+                console.log('[Typing] ⌨️ User started typing, pausing polls');
+            }
+            userIsTyping = true;
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                userIsTyping = false;
+                console.log('[Typing] ✅ User stopped typing, resuming polls');
+            }, 2000); // Consider user done typing after 2 seconds of inactivity
+        }
+
+        // Helper function to apply contract data (used by both localStorage and Gist loading)
+        function applyContractData(contractData) {
+            // Restore rule count
+            if (contractData.ruleCount) {
+                ruleCount = contractData.ruleCount;
+            }
+
+            // Helper to restore list items
+            const restoreListItems = (containerId, data, addFunction) => {
+                if (data && data.length > 0) {
+                    const textareas = document.querySelectorAll(`#${containerId} .list-item textarea`);
+                    data.forEach((value, index) => {
+                        if (index >= textareas.length) {
+                            addFunction();
+                        }
+                    });
+                    const updatedTextareas = document.querySelectorAll(`#${containerId} .list-item textarea`);
+                    data.forEach((value, index) => {
+                        if (updatedTextareas[index]) {
+                            updatedTextareas[index].value = value;
+                            autoResizeTextarea(updatedTextareas[index]);
+                        }
+                    });
+                }
+            };
+
+            restoreListItems('hard-limits-container', contractData.hardLimits, addHardLimit);
+            restoreListItems('soft-limits-container', contractData.softLimits, addSoftLimit);
+            restoreListItems('safewords-container', contractData.safewords, addSafeword);
+            restoreListItems('rewards-container', contractData.rewards, addReward);
+            restoreListItems('punishments-container', contractData.punishments, addPunishment);
+            restoreListItems('daily-duties-container', contractData.dailyDuties, addDailyDuty);
+            restoreListItems('expectations-container', contractData.expectations, addExpectation);
+
+            // Restore rules/commands
+            if (contractData.rules && contractData.rules.length > 0) {
+                const rulesTextareas = document.querySelectorAll('#rules-container textarea');
+                contractData.rules.forEach((value, index) => {
+                    if (index >= rulesTextareas.length) {
+                        addRule();
+                    }
+                });
+                const updatedTextareas = document.querySelectorAll('#rules-container textarea');
+                contractData.rules.forEach((value, index) => {
+                    if (updatedTextareas[index]) {
+                        updatedTextareas[index].value = value;
+                        autoResizeTextarea(updatedTextareas[index]);
+                    }
+                });
+            }
+
+            // Restore other fields
+            if (contractData.otherFields) {
+                Object.keys(contractData.otherFields).forEach(key => {
+                    const field = document.getElementById(key) ||
+                                document.querySelector(`[aria-label="${key}"]`) ||
+                                document.querySelector(`[placeholder="${key}"]`);
+                    if (field) {
+                        field.value = contractData.otherFields[key];
+                        if (field.classList.contains('field-textarea') || field.classList.contains('field-textarea-small')) {
+                            autoResizeTextarea(field);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Check if URL has a gist parameter
+        function getGistIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('gist');
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', async () => {
+            // Load saved theme preference
+            loadSavedTheme();
+
+            // Check if admin mode should be enabled
+            checkAdminMode();
+
+            // Decrypt GitHub token if user is authenticated
+            if (isPasswordAuthenticated()) {
+                decryptedGithubToken = decryptToken(ENCRYPTED_TOKEN, EDIT_PASSWORD);
+                if (!decryptedGithubToken) {
+                    console.error('Failed to decrypt GitHub token');
+                }
+            }
+
+            // Initialize auto-resize for all textareas
+            document.querySelectorAll('.field-textarea, .field-textarea-small').forEach(textarea => {
+                initTextareaAutoResize(textarea);
+            });
+
+            // Load from the global gist - single source of truth for everyone
+            await loadFromGist(GLOBAL_GIST_ID);
+
+            // Start polling for real-time updates
+            startGistPolling();
+
+            // Check if brag mode
+            if (isBragMode()) {
+                setTodaysDate();
+                enableBragMode();
+            }
+            // Check if readonly mode (no password or explicit readonly URL param)
+            else if (isReadOnlyMode()) {
+                setTodaysDate(); // Set date after loading saved data
+                enableReadOnlyMode();
+
+                // Also track typing in readonly mode (for submissive's signature)
+                document.addEventListener('input', markUserTyping);
+
+            }
+            // Normal edit mode (password authenticated)
+            else {
+                setTodaysDate(); // Set date after loading saved data
+                initAutoSave();
+
+                // Initialize drag and drop for all existing list items
+                document.querySelectorAll('.list-item').forEach(item => {
+                    initDragAndDrop(item);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
