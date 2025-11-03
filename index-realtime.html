@@ -4814,43 +4814,45 @@
                         previewActions.prepend(signBtn);
                     }
 
-                    // Set up save signature button handler
-                    // Use event delegation since button is created dynamically
-                    document.addEventListener('click', async function handleSignature(e) {
-                        if (e.target && e.target.id === 'save-signature-btn') {
-                            const subSig = document.getElementById('preview-submissive-signature')?.value || '';
-                            const subDate = document.getElementById('preview-submissive-signature-date')?.value || '';
+                    // Set up auto-save for signature fields
+                    // Use setTimeout to debounce saves
+                    let signatureSaveTimeout;
+                    const saveSignature = async () => {
+                        const subSig = document.getElementById('preview-submissive-signature')?.value || '';
+                        const subDate = document.getElementById('preview-submissive-signature-date')?.value || '';
 
-                            if (!subSig.trim()) {
-                                alert('Please enter your name to sign the contract.');
-                                return;
-                            }
+                        // Save signature to database
+                        const { error } = await supabaseClient
+                            .from('contracts')
+                            .update({
+                                submissive_signature: subSig,
+                                submissive_signature_date: subDate
+                            })
+                            .eq('id', currentContract.id);
 
-                            // Save signature to database
-                            const { error } = await supabaseClient
-                                .from('contracts')
-                                .update({
-                                    submissive_signature: subSig,
-                                    submissive_signature_date: subDate
-                                })
-                                .eq('id', currentContract.id);
-
-                            if (error) {
-                                console.error('Error saving signature:', error);
-                                alert('Failed to save signature. Please try again.');
-                            } else {
-                                // Update local contract
-                                currentContract.submissive_signature = subSig;
-                                currentContract.submissive_signature_date = subDate;
-
-                                // Show success message
-                                alert('✅ Signature saved successfully!');
-
-                                // Re-render to show signed state
-                                renderPreview();
-                            }
+                        if (error) {
+                            console.error('Error saving signature:', error);
+                        } else {
+                            // Update local contract
+                            currentContract.submissive_signature = subSig;
+                            currentContract.submissive_signature_date = subDate;
                         }
-                    });
+                    };
+
+                    // Add input listeners for auto-save
+                    const subSigInput = document.getElementById('preview-submissive-signature');
+                    const subDateInput = document.getElementById('preview-submissive-signature-date');
+
+                    if (subSigInput) {
+                        subSigInput.addEventListener('input', () => {
+                            clearTimeout(signatureSaveTimeout);
+                            signatureSaveTimeout = setTimeout(saveSignature, 1000);
+                        });
+                    }
+
+                    if (subDateInput) {
+                        subDateInput.addEventListener('change', saveSignature);
+                    }
                 } else {
                     // Viewers also get presence (but read-only)
                     currentUser = {
@@ -7549,27 +7551,20 @@
                         <input type="date" class="preview-readonly-input preview-date-input" value="${ownerDateFormatted}" readonly>
                     </div>
                     <div class="preview-signature-box">
-                        <label class="preview-field-label">
-                            Submissive's Acceptance ${isSignerMode ? '<span style="color: var(--hot-pink);">✍️</span>' : ''}
-                        </label>
+                        <label class="preview-field-label">Submissive's Acceptance</label>
                         <input type="text"
                             id="preview-submissive-signature"
-                            class="${isSignerMode ? 'preview-signature-input' : 'preview-readonly-input preview-signature-input'}"
+                            class="preview-readonly-input preview-signature-input"
                             value="${escapeHtml(subSig)}"
                             ${isSignerMode ? '' : 'readonly'}
                             placeholder="${isSignerMode ? 'Type your name to sign' : 'Not signed'}"
-                            style="${isSignerMode ? 'border: none; border-bottom: 2px solid var(--accent-pink); background: transparent; cursor: text; font-family: \'Brush Script MT\', \'Lucida Handwriting\', cursive; font-size: 24px; text-align: center; padding: 10px 0;' : ''}">
+                            style="${isSignerMode ? 'border-bottom-color: var(--accent-pink);' : ''}">
                         <input type="date"
                             id="preview-submissive-signature-date"
-                            class="${isSignerMode ? 'preview-date-input' : 'preview-readonly-input preview-date-input'}"
+                            class="preview-readonly-input preview-date-input"
                             value="${isSignerMode && !subDateFormatted ? todayFormatted : subDateFormatted}"
                             ${isSignerMode ? '' : 'readonly'}
-                            style="${isSignerMode ? 'border: none; border-bottom: 2px solid var(--accent-pink); background: transparent; cursor: pointer;' : ''}">
-                        ${isSignerMode ? `
-                            <button class="btn" id="save-signature-btn" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">
-                                ✍️ Save Signature
-                            </button>
-                        ` : ''}
+                            style="${isSignerMode ? 'border-bottom-color: var(--accent-pink);' : ''}">
                     </div>
                 </div>
             `;
