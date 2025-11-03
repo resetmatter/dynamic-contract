@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D/s Dynamic Contract - Real-time Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
 
     <style>
         :root {
@@ -1458,7 +1459,7 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 2000;
+            z-index: 4000;
             align-items: center;
             justify-content: center;
         }
@@ -4687,11 +4688,12 @@
                 lastCapturedState = null;
                 updateUndoRedoUI();
 
-                // Hide auth screen and show main app
+                // Hide auth screen
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-screen').style.display = 'block';
 
                 if (isEditor) {
+                    // Show main app for editors
+                    document.getElementById('app-screen').style.display = 'block';
                     // Create a guest user for public editing
                     currentUser = {
                         id: 'public-editor',
@@ -4811,45 +4813,117 @@
                             }
                         };
                         previewActions.prepend(signBtn);
+
+                        // Add Brag Mode button
+                        const bragBtn = document.createElement('button');
+                        bragBtn.className = 'btn btn-secondary';
+                        bragBtn.id = 'signer-brag-btn';
+                        bragBtn.textContent = '✨ Brag Mode';
+                        bragBtn.onclick = () => {
+                            // Hide Public Sharing section for signers
+                            const publicSharingSection = document.querySelector('#share-dialog .form-group');
+                            if (publicSharingSection) {
+                                publicSharingSection.style.display = 'none';
+                            }
+
+                            // Open share dialog
+                            const shareDialog = document.getElementById('share-dialog');
+                            if (shareDialog) {
+                                shareDialog.classList.add('open');
+                                // Load current brag mode status
+                                loadBragModeStatus();
+                            }
+                        };
+                        previewActions.prepend(bragBtn);
+
+                        // Add Save as PNG button
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'btn btn-secondary';
+                        saveBtn.id = 'signer-save-png-btn';
+                        saveBtn.textContent = '💾 Save PNG';
+                        saveBtn.onclick = async () => {
+                            try {
+                                saveBtn.textContent = '📸 Generating...';
+                                saveBtn.disabled = true;
+
+                                // Wait a moment for UI to update
+                                await new Promise(resolve => setTimeout(resolve, 100));
+
+                                // Capture the preview content as PNG
+                                const previewContent = document.getElementById('preview-content');
+                                const dataUrl = await htmlToImage.toPng(previewContent, {
+                                    quality: 1.0,
+                                    pixelRatio: 2,
+                                    cacheBust: true,
+                                    style: {
+                                        transform: 'scale(1)',
+                                        transformOrigin: 'top left'
+                                    }
+                                });
+
+                                // Create download link
+                                const link = document.createElement('a');
+                                link.download = 'contract-' + new Date().toISOString().split('T')[0] + '.png';
+                                link.href = dataUrl;
+                                link.click();
+
+                                // Show success
+                                saveBtn.textContent = '✓ Saved!';
+                                setTimeout(() => {
+                                    saveBtn.textContent = '💾 Save PNG';
+                                    saveBtn.disabled = false;
+                                }, 2000);
+                            } catch (err) {
+                                console.error('Error generating PNG:', err);
+                                saveBtn.textContent = '❌ Error';
+                                setTimeout(() => {
+                                    saveBtn.textContent = '💾 Save PNG';
+                                    saveBtn.disabled = false;
+                                }, 2000);
+                            }
+                        };
+                        previewActions.prepend(saveBtn);
                     }
 
-                    // Set up save signature button handler
-                    // Use event delegation since button is created dynamically
-                    document.addEventListener('click', async function handleSignature(e) {
-                        if (e.target && e.target.id === 'save-signature-btn') {
-                            const subSig = document.getElementById('preview-submissive-signature')?.value || '';
-                            const subDate = document.getElementById('preview-submissive-signature-date')?.value || '';
+                    // Set up auto-save for signature fields
+                    // Use setTimeout to debounce saves
+                    let signatureSaveTimeout;
+                    const saveSignature = async () => {
+                        const subSig = document.getElementById('preview-submissive-signature')?.value || '';
+                        const subDate = document.getElementById('preview-submissive-signature-date')?.value || '';
 
-                            if (!subSig.trim()) {
-                                alert('Please enter your name to sign the contract.');
-                                return;
-                            }
+                        // Save signature to database
+                        const { error } = await supabaseClient
+                            .from('contracts')
+                            .update({
+                                submissive_signature: subSig,
+                                submissive_signature_date: subDate
+                            })
+                            .eq('id', currentContract.id);
 
-                            // Save signature to database
-                            const { error } = await supabaseClient
-                                .from('contracts')
-                                .update({
-                                    submissive_signature: subSig,
-                                    submissive_signature_date: subDate
-                                })
-                                .eq('id', currentContract.id);
-
-                            if (error) {
-                                console.error('Error saving signature:', error);
-                                alert('Failed to save signature. Please try again.');
-                            } else {
-                                // Update local contract
-                                currentContract.submissive_signature = subSig;
-                                currentContract.submissive_signature_date = subDate;
-
-                                // Show success message
-                                alert('✅ Signature saved successfully!');
-
-                                // Re-render to show signed state
-                                renderPreview();
-                            }
+                        if (error) {
+                            console.error('Error saving signature:', error);
+                        } else {
+                            // Update local contract
+                            currentContract.submissive_signature = subSig;
+                            currentContract.submissive_signature_date = subDate;
                         }
-                    });
+                    };
+
+                    // Add input listeners for auto-save
+                    const subSigInput = document.getElementById('preview-submissive-signature');
+                    const subDateInput = document.getElementById('preview-submissive-signature-date');
+
+                    if (subSigInput) {
+                        subSigInput.addEventListener('input', () => {
+                            clearTimeout(signatureSaveTimeout);
+                            signatureSaveTimeout = setTimeout(saveSignature, 1000);
+                        });
+                    }
+
+                    if (subDateInput) {
+                        subDateInput.addEventListener('change', saveSignature);
+                    }
                 } else {
                     // Viewers also get presence (but read-only)
                     currentUser = {
@@ -7547,28 +7621,20 @@
                         <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(ownerSig)}" readonly placeholder="Not signed">
                         <input type="date" class="preview-readonly-input preview-date-input" value="${ownerDateFormatted}" readonly>
                     </div>
-                    <div class="preview-signature-box" style="${isSignerMode ? 'border: 2px solid var(--accent-pink); padding: 15px; border-radius: 8px; background: rgba(255, 105, 180, 0.05);' : ''}">
-                        <label class="preview-field-label" style="${isSignerMode ? 'color: var(--hot-pink); font-weight: 700; font-size: 1.1em;' : ''}">
-                            Submissive's Acceptance ${isSignerMode ? '<span style="color: var(--hot-pink);">✍️</span>' : ''}
-                        </label>
+                    <div class="preview-signature-box">
+                        <label class="preview-field-label">Submissive's Acceptance</label>
                         <input type="text"
                             id="preview-submissive-signature"
-                            class="${isSignerMode ? 'preview-signature-input' : 'preview-readonly-input preview-signature-input'}"
+                            class="preview-readonly-input preview-signature-input"
                             value="${escapeHtml(subSig)}"
                             ${isSignerMode ? '' : 'readonly'}
                             placeholder="${isSignerMode ? 'Type your name to sign' : 'Not signed'}"
-                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: text; font-family: \'Brush Script MT\', \'Lucida Handwriting\', cursive; font-size: 24px;' : ''}">
+                            style="${isSignerMode ? 'border-bottom-color: var(--accent-pink);' : ''}">
                         <input type="date"
                             id="preview-submissive-signature-date"
-                            class="${isSignerMode ? 'preview-date-input' : 'preview-readonly-input preview-date-input'}"
+                            class="preview-readonly-input preview-date-input"
                             value="${isSignerMode && !subDateFormatted ? todayFormatted : subDateFormatted}"
-                            ${isSignerMode ? '' : 'readonly'}
-                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: pointer;' : ''}">
-                        ${isSignerMode ? `
-                            <button class="btn" id="save-signature-btn" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">
-                                ✍️ Save Signature
-                            </button>
-                        ` : ''}
+                            ${isSignerMode ? '' : 'readonly'}>
                     </div>
                 </div>
             `;
