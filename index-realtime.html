@@ -4720,12 +4720,16 @@
                     const historyBtn = document.getElementById('history-btn');
                     const snapshotBtn = document.getElementById('save-snapshot-btn');
                     const manageSnapshotsBtn = document.getElementById('manage-snapshots-btn');
+                    const logoutBtn = document.getElementById('logout-btn');
+                    const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
                     if (backBtn) backBtn.style.display = 'none';
                     if (shareBtn) shareBtn.style.display = 'none';
                     if (historyBtn) historyBtn.style.display = 'none';
                     if (snapshotBtn) snapshotBtn.style.display = 'none';
                     if (manageSnapshotsBtn) manageSnapshotsBtn.style.display = 'none';
+                    if (logoutBtn) logoutBtn.style.display = 'none';
+                    if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
 
                     renderContractEditor();
                     setupRealtimeSync();
