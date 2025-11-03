@@ -4820,21 +4820,18 @@
                         bragBtn.id = 'signer-brag-btn';
                         bragBtn.textContent = '✨ Brag Mode';
                         bragBtn.onclick = () => {
-                            // Check if brag mode is enabled
-                            if (currentContract.brag_mode_enabled && currentContract.brag_mode_token) {
-                                const bragUrl = `${window.location.origin}${window.location.pathname}?brag=${currentContract.brag_mode_token}`;
+                            // Hide Public Sharing section for signers
+                            const publicSharingSection = document.querySelector('#share-dialog .form-group');
+                            if (publicSharingSection) {
+                                publicSharingSection.style.display = 'none';
+                            }
 
-                                // Create a simple prompt with the link
-                                const message = `Brag Mode Link (personal info hidden):\n\n${bragUrl}\n\nClick OK to copy to clipboard.`;
-                                if (confirm(message)) {
-                                    navigator.clipboard.writeText(bragUrl).then(() => {
-                                        alert('✓ Brag mode link copied to clipboard!');
-                                    }).catch(() => {
-                                        alert('Brag mode link: ' + bragUrl);
-                                    });
-                                }
-                            } else {
-                                alert('Brag mode is not enabled for this contract. The contract owner needs to enable it in the sharing settings.');
+                            // Open share dialog
+                            const shareDialog = document.getElementById('share-dialog');
+                            if (shareDialog) {
+                                shareDialog.classList.add('open');
+                                // Load current brag mode status
+                                loadBragModeStatus();
                             }
                         };
                         previewActions.prepend(bragBtn);
