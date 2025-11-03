@@ -3834,29 +3834,61 @@
     <!-- Share Dialog -->
     <div class="dialog-overlay" id="share-dialog">
         <div class="dialog">
-            <h3>Share Contract</h3>
+            <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid rgba(255, 105, 180, 0.3);">
+                <h3 style="margin: 0 0 10px; font-size: 1.8em; background: linear-gradient(135deg, var(--accent-pink), var(--hot-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🔗 Share Contract</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin: 0; line-height: 1.4;">
+                    Choose how you want to share this contract with others
+                </p>
+            </div>
 
             <!-- Public Sharing Section -->
-            <div class="form-group" style="background: rgba(139, 0, 0, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                <h4 style="color: var(--accent-pink); margin: 0 0 10px;">🌐 Public Sharing (No Account Needed)</h4>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
-                        <input type="checkbox" id="public-share-toggle" style="cursor: pointer;">
-                        <span>Enable public link</span>
+            <div class="form-group" style="background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(147, 112, 219, 0.1)); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid rgba(138, 43, 226, 0.4); box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <h4 style="color: var(--accent-light-pink); margin: 0; font-size: 1.2em; text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);">🌐 Public Sharing</h4>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 20px; transition: all 0.3s;">
+                        <input type="checkbox" id="public-share-toggle" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600;">Enable</span>
                     </label>
                 </div>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px; line-height: 1.5;">
+                    Anyone with this link can access your contract. No account needed!
+                </p>
+
                 <div id="public-link-container" style="display: none;">
-                    <div class="form-group" style="margin: 10px 0;">
-                        <label for="public-share-role">Public Link Permission</label>
-                        <select id="public-share-role">
+                    <!-- Permission Selection -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid rgba(138, 43, 226, 0.6);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔑 Permission Level</h5>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="public-share-permission" value="viewer" checked style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'viewer'">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">👁️ Viewer (Read-Only)</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Can view but not edit the contract</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="public-share-permission" value="editor" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'editor'">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">✏️ Editor (Can Edit)</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Can make changes to the contract</div>
+                                </div>
+                            </label>
+                        </div>
+                        <select id="public-share-role" style="display: none;">
                             <option value="viewer">Viewer (read-only)</option>
                             <option value="editor">Editor (can edit)</option>
                         </select>
                     </div>
-                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">Anyone with this link can access the contract:</p>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
-                        <button class="btn btn-secondary" id="copy-link-btn">📋 Copy</button>
+
+                    <!-- Link Display -->
+                    <div style="background: rgba(0, 138, 43, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(0, 255, 0, 0.3);">
+                        <p style="color: var(--text-secondary); font-size: 0.85em; margin: 0 0 10px;">
+                            🔗 <strong>Share this link:</strong>
+                        </p>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em;">
+                            <button class="btn btn-secondary" id="copy-link-btn" style="white-space: nowrap; background: rgba(138, 43, 226, 0.6); border: none;">📋 Copy</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -3952,25 +3984,52 @@
             </div>
 
             <!-- Email Sharing Section -->
-            <h4 style="color: var(--accent-pink); margin: 0 0 10px;">📧 Share with Registered Users</h4>
-            <div class="form-group">
-                <label for="share-email">Partner's Email</label>
-                <input type="email" id="share-email" placeholder="partner@email.com">
+            <div class="form-group" style="background: linear-gradient(135deg, rgba(30, 144, 255, 0.15), rgba(0, 191, 255, 0.1)); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid rgba(30, 144, 255, 0.4); box-shadow: 0 4px 15px rgba(30, 144, 255, 0.2);">
+                <h4 style="color: var(--accent-light-pink); margin: 0 0 15px; font-size: 1.2em; text-shadow: 0 0 10px rgba(30, 144, 255, 0.3);">📧 Share with Registered Users</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px; line-height: 1.5;">
+                    Invite specific people by email. They'll need an account to access.
+                </p>
+
+                <!-- Email Input -->
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid rgba(30, 144, 255, 0.6);">
+                    <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">✉️ Email Address</h5>
+                    <input type="email" id="share-email" placeholder="partner@email.com" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: var(--text-color); font-size: 0.95em;">
+                </div>
+
+                <!-- Role Selection -->
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid rgba(0, 191, 255, 0.6);">
+                    <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔑 Permission Level</h5>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                            <input type="radio" name="email-share-permission" value="editor" checked style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('share-role').value = 'editor'">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 3px;">✏️ Editor (Can Edit)</div>
+                                <div style="font-size: 0.85em; color: var(--text-secondary);">Full editing permissions</div>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                            <input type="radio" name="email-share-permission" value="viewer" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('share-role').value = 'viewer'">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 3px;">👁️ Viewer (Read-Only)</div>
+                                <div style="font-size: 0.85em; color: var(--text-secondary);">Can only view the contract</div>
+                            </div>
+                        </label>
+                    </div>
+                    <select id="share-role" style="display: none;">
+                        <option value="editor">Editor (can edit)</option>
+                        <option value="viewer">Viewer (read-only)</option>
+                    </select>
+                </div>
+
+                <!-- Current Shares -->
+                <div id="current-shares" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border-left: 3px solid rgba(147, 112, 219, 0.6);">
+                    <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">👥 Current Shares</h5>
+                    <div id="shares-list"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="share-role">Role</label>
-                <select id="share-role">
-                    <option value="editor">Editor (can edit)</option>
-                    <option value="viewer">Viewer (read-only)</option>
-                </select>
-            </div>
-            <div id="current-shares">
-                <h4 style="color: var(--accent-pink); margin: 20px 0 10px;">Current Shares:</h4>
-                <div id="shares-list"></div>
-            </div>
-            <div class="dialog-actions">
-                <button class="btn btn-secondary" id="cancel-share-btn">Cancel</button>
-                <button class="btn" id="confirm-share-btn">Share</button>
+            <div class="dialog-actions" style="margin-top: 25px; padding-top: 20px; border-top: 2px solid rgba(255, 105, 180, 0.2); display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="cancel-share-btn" style="padding: 12px 24px; font-weight: 600;">✕ Cancel</button>
+                <button class="btn" id="confirm-share-btn" style="background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; padding: 12px 32px; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">📤 Share</button>
             </div>
         </div>
     </div>
