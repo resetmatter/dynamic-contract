@@ -246,6 +246,37 @@
             color: var(--accent-pink);
         }
 
+        /* Brag Mode Indicator Banner */
+        .brag-mode-banner {
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%);
+            color: white;
+            text-align: center;
+            padding: 12px 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(255, 20, 147, 0.5);
+            border-bottom: 2px solid var(--accent-pink);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.95em;
+            letter-spacing: 0.5px;
+        }
+
+        .brag-mode-banner.active {
+            display: flex;
+        }
+
+        .brag-mode-banner-icon {
+            font-size: 1.2em;
+            animation: sparkle 2s infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+            50% { opacity: 0.7; transform: scale(1.1) rotate(10deg); }
+        }
+
         /* Presence Dropdown */
         .presence-dropdown {
             position: absolute;
@@ -3536,6 +3567,13 @@
             </div>
         </header>
 
+        <!-- Brag Mode Indicator Banner -->
+        <div class="brag-mode-banner" id="brag-mode-banner">
+            <span class="brag-mode-banner-icon">✨</span>
+            <span>BRAG MODE: Personal information is hidden for privacy</span>
+            <span class="brag-mode-banner-icon">✨</span>
+        </div>
+
         <!-- Mobile Menu Overlay -->
         <div class="mobile-menu-overlay" id="mobile-menu-overlay"></div>
 
@@ -3798,6 +3836,51 @@
                     <div style="display: flex; gap: 8px;">
                         <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
                         <button class="btn btn-secondary" id="copy-link-btn">📋 Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Brag Mode Section -->
+            <div class="form-group" style="background: rgba(220, 20, 60, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid var(--accent-pink);">
+                <h4 style="color: var(--accent-pink); margin: 0 0 10px;">✨ Brag Mode (Personal Info Hidden)</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 15px;">
+                    Share your contract with personal information securely redacted. Perfect for showing off your dynamic to friends!
+                </p>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
+                        <input type="checkbox" id="brag-mode-toggle" style="cursor: pointer;">
+                        <span>Enable Brag Mode</span>
+                    </label>
+                </div>
+                <div id="brag-mode-container" style="display: none;">
+                    <div class="form-group" style="margin: 10px 0;">
+                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">What to Hide:</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="brag-hide-names" checked style="cursor: pointer;">
+                                <span>Names (show "Dominant" / "Submissive" instead)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="brag-hide-signatures" checked style="cursor: pointer;">
+                                <span>Signatures (show "[Signed]" instead)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="brag-hide-dates" checked style="cursor: pointer;">
+                                <span>Exact signature dates (show month/year only)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div style="margin: 15px 0;">
+                        <button class="btn btn-secondary" id="preview-brag-btn" style="width: 100%; margin-bottom: 10px;">
+                            👁️ Preview Brag Mode
+                        </button>
+                    </div>
+                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">
+                        🔒 Security: Personal data is filtered server-side and never sent to viewers' browsers.
+                    </p>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="brag-mode-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
+                        <button class="btn btn-secondary" id="copy-brag-link-btn">📋 Copy</button>
                     </div>
                 </div>
             </div>
@@ -4411,9 +4494,16 @@
 
         // Check for existing session on load
         async function checkAuth() {
-            // Check if accessing via public share link
+            // Check if accessing via public share link or brag mode
             const urlParams = new URLSearchParams(window.location.search);
             const publicToken = urlParams.get('share');
+            const bragToken = urlParams.get('brag');
+
+            if (bragToken) {
+                // Brag mode access - no login required, personal info filtered
+                await loadBragModeContract(bragToken);
+                return;
+            }
 
             if (publicToken) {
                 // Public access mode - no login required
@@ -4544,6 +4634,77 @@
             } catch (err) {
                 console.error('Error loading public contract:', err);
                 alert('Error loading shared contract');
+            }
+        }
+
+        // Load contract via brag mode token (server-side filtered data)
+        async function loadBragModeContract(token) {
+            try {
+                // Call the PostgreSQL function that filters personal data server-side
+                const { data, error } = await supabaseClient
+                    .rpc('get_brag_mode_contract', { brag_token: token });
+
+                if (error || !data || data.length === 0) {
+                    console.error('Error loading brag mode contract:', error);
+                    alert('Invalid or expired brag mode link');
+                    window.location.href = window.location.pathname; // Remove token from URL
+                    return;
+                }
+
+                // Get the filtered contract (data is an array, take first element)
+                const contract = data[0];
+                currentContract = contract;
+
+                // Mark this as brag mode view
+                currentContract.isBragMode = true;
+
+                // Reset undo/redo stacks
+                undoStack = [];
+                redoStack = [];
+                currentStateIndex = -1;
+                lastCapturedState = null;
+                updateUndoRedoUI();
+
+                // Hide auth screen and show main app
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-screen').style.display = 'block';
+
+                // Show brag mode banner
+                const banner = document.getElementById('brag-mode-banner');
+                if (banner) {
+                    banner.classList.add('active');
+                }
+
+                // Create a guest user for brag mode (read-only)
+                currentUser = {
+                    id: `brag-viewer-${Date.now()}`,
+                    email: 'brag-viewer@guest',
+                    isBragViewer: true
+                };
+
+                // Show preview (read-only) with filtered data
+                renderPreview();
+                document.getElementById('preview-overlay').classList.add('open');
+
+                // Update preview header to indicate brag mode
+                const previewHeader = document.querySelector('.preview-header h3');
+                if (previewHeader) {
+                    previewHeader.innerHTML = '✨ ' + (contract.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Brag Mode - Personal Info Hidden)</span>';
+                }
+
+                // Add additional notice in the preview
+                const previewContent = document.querySelector('.preview-content');
+                if (previewContent) {
+                    const notice = document.createElement('div');
+                    notice.style.cssText = 'background: rgba(255, 20, 147, 0.2); border: 1px solid var(--accent-pink); padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+                    notice.innerHTML = '<strong>🔒 Privacy Protected:</strong> Personal information has been securely redacted and never left the server.';
+                    previewContent.insertBefore(notice, previewContent.firstChild);
+                }
+
+            } catch (err) {
+                console.error('Error loading brag mode contract:', err);
+                alert('Error loading brag mode contract');
+                window.location.href = window.location.pathname;
             }
         }
 
@@ -8247,6 +8408,7 @@
             document.getElementById('share-dialog').classList.add('open');
             await loadShares();
             await loadPublicShareStatus();
+            await loadBragModeStatus();
         });
 
         document.getElementById('cancel-share-btn').addEventListener('click', () => {
@@ -8415,6 +8577,193 @@
                 .replace(/\+/g, '-')
                 .replace(/=/g, '');
         }
+
+        // ============================================
+        // BRAG MODE
+        // ============================================
+
+        async function loadBragModeStatus() {
+            const isBragMode = currentContract.brag_mode_enabled || false;
+            const toggle = document.getElementById('brag-mode-toggle');
+            const container = document.getElementById('brag-mode-container');
+            const linkInput = document.getElementById('brag-mode-link');
+            const config = currentContract.brag_mode_config || {
+                hide_names: true,
+                hide_signatures: true,
+                hide_signature_dates: true,
+                personal_field_ids: []
+            };
+
+            toggle.checked = isBragMode;
+
+            // Update config checkboxes
+            document.getElementById('brag-hide-names').checked = config.hide_names !== false;
+            document.getElementById('brag-hide-signatures').checked = config.hide_signatures !== false;
+            document.getElementById('brag-hide-dates').checked = config.hide_signature_dates !== false;
+
+            if (isBragMode && currentContract.brag_mode_token) {
+                container.style.display = 'block';
+                const bragUrl = `${window.location.origin}${window.location.pathname}?brag=${currentContract.brag_mode_token}`;
+                linkInput.value = bragUrl;
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        document.getElementById('brag-mode-toggle').addEventListener('change', async (e) => {
+            const isEnabled = e.target.checked;
+
+            if (isEnabled && !currentContract.brag_mode_token) {
+                // Generate new brag token using the database function
+                try {
+                    const { data: tokenData, error: tokenError } = await supabaseClient
+                        .rpc('generate_brag_token');
+
+                    if (tokenError) {
+                        console.error('Error generating brag token:', tokenError);
+                        alert('Failed to generate brag mode token');
+                        e.target.checked = false;
+                        return;
+                    }
+
+                    currentContract.brag_mode_token = tokenData;
+                } catch (err) {
+                    console.error('Error generating token:', err);
+                    // Fallback to client-side generation if function doesn't exist yet
+                    currentContract.brag_mode_token = generateShareToken();
+                }
+            }
+
+            // Get current config
+            const config = {
+                hide_names: document.getElementById('brag-hide-names').checked,
+                hide_signatures: document.getElementById('brag-hide-signatures').checked,
+                hide_signature_dates: document.getElementById('brag-hide-dates').checked,
+                personal_field_ids: [] // Future feature: allow marking specific fields as personal
+            };
+
+            currentContract.brag_mode_enabled = isEnabled;
+            currentContract.brag_mode_config = config;
+
+            // Update database
+            const { error } = await supabaseClient
+                .from('contracts')
+                .update({
+                    brag_mode_enabled: isEnabled,
+                    brag_mode_token: currentContract.brag_mode_token,
+                    brag_mode_config: config
+                })
+                .eq('id', currentContract.id);
+
+            if (error) {
+                console.error('Error updating brag mode:', error);
+                alert('Failed to update brag mode settings');
+                e.target.checked = !isEnabled; // Revert
+                return;
+            }
+
+            await loadBragModeStatus();
+        });
+
+        // Update config when checkboxes change
+        async function updateBragModeConfig() {
+            if (!currentContract.brag_mode_enabled) return;
+
+            const config = {
+                hide_names: document.getElementById('brag-hide-names').checked,
+                hide_signatures: document.getElementById('brag-hide-signatures').checked,
+                hide_signature_dates: document.getElementById('brag-hide-dates').checked,
+                personal_field_ids: []
+            };
+
+            currentContract.brag_mode_config = config;
+
+            const { error } = await supabaseClient
+                .from('contracts')
+                .update({ brag_mode_config: config })
+                .eq('id', currentContract.id);
+
+            if (error) {
+                console.error('Error updating brag mode config:', error);
+            }
+        }
+
+        document.getElementById('brag-hide-names').addEventListener('change', updateBragModeConfig);
+        document.getElementById('brag-hide-signatures').addEventListener('change', updateBragModeConfig);
+        document.getElementById('brag-hide-dates').addEventListener('change', updateBragModeConfig);
+
+        // Copy brag mode link
+        document.getElementById('copy-brag-link-btn').addEventListener('click', () => {
+            const linkInput = document.getElementById('brag-mode-link');
+            linkInput.select();
+            navigator.clipboard.writeText(linkInput.value);
+
+            const btn = document.getElementById('copy-brag-link-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        });
+
+        // Preview brag mode
+        document.getElementById('preview-brag-btn').addEventListener('click', async () => {
+            if (!currentContract.brag_mode_enabled || !currentContract.brag_mode_token) {
+                alert('Please enable brag mode first');
+                return;
+            }
+
+            // Load the filtered contract via RPC
+            try {
+                const { data, error } = await supabaseClient
+                    .rpc('get_brag_mode_contract', { brag_token: currentContract.brag_mode_token });
+
+                if (error || !data || data.length === 0) {
+                    console.error('Error previewing brag mode:', error);
+                    alert('Failed to load preview. Make sure the database migration has been run.');
+                    return;
+                }
+
+                const filteredContract = data[0];
+
+                // Temporarily store current contract
+                const originalContract = { ...currentContract };
+                currentContract = filteredContract;
+                currentContract.isBragMode = true;
+
+                // Render preview
+                renderPreview();
+                document.getElementById('preview-overlay').classList.add('open');
+
+                // Update preview header
+                const previewHeader = document.querySelector('.preview-header h3');
+                if (previewHeader) {
+                    previewHeader.innerHTML = '✨ ' + (filteredContract.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(BRAG MODE PREVIEW)</span>';
+                }
+
+                // Add notice
+                const previewContent = document.querySelector('.preview-content');
+                if (previewContent && !previewContent.querySelector('.brag-preview-notice')) {
+                    const notice = document.createElement('div');
+                    notice.className = 'brag-preview-notice';
+                    notice.style.cssText = 'background: rgba(255, 20, 147, 0.2); border: 1px solid var(--accent-pink); padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;';
+                    notice.innerHTML = '<strong>👁️ PREVIEW MODE:</strong> This is how others will see your contract with personal info hidden. Close this preview to return to editing.';
+                    previewContent.insertBefore(notice, previewContent.firstChild);
+                }
+
+                // Restore contract when preview closes
+                const closePreviewBtn = document.getElementById('close-preview-btn');
+                const restoreContract = () => {
+                    currentContract = originalContract;
+                    closePreviewBtn.removeEventListener('click', restoreContract);
+                };
+                closePreviewBtn.addEventListener('click', restoreContract);
+
+            } catch (err) {
+                console.error('Error loading brag preview:', err);
+                alert('Error loading preview. Ensure the database migration has been applied.');
+            }
+        });
 
         // ============================================
         // STICKY HEADER ENHANCEMENT

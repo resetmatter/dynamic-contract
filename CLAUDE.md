@@ -30,8 +30,14 @@ This is a single-page HTML application for creating customizable D/s dynamic con
   - Includes Row Level Security (RLS) policies
   - Run in Supabase SQL Editor to set up backend
 
+- **supabase-brag-mode-migration.sql** - Brag mode feature migration
+  - Adds brag mode columns to contracts table
+  - Creates server-side filtering function for privacy
+  - Run after initial schema setup
+
 - **SETUP-INSTRUCTIONS.md** - Step-by-step setup guide for real-time edition
 - **README.md** - Complete documentation and user guide
+- **BRAG-MODE.md** - Security guide and documentation for brag mode feature
 
 ## Architecture
 
@@ -52,16 +58,20 @@ This is a single-page HTML application for creating customizable D/s dynamic con
 2. **Real-time Sync** - PostgreSQL changes broadcast via WebSocket
 3. **Presence System** - Track who's online using Supabase Presence
 4. **History Tracking** - Automatic change log + manual snapshots
-5. **Row Level Security** - Postgres RLS policies for data security
+5. **Brag Mode** - Server-side filtered sharing for privacy (personal info never sent to browser)
+6. **Row Level Security** - Postgres RLS policies for data security
 
 **Key JavaScript Functions (index-realtime.html):**
-- `checkAuth()` - Verify user session on load
+- `checkAuth()` - Verify user session on load, handle brag/public tokens
 - `saveContract()` - Debounced save to Supabase (500ms)
 - `setupRealtimeSync()` - Subscribe to database changes
 - `handleRealtimeUpdate()` - Handle incoming sync updates
 - `trackChange()` - Log changes to history table
 - `setupPresence()` - Initialize presence tracking
 - `renderContractEditor()` - Dynamic section/field rendering
+- `loadBragModeContract()` - Load contract via brag token with server-side filtering
+- `loadBragModeStatus()` - Load and display brag mode configuration
+- `get_brag_mode_contract()` - PostgreSQL RPC function that filters personal data
 
 ### Original Edition (index.html)
 
@@ -118,6 +128,10 @@ The visual theme uses:
 - Test sharing: Share contract with another test account
 - Test history: Make changes, verify they appear in history panel
 - Test snapshots: Create snapshot, make changes, restore snapshot
+- Test brag mode: Enable brag mode, preview, verify personal data is hidden
+  - Check DOM/Network: Personal info should NOT appear anywhere
+  - Test URL manipulation: Cannot access real data via URL changes
+  - Verify server-side filtering: RPC function returns filtered data only
 - Inspect browser DevTools > Console for errors
 - Inspect Network tab > WS for WebSocket connection
 
