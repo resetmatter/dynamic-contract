@@ -94,7 +94,8 @@ BEGIN
         WHEN 'placeholder' THEN
             obscure_placeholder := '[REDACTED]';
         WHEN 'blur' THEN
-            obscure_placeholder := '[Content Hidden]';
+            -- For blur mode, send realistic-looking placeholder text that will be blurred client-side
+            obscure_placeholder := 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua';
         ELSE
             obscure_placeholder := '████████████';
     END CASE;

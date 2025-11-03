@@ -277,6 +277,27 @@
             50% { opacity: 0.7; transform: scale(1.1) rotate(10deg); }
         }
 
+        /* Brag Mode Content Styles */
+        .brag-blurred {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            padding: 2px 4px;
+        }
+
+        .brag-redacted {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: transparent !important;
+            user-select: none;
+            pointer-events: none;
+            border-radius: 3px;
+            padding: 2px 4px;
+            display: inline-block;
+            min-width: 100px;
+        }
+
         /* Presence Dropdown */
         .presence-dropdown {
             position: absolute;
@@ -7200,6 +7221,18 @@
             const domName = currentContract.dominant_name || 'Matthew';
             const subName = currentContract.submissive_name || 'Shailah';
 
+            // Check if we're in brag mode and get obscure settings
+            const isBragMode = currentContract.isBragMode || false;
+            const bragConfig = currentContract.brag_mode_config || {};
+            const obscureMethod = bragConfig.obscure_method || 'redacted';
+            const obscuredSections = bragConfig.obscured_section_names || [];
+
+            // Helper function to get blur class based on obscure method
+            const getObscureClass = (shouldObscure) => {
+                if (!shouldObscure || !isBragMode) return '';
+                return obscureMethod === 'blur' ? 'brag-blurred' : '';
+            };
+
             let html = `
                 <div class="preview-bow preview-bow-top-left">🎀</div>
                 <div class="preview-bow preview-bow-top-right">🎀</div>
@@ -7221,6 +7254,9 @@
             sections.forEach((section, index) => {
                 if (!section.title) return;
 
+                // Check if this section should be obscured
+                const sectionIsObscured = obscuredSections.includes(section.title);
+
                 // Add decorative divider before each section (except first)
                 if (index > 0) {
                     html += `<div class="preview-divider">⛓️ 🎀 ⛓️</div>`;
@@ -7236,6 +7272,8 @@
                 section.fields.forEach(field => {
                     if (!field || (!field.label && !field.value && (!field.items || field.items.length === 0))) return;
 
+                    const obscureClass = getObscureClass(sectionIsObscured);
+
                     html += `<div class="preview-field-group">`;
                     html += `<label class="preview-field-label">${escapeHtml(field.label || 'Field')}</label>`;
 
@@ -7247,7 +7285,7 @@
                                 html += `
                                     <div class="preview-list-item">
                                         <span class="preview-list-bow">🎀</span>
-                                        <textarea class="preview-readonly-textarea" readonly>${escapeHtml(item)}</textarea>
+                                        <textarea class="preview-readonly-textarea ${obscureClass}" readonly>${escapeHtml(item)}</textarea>
                                     </div>
                                 `;
                             }
@@ -7256,12 +7294,12 @@
                     } else if (field.type === 'text') {
                         // Render text input as readonly
                         const value = field.value || '';
-                        html += `<input type="text" class="preview-readonly-input" value="${escapeHtml(value)}" readonly>`;
+                        html += `<input type="text" class="preview-readonly-input ${obscureClass}" value="${escapeHtml(value)}" readonly>`;
                     } else {
                         // Render textarea as readonly (for both textarea type and list type with no items)
                         const value = field.value || '';
                         if (value.trim()) {
-                            html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
+                            html += `<textarea class="preview-readonly-textarea ${obscureClass}" readonly>${escapeHtml(value)}</textarea>`;
                         }
                     }
 
