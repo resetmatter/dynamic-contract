@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>D/s Dynamic Contract - Real-time Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
 
     <style>
         :root {
@@ -4812,6 +4813,79 @@
                             }
                         };
                         previewActions.prepend(signBtn);
+
+                        // Add Brag Mode button
+                        const bragBtn = document.createElement('button');
+                        bragBtn.className = 'btn btn-secondary';
+                        bragBtn.id = 'signer-brag-btn';
+                        bragBtn.textContent = '✨ Brag Mode';
+                        bragBtn.onclick = () => {
+                            // Check if brag mode is enabled
+                            if (currentContract.brag_mode_enabled && currentContract.brag_mode_token) {
+                                const bragUrl = `${window.location.origin}${window.location.pathname}?brag=${currentContract.brag_mode_token}`;
+
+                                // Create a simple prompt with the link
+                                const message = `Brag Mode Link (personal info hidden):\n\n${bragUrl}\n\nClick OK to copy to clipboard.`;
+                                if (confirm(message)) {
+                                    navigator.clipboard.writeText(bragUrl).then(() => {
+                                        alert('✓ Brag mode link copied to clipboard!');
+                                    }).catch(() => {
+                                        alert('Brag mode link: ' + bragUrl);
+                                    });
+                                }
+                            } else {
+                                alert('Brag mode is not enabled for this contract. The contract owner needs to enable it in the sharing settings.');
+                            }
+                        };
+                        previewActions.prepend(bragBtn);
+
+                        // Add Save as PNG button
+                        const saveBtn = document.createElement('button');
+                        saveBtn.className = 'btn btn-secondary';
+                        saveBtn.id = 'signer-save-png-btn';
+                        saveBtn.textContent = '💾 Save PNG';
+                        saveBtn.onclick = async () => {
+                            try {
+                                saveBtn.textContent = '📸 Generating...';
+                                saveBtn.disabled = true;
+
+                                // Wait a moment for UI to update
+                                await new Promise(resolve => setTimeout(resolve, 100));
+
+                                // Capture the preview content as PNG
+                                const previewContent = document.getElementById('preview-content');
+                                const dataUrl = await htmlToImage.toPng(previewContent, {
+                                    quality: 1.0,
+                                    pixelRatio: 2,
+                                    cacheBust: true,
+                                    style: {
+                                        transform: 'scale(1)',
+                                        transformOrigin: 'top left'
+                                    }
+                                });
+
+                                // Create download link
+                                const link = document.createElement('a');
+                                link.download = 'contract-' + new Date().toISOString().split('T')[0] + '.png';
+                                link.href = dataUrl;
+                                link.click();
+
+                                // Show success
+                                saveBtn.textContent = '✓ Saved!';
+                                setTimeout(() => {
+                                    saveBtn.textContent = '💾 Save PNG';
+                                    saveBtn.disabled = false;
+                                }, 2000);
+                            } catch (err) {
+                                console.error('Error generating PNG:', err);
+                                saveBtn.textContent = '❌ Error';
+                                setTimeout(() => {
+                                    saveBtn.textContent = '💾 Save PNG';
+                                    saveBtn.disabled = false;
+                                }, 2000);
+                            }
+                        };
+                        previewActions.prepend(saveBtn);
                     }
 
                     // Set up auto-save for signature fields
