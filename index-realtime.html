@@ -3841,55 +3841,91 @@
             </div>
 
             <!-- Brag Mode Section -->
-            <div class="form-group" style="background: rgba(220, 20, 60, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid var(--accent-pink);">
-                <h4 style="color: var(--accent-pink); margin: 0 0 10px;">✨ Brag Mode (Personal Info Hidden)</h4>
-                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 15px;">
-                    Share your contract with personal information securely redacted. Perfect for showing off your dynamic to friends!
-                </p>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
-                        <input type="checkbox" id="brag-mode-toggle" style="cursor: pointer;">
-                        <span>Enable Brag Mode</span>
+            <div class="form-group" style="background: linear-gradient(135deg, rgba(220, 20, 60, 0.15), rgba(255, 105, 180, 0.1)); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid var(--accent-pink); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <h4 style="color: var(--accent-pink); margin: 0; font-size: 1.2em; text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);">✨ Brag Mode</h4>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 20px; transition: all 0.3s;">
+                        <input type="checkbox" id="brag-mode-toggle" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600;">Enable</span>
                     </label>
                 </div>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px; line-height: 1.5;">
+                    Share your contract publicly with sensitive information securely obscured. Perfect for showing off your dynamic to friends!
+                </p>
+
                 <div id="brag-mode-container" style="display: none;">
-                    <div class="form-group" style="margin: 10px 0;">
-                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">Personal Information to Hide:</label>
-                        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" id="brag-hide-names" checked style="cursor: pointer;">
-                                <span>Names (show "Dominant" / "Submissive" instead)</span>
+                    <!-- Personal Info Section -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--accent-pink);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔒 Personal Information</h5>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; transition: all 0.2s;">
+                                <input type="checkbox" id="brag-hide-names" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <span style="font-size: 0.9em;">Hide Names</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" id="brag-hide-signatures" checked style="cursor: pointer;">
-                                <span>Signatures (show "[Signed]" instead)</span>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; transition: all 0.2s;">
+                                <input type="checkbox" id="brag-hide-signatures" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <span style="font-size: 0.9em;">Hide Signatures</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" id="brag-hide-dates" checked style="cursor: pointer;">
-                                <span>Exact signature dates (show month/year only)</span>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; transition: all 0.2s;">
+                                <input type="checkbox" id="brag-hide-dates" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <span style="font-size: 0.9em;">Hide Exact Dates</span>
                             </label>
                         </div>
                     </div>
-                    <div class="form-group" style="margin: 10px 0;">
-                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">Sections to Hide:</label>
-                        <p style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 10px;">
-                            Select specific sections to completely hide from viewers
+
+                    <!-- Sections to Obscure -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--hot-pink);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 8px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">👁️ Sections to Obscure</h5>
+                        <p style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 12px;">
+                            Select sections where content should be obscured (sections stay visible but content is hidden)
                         </p>
-                        <div id="brag-sections-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 15px;">
+                        <div id="brag-sections-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 200px; overflow-y: auto; padding: 5px;">
                             <!-- Dynamically populated with contract sections -->
                         </div>
                     </div>
-                    <div style="margin: 15px 0;">
-                        <button class="btn btn-secondary" id="preview-brag-btn" style="width: 100%; margin-bottom: 10px;">
+
+                    <!-- Obscure Method -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--crimson);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🎨 Obscure Method</h5>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="brag-obscure-method" value="redacted" checked style="cursor: pointer; width: 18px; height: 18px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">Redacted Bars</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Show ████████ style blocks</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="brag-obscure-method" value="placeholder" style="cursor: pointer; width: 18px; height: 18px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">Placeholder Text</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Show [REDACTED] text</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="brag-obscure-method" value="blur" style="cursor: pointer; width: 18px; height: 18px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">Blur Filter</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Blur the content</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-secondary" id="preview-brag-btn" style="width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3); font-weight: 600;">
                             👁️ Preview Brag Mode
                         </button>
-                    </div>
-                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">
-                        🔒 Security: Personal data is filtered server-side and never sent to viewers' browsers.
-                    </p>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="brag-mode-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
-                        <button class="btn btn-secondary" id="copy-brag-link-btn">📋 Copy</button>
+                        <div style="background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 5px; border: 1px solid rgba(0, 255, 0, 0.3); text-align: center;">
+                            <p style="color: var(--text-secondary); font-size: 0.85em; margin: 0 0 8px;">
+                                🔒 <strong>Security:</strong> Content is obscured server-side and never sent to viewers
+                            </p>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="brag-mode-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em;">
+                                <button class="btn btn-secondary" id="copy-brag-link-btn" style="white-space: nowrap; background: var(--primary-light); border: none;">📋 Copy Link</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -8600,7 +8636,8 @@
                 hide_names: true,
                 hide_signatures: true,
                 hide_signature_dates: true,
-                hidden_section_names: [],
+                obscured_section_names: [],
+                obscure_method: 'redacted',
                 personal_field_ids: []
             };
 
@@ -8611,8 +8648,13 @@
             document.getElementById('brag-hide-signatures').checked = config.hide_signatures !== false;
             document.getElementById('brag-hide-dates').checked = config.hide_signature_dates !== false;
 
+            // Update obscure method radio buttons
+            const obscureMethod = config.obscure_method || 'redacted';
+            const methodRadio = document.querySelector(`input[name="brag-obscure-method"][value="${obscureMethod}"]`);
+            if (methodRadio) methodRadio.checked = true;
+
             // Populate sections list dynamically from current contract
-            populateBragSectionsList(config.hidden_section_names || []);
+            populateBragSectionsList(config.obscured_section_names || []);
 
             if (isBragMode && currentContract.brag_mode_token) {
                 container.style.display = 'block';
@@ -8623,29 +8665,29 @@
             }
         }
 
-        function populateBragSectionsList(hiddenSectionNames = []) {
+        function populateBragSectionsList(obscuredSectionNames = []) {
             const sectionsList = document.getElementById('brag-sections-list');
             if (!sectionsList) return;
 
             const sections = currentContract.data?.sections || [];
 
             if (sections.length === 0) {
-                sectionsList.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1 / -1;">No sections yet. Add sections to your contract first.</p>';
+                sectionsList.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1 / -1; font-size: 0.85em; font-style: italic;">No sections yet. Add sections to your contract first.</p>';
                 return;
             }
 
             sectionsList.innerHTML = sections.map((section, index) => {
                 const sectionName = section.title || `Section ${index + 1}`;
-                const isHidden = hiddenSectionNames.includes(sectionName);
+                const isObscured = obscuredSectionNames.includes(sectionName);
 
                 return `
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; transition: background 0.2s;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: ${isObscured ? 'rgba(220, 20, 60, 0.2)' : 'rgba(255,255,255,0.05)'}; padding: 8px; border-radius: 5px; transition: all 0.2s; border: 1px solid ${isObscured ? 'var(--accent-pink)' : 'transparent'};">
                         <input type="checkbox"
                                class="brag-section-checkbox"
                                data-section-name="${sectionName.replace(/"/g, '&quot;')}"
-                               ${isHidden ? 'checked' : ''}
-                               style="cursor: pointer;">
-                        <span style="font-size: 0.9em;">${sectionName}</span>
+                               ${isObscured ? 'checked' : ''}
+                               style="cursor: pointer; width: 16px; height: 16px;">
+                        <span style="font-size: 0.85em; font-weight: ${isObscured ? '600' : '400'};">${sectionName}</span>
                     </label>
                 `;
             }).join('');
@@ -8681,16 +8723,19 @@
             }
 
             // Get current config
-            const hiddenSectionNames = [];
+            const obscuredSectionNames = [];
             document.querySelectorAll('.brag-section-checkbox:checked').forEach(checkbox => {
-                hiddenSectionNames.push(checkbox.dataset.sectionName);
+                obscuredSectionNames.push(checkbox.dataset.sectionName);
             });
+
+            const obscureMethod = document.querySelector('input[name="brag-obscure-method"]:checked')?.value || 'redacted';
 
             const config = {
                 hide_names: document.getElementById('brag-hide-names').checked,
                 hide_signatures: document.getElementById('brag-hide-signatures').checked,
                 hide_signature_dates: document.getElementById('brag-hide-dates').checked,
-                hidden_section_names: hiddenSectionNames,
+                obscured_section_names: obscuredSectionNames,
+                obscure_method: obscureMethod,
                 personal_field_ids: [] // Future feature: allow marking specific fields as personal
             };
 
@@ -8721,17 +8766,20 @@
         async function updateBragModeConfig() {
             if (!currentContract.brag_mode_enabled) return;
 
-            // Collect hidden section names from checkboxes
-            const hiddenSectionNames = [];
+            // Collect obscured section names from checkboxes
+            const obscuredSectionNames = [];
             document.querySelectorAll('.brag-section-checkbox:checked').forEach(checkbox => {
-                hiddenSectionNames.push(checkbox.dataset.sectionName);
+                obscuredSectionNames.push(checkbox.dataset.sectionName);
             });
+
+            const obscureMethod = document.querySelector('input[name="brag-obscure-method"]:checked')?.value || 'redacted';
 
             const config = {
                 hide_names: document.getElementById('brag-hide-names').checked,
                 hide_signatures: document.getElementById('brag-hide-signatures').checked,
                 hide_signature_dates: document.getElementById('brag-hide-dates').checked,
-                hidden_section_names: hiddenSectionNames,
+                obscured_section_names: obscuredSectionNames,
+                obscure_method: obscureMethod,
                 personal_field_ids: []
             };
 
@@ -8746,6 +8794,11 @@
                 console.error('Error updating brag mode config:', error);
             }
         }
+
+        // Add event listener for obscure method radio buttons
+        document.querySelectorAll('input[name="brag-obscure-method"]').forEach(radio => {
+            radio.addEventListener('change', updateBragModeConfig);
+        });
 
         document.getElementById('brag-hide-names').addEventListener('change', updateBragModeConfig);
         document.getElementById('brag-hide-signatures').addEventListener('change', updateBragModeConfig);

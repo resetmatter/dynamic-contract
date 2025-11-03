@@ -18,7 +18,8 @@ ADD COLUMN IF NOT EXISTS brag_mode_config JSONB DEFAULT '{
   "hide_names": true,
   "hide_signatures": true,
   "hide_signature_dates": true,
-  "hidden_section_names": [],
+  "obscured_section_names": [],
+  "obscure_method": "redacted",
   "personal_field_ids": []
 }'::jsonb;
 
@@ -64,8 +65,10 @@ DECLARE
     filtered_sections JSONB;
     filtered_fields JSONB;
     personal_field_ids TEXT[];
-    hidden_section_names TEXT[];
+    obscured_section_names TEXT[];
     section_title TEXT;
+    obscure_method TEXT;
+    obscure_placeholder TEXT;
 BEGIN
     -- Find the contract with this brag token
     SELECT * INTO contract_record
@@ -81,7 +84,20 @@ BEGIN
     -- Get brag mode config
     config := contract_record.brag_mode_config;
     personal_field_ids := ARRAY(SELECT jsonb_array_elements_text(config->'personal_field_ids'));
-    hidden_section_names := ARRAY(SELECT jsonb_array_elements_text(config->'hidden_section_names'));
+    obscured_section_names := ARRAY(SELECT jsonb_array_elements_text(config->'obscured_section_names'));
+    obscure_method := COALESCE(config->>'obscure_method', 'redacted');
+
+    -- Set placeholder text based on obscure method
+    CASE obscure_method
+        WHEN 'redacted' THEN
+            obscure_placeholder := '████████████';
+        WHEN 'placeholder' THEN
+            obscure_placeholder := '[REDACTED]';
+        WHEN 'blur' THEN
+            obscure_placeholder := '[Content Hidden]';
+        ELSE
+            obscure_placeholder := '████████████';
+    END CASE;
 
     -- Filter the contract data (sections and fields)
     filtered_sections := '[]'::jsonb;
@@ -92,25 +108,20 @@ BEGIN
             -- Get section title
             section_title := section->>'title';
 
-            -- Skip this entire section if it's in the hidden list
-            IF section_title = ANY(hidden_section_names) THEN
-                CONTINUE;
-            END IF;
-
             filtered_fields := '[]'::jsonb;
 
             IF section ? 'fields' THEN
                 FOR field IN SELECT * FROM jsonb_array_elements(section->'fields')
                 LOOP
-                    -- Check if this field is marked as personal
-                    IF (field->>'id') = ANY(personal_field_ids) THEN
-                        -- Redact the value based on field type
+                    -- Check if this section should be obscured or if field is marked as personal
+                    IF section_title = ANY(obscured_section_names) OR (field->>'id') = ANY(personal_field_ids) THEN
+                        -- Obscure the value based on field type
                         IF field->>'type' = 'list' THEN
-                            field := jsonb_set(field, '{items}', '["[Redacted]"]'::jsonb);
+                            field := jsonb_set(field, '{items}', jsonb_build_array(obscure_placeholder));
                         ELSIF field->>'type' = 'textarea' THEN
-                            field := jsonb_set(field, '{value}', '"[Redacted - Personal Information]"'::jsonb);
+                            field := jsonb_set(field, '{value}', to_jsonb(obscure_placeholder));
                         ELSE
-                            field := jsonb_set(field, '{value}', '"[Redacted]"'::jsonb);
+                            field := jsonb_set(field, '{value}', to_jsonb(obscure_placeholder));
                         END IF;
                     END IF;
 
