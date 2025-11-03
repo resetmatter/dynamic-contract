@@ -277,6 +277,27 @@
             50% { opacity: 0.7; transform: scale(1.1) rotate(10deg); }
         }
 
+        /* Brag Mode Content Styles */
+        .brag-blurred {
+            filter: blur(8px);
+            user-select: none;
+            pointer-events: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            padding: 2px 4px;
+        }
+
+        .brag-redacted {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: transparent !important;
+            user-select: none;
+            pointer-events: none;
+            border-radius: 3px;
+            padding: 2px 4px;
+            display: inline-block;
+            min-width: 100px;
+        }
+
         /* Presence Dropdown */
         .presence-dropdown {
             position: absolute;
@@ -3812,115 +3833,220 @@
 
     <!-- Share Dialog -->
     <div class="dialog-overlay" id="share-dialog">
-        <div class="dialog">
-            <h3>Share Contract</h3>
+        <div class="dialog" style="position: relative;">
+            <button onclick="document.getElementById('share-dialog').classList.remove('open')" style="position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 105, 180, 0.4); color: var(--accent-pink); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10;" onmouseover="this.style.background='rgba(255, 105, 180, 0.2)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='rotate(0deg)'">✕</button>
+            <div style="text-align: center; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid rgba(255, 105, 180, 0.3);">
+                <h3 style="margin: 0 0 10px; font-size: 1.8em; background: linear-gradient(135deg, var(--accent-pink), var(--hot-pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">🔗 Share Contract</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin: 0; line-height: 1.4;">
+                    Choose how you want to share this contract with others
+                </p>
+            </div>
 
             <!-- Public Sharing Section -->
-            <div class="form-group" style="background: rgba(139, 0, 0, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 20px;">
-                <h4 style="color: var(--accent-pink); margin: 0 0 10px;">🌐 Public Sharing (No Account Needed)</h4>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
-                        <input type="checkbox" id="public-share-toggle" style="cursor: pointer;">
-                        <span>Enable public link</span>
+            <div class="form-group" style="background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(147, 112, 219, 0.1)); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid rgba(138, 43, 226, 0.4); box-shadow: 0 4px 15px rgba(138, 43, 226, 0.2);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <h4 style="color: var(--accent-light-pink); margin: 0; font-size: 1.2em; text-shadow: 0 0 10px rgba(138, 43, 226, 0.3);">🌐 Public Sharing</h4>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 20px; transition: all 0.3s;">
+                        <input type="checkbox" id="public-share-toggle" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600;">Enable</span>
                     </label>
                 </div>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px; line-height: 1.5;">
+                    Anyone with this link can access your contract. No account needed!
+                </p>
+
                 <div id="public-link-container" style="display: none;">
-                    <div class="form-group" style="margin: 10px 0;">
-                        <label for="public-share-role">Public Link Permission</label>
-                        <select id="public-share-role">
+                    <!-- Permission Selection -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid rgba(138, 43, 226, 0.6);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔑 Permission Level</h5>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="public-share-permission" value="viewer" checked style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'viewer'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">👁️ Viewer (Read-Only)</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Can view but not edit the contract</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="public-share-permission" value="signer" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'signer'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">✍️ Signer (Can Sign)</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Can view and sign the contract (submissive signature only)</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="public-share-permission" value="editor" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('public-share-role').value = 'editor'; document.getElementById('public-share-role').dispatchEvent(new Event('change'));">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">✏️ Editor (Can Edit)</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Can make changes to the contract</div>
+                                </div>
+                            </label>
+                        </div>
+                        <select id="public-share-role" style="display: none;">
                             <option value="viewer">Viewer (read-only)</option>
+                            <option value="signer">Signer (can sign)</option>
                             <option value="editor">Editor (can edit)</option>
                         </select>
                     </div>
-                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">Anyone with this link can access the contract:</p>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
-                        <button class="btn btn-secondary" id="copy-link-btn">📋 Copy</button>
+
+                    <!-- Link Display -->
+                    <div style="background: rgba(0, 138, 43, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(0, 255, 0, 0.3);">
+                        <p style="color: var(--text-secondary); font-size: 0.85em; margin: 0 0 10px;">
+                            🔗 <strong>Share this link:</strong>
+                        </p>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="public-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em;">
+                            <button class="btn btn-secondary" id="copy-link-btn" style="white-space: nowrap; background: rgba(138, 43, 226, 0.6); border: none;">📋 Copy</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Brag Mode Section -->
-            <div class="form-group" style="background: rgba(220, 20, 60, 0.1); padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid var(--accent-pink);">
-                <h4 style="color: var(--accent-pink); margin: 0 0 10px;">✨ Brag Mode (Personal Info Hidden)</h4>
-                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 15px;">
-                    Share your contract with personal information securely redacted. Perfect for showing off your dynamic to friends!
-                </p>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
-                        <input type="checkbox" id="brag-mode-toggle" style="cursor: pointer;">
-                        <span>Enable Brag Mode</span>
+            <div class="form-group" style="background: linear-gradient(135deg, rgba(220, 20, 60, 0.15), rgba(255, 105, 180, 0.1)); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid var(--accent-pink); box-shadow: 0 4px 15px rgba(255, 20, 147, 0.2);">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                    <h4 style="color: var(--accent-pink); margin: 0; font-size: 1.2em; text-shadow: 0 0 10px rgba(255, 105, 180, 0.3);">✨ Brag Mode</h4>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: rgba(0,0,0,0.3); padding: 8px 15px; border-radius: 20px; transition: all 0.3s;">
+                        <input type="checkbox" id="brag-mode-toggle" style="cursor: pointer; width: 18px; height: 18px;">
+                        <span style="font-weight: 600;">Enable</span>
                     </label>
                 </div>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px; line-height: 1.5;">
+                    Share your contract publicly with sensitive information securely obscured. Perfect for showing off your dynamic to friends!
+                </p>
+
                 <div id="brag-mode-container" style="display: none;">
-                    <div class="form-group" style="margin: 10px 0;">
-                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">Personal Information to Hide:</label>
-                        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" id="brag-hide-names" checked style="cursor: pointer;">
-                                <span>Names (show "Dominant" / "Submissive" instead)</span>
+                    <!-- Personal Info Section -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--accent-pink);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔒 Personal Information</h5>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; transition: all 0.2s;">
+                                <input type="checkbox" id="brag-hide-names" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <span style="font-size: 0.9em;">Hide Names</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" id="brag-hide-signatures" checked style="cursor: pointer;">
-                                <span>Signatures (show "[Signed]" instead)</span>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; transition: all 0.2s;">
+                                <input type="checkbox" id="brag-hide-signatures" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <span style="font-size: 0.9em;">Hide Signatures</span>
                             </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="checkbox" id="brag-hide-dates" checked style="cursor: pointer;">
-                                <span>Exact signature dates (show month/year only)</span>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 5px; transition: all 0.2s;">
+                                <input type="checkbox" id="brag-hide-dates" checked style="cursor: pointer; width: 16px; height: 16px;">
+                                <span style="font-size: 0.9em;">Hide Exact Dates</span>
                             </label>
                         </div>
                     </div>
-                    <div class="form-group" style="margin: 10px 0;">
-                        <label style="color: var(--accent-light-pink); font-weight: bold; margin-bottom: 8px; display: block;">Sections to Hide:</label>
-                        <p style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 10px;">
-                            Select specific sections to completely hide from viewers
+
+                    <!-- Sections to Obscure -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--hot-pink);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 8px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">👁️ Sections to Obscure</h5>
+                        <p style="color: var(--text-secondary); font-size: 0.85em; margin-bottom: 12px;">
+                            Select sections where content should be obscured (sections stay visible but content is hidden)
                         </p>
-                        <div id="brag-sections-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-bottom: 15px;">
+                        <div id="brag-sections-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 200px; overflow-y: auto; padding: 5px;">
                             <!-- Dynamically populated with contract sections -->
                         </div>
                     </div>
-                    <div style="margin: 15px 0;">
-                        <button class="btn btn-secondary" id="preview-brag-btn" style="width: 100%; margin-bottom: 10px;">
+
+                    <!-- Obscure Method -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid var(--crimson);">
+                        <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🎨 Obscure Method</h5>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="brag-obscure-method" value="redacted" checked style="cursor: pointer; width: 18px; height: 18px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">Redacted Bars</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Show ████████ style blocks</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="brag-obscure-method" value="placeholder" style="cursor: pointer; width: 18px; height: 18px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">Placeholder Text</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Show [REDACTED] text</div>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                                <input type="radio" name="brag-obscure-method" value="blur" style="cursor: pointer; width: 18px; height: 18px;">
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; margin-bottom: 3px;">Blur Filter</div>
+                                    <div style="font-size: 0.85em; color: var(--text-secondary);">Blur the content</div>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                        <button class="btn btn-secondary" id="preview-brag-btn" style="width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3); font-weight: 600;">
                             👁️ Preview Brag Mode
                         </button>
-                    </div>
-                    <p style="color: var(--text-secondary); font-size: 0.9em; margin: 10px 0;">
-                        🔒 Security: Personal data is filtered server-side and never sent to viewers' browsers.
-                    </p>
-                    <div style="display: flex; gap: 8px;">
-                        <input type="text" id="brag-mode-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text;">
-                        <button class="btn btn-secondary" id="copy-brag-link-btn">📋 Copy</button>
+                        <div style="background: rgba(0, 255, 0, 0.1); padding: 10px; border-radius: 5px; border: 1px solid rgba(0, 255, 0, 0.3); text-align: center;">
+                            <p style="color: var(--text-secondary); font-size: 0.85em; margin: 0 0 8px;">
+                                🔒 <strong>Security:</strong> Content is obscured server-side and never sent to viewers
+                            </p>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="brag-mode-link" readonly style="flex: 1; background: rgba(0,0,0,0.3); cursor: text; border: 1px solid rgba(255,255,255,0.2); padding: 10px; border-radius: 5px; font-family: monospace; font-size: 0.9em;">
+                                <button class="btn btn-secondary" id="copy-brag-link-btn" style="white-space: nowrap; background: var(--primary-light); border: none;">📋 Copy Link</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Email Sharing Section -->
-            <h4 style="color: var(--accent-pink); margin: 0 0 10px;">📧 Share with Registered Users</h4>
-            <div class="form-group">
-                <label for="share-email">Partner's Email</label>
-                <input type="email" id="share-email" placeholder="partner@email.com">
+            <div class="form-group" style="background: linear-gradient(135deg, rgba(30, 144, 255, 0.15), rgba(0, 191, 255, 0.1)); padding: 20px; border-radius: 10px; margin-bottom: 20px; border: 2px solid rgba(30, 144, 255, 0.4); box-shadow: 0 4px 15px rgba(30, 144, 255, 0.2);">
+                <h4 style="color: var(--accent-light-pink); margin: 0 0 15px; font-size: 1.2em; text-shadow: 0 0 10px rgba(30, 144, 255, 0.3);">📧 Share with Registered Users</h4>
+                <p style="color: var(--text-secondary); font-size: 0.9em; margin-bottom: 20px; line-height: 1.5;">
+                    Invite specific people by email. They'll need an account to access.
+                </p>
+
+                <!-- Email Input -->
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid rgba(30, 144, 255, 0.6);">
+                    <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">✉️ Email Address</h5>
+                    <input type="email" id="share-email" placeholder="partner@email.com" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); border-radius: 5px; color: var(--text-color); font-size: 0.95em;">
+                </div>
+
+                <!-- Role Selection -->
+                <div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 3px solid rgba(0, 191, 255, 0.6);">
+                    <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">🔑 Permission Level</h5>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                            <input type="radio" name="email-share-permission" value="editor" checked style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('share-role').value = 'editor'">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 3px;">✏️ Editor (Can Edit)</div>
+                                <div style="font-size: 0.85em; color: var(--text-secondary);">Full editing permissions</div>
+                            </div>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 5px; border: 2px solid transparent; transition: all 0.3s;">
+                            <input type="radio" name="email-share-permission" value="viewer" style="cursor: pointer; width: 18px; height: 18px;" onchange="document.getElementById('share-role').value = 'viewer'">
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; margin-bottom: 3px;">👁️ Viewer (Read-Only)</div>
+                                <div style="font-size: 0.85em; color: var(--text-secondary);">Can only view the contract</div>
+                            </div>
+                        </label>
+                    </div>
+                    <select id="share-role" style="display: none;">
+                        <option value="editor">Editor (can edit)</option>
+                        <option value="viewer">Viewer (read-only)</option>
+                    </select>
+                </div>
+
+                <!-- Current Shares -->
+                <div id="current-shares" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border-left: 3px solid rgba(147, 112, 219, 0.6);">
+                    <h5 style="color: var(--accent-light-pink); font-weight: bold; margin: 0 0 12px; font-size: 0.95em; text-transform: uppercase; letter-spacing: 1px;">👥 Current Shares</h5>
+                    <div id="shares-list"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="share-role">Role</label>
-                <select id="share-role">
-                    <option value="editor">Editor (can edit)</option>
-                    <option value="viewer">Viewer (read-only)</option>
-                </select>
-            </div>
-            <div id="current-shares">
-                <h4 style="color: var(--accent-pink); margin: 20px 0 10px;">Current Shares:</h4>
-                <div id="shares-list"></div>
-            </div>
-            <div class="dialog-actions">
-                <button class="btn btn-secondary" id="cancel-share-btn">Cancel</button>
-                <button class="btn" id="confirm-share-btn">Share</button>
+            <div class="dialog-actions" style="margin-top: 25px; padding-top: 20px; border-top: 2px solid rgba(255, 105, 180, 0.2); display: flex; gap: 10px; justify-content: flex-end;">
+                <button class="btn btn-secondary" id="cancel-share-btn" style="padding: 12px 24px; font-weight: 600;">✕ Cancel</button>
+                <button class="btn" id="confirm-share-btn" style="background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; padding: 12px 32px; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">📤 Share</button>
             </div>
         </div>
     </div>
 
     <!-- Snapshot Dialog -->
     <div class="dialog-overlay" id="snapshot-dialog">
-        <div class="dialog">
+        <div class="dialog" style="position: relative;">
+            <button onclick="document.getElementById('snapshot-dialog').classList.remove('open')" style="position: absolute; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.1); border: 2px solid rgba(255, 105, 180, 0.4); color: var(--accent-pink); width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.2em; display: flex; align-items: center; justify-content: center; transition: all 0.3s; z-index: 10;" onmouseover="this.style.background='rgba(255, 105, 180, 0.2)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.1)'; this.style.transform='rotate(0deg)'">✕</button>
             <h3>📸 Create Snapshot</h3>
             <p style="color: var(--text-secondary); margin-bottom: 20px;">
                 Save the current state of your contract. You can restore this version later from the history panel.
@@ -4550,7 +4676,9 @@
 
                 // Set as current contract
                 currentContract = data;
-                const isEditor = data.public_share_role === 'editor';
+                const shareRole = data.public_share_role || 'viewer';
+                const isEditor = shareRole === 'editor';
+                const isSigner = shareRole === 'signer';
 
                 // Reset undo/redo stacks for new contract
                 undoStack = [];
@@ -4602,12 +4730,16 @@
                     const historyBtn = document.getElementById('history-btn');
                     const snapshotBtn = document.getElementById('save-snapshot-btn');
                     const manageSnapshotsBtn = document.getElementById('manage-snapshots-btn');
+                    const logoutBtn = document.getElementById('logout-btn');
+                    const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
                     if (backBtn) backBtn.style.display = 'none';
                     if (shareBtn) shareBtn.style.display = 'none';
                     if (historyBtn) historyBtn.style.display = 'none';
                     if (snapshotBtn) snapshotBtn.style.display = 'none';
                     if (manageSnapshotsBtn) manageSnapshotsBtn.style.display = 'none';
+                    if (logoutBtn) logoutBtn.style.display = 'none';
+                    if (mobileLogoutBtn) mobileLogoutBtn.style.display = 'none';
 
                     renderContractEditor();
                     setupRealtimeSync();
@@ -4621,6 +4753,103 @@
                         indicator.textContent = '🌐 Public Editor Mode';
                         editorActions.insertBefore(indicator, editorActions.firstChild);
                     }
+                } else if (isSigner) {
+                    // Signers can view and sign the contract
+                    currentUser = {
+                        id: `signer-${Date.now()}`,
+                        email: 'public-signer@guest',
+                        isPublicSigner: true
+                    };
+
+                    // For signers, hide both app and auth screens - only show preview overlay
+                    document.getElementById('app-screen').style.display = 'none';
+                    document.getElementById('auth-screen').style.display = 'none';
+
+                    // Mark contract as signer mode for rendering
+                    currentContract.isSignerMode = true;
+
+                    // Show preview for signers with editable signature fields
+                    renderPreview();
+                    const previewOverlay = document.getElementById('preview-overlay');
+                    previewOverlay.classList.add('open');
+                    previewOverlay.setAttribute('data-viewer-mode', 'true'); // Mark as viewer mode to prevent closing
+                    setupPresence(); // Enable presence for signers too
+
+                    // Add message to preview
+                    const previewHeader = document.querySelector('.preview-header h3');
+                    if (previewHeader) {
+                        previewHeader.innerHTML = '✍️ ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Ready to Sign)</span>';
+                    }
+
+                    // Hide close button and print button, but add Sign button
+                    const closeBtn = document.getElementById('close-preview-btn');
+                    const printBtn = document.querySelector('.preview-actions .btn-secondary');
+                    if (closeBtn) {
+                        closeBtn.style.display = 'none';
+                    }
+                    if (printBtn) {
+                        printBtn.style.display = 'none';
+                    }
+
+                    // Add Sign button to header
+                    const previewActions = document.querySelector('.preview-actions');
+                    if (previewActions) {
+                        const signBtn = document.createElement('button');
+                        signBtn.className = 'btn';
+                        signBtn.id = 'scroll-to-signature-btn';
+                        signBtn.textContent = '✍️ Sign Contract';
+                        signBtn.style.cssText = 'background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);';
+                        signBtn.onclick = () => {
+                            const signatureSection = document.getElementById('preview-signature-section');
+                            if (signatureSection) {
+                                signatureSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                // Focus on first signature field after scroll
+                                setTimeout(() => {
+                                    const subSigInput = document.getElementById('preview-submissive-signature');
+                                    if (subSigInput) subSigInput.focus();
+                                }, 500);
+                            }
+                        };
+                        previewActions.prepend(signBtn);
+                    }
+
+                    // Set up save signature button handler
+                    // Use event delegation since button is created dynamically
+                    document.addEventListener('click', async function handleSignature(e) {
+                        if (e.target && e.target.id === 'save-signature-btn') {
+                            const subSig = document.getElementById('preview-submissive-signature')?.value || '';
+                            const subDate = document.getElementById('preview-submissive-signature-date')?.value || '';
+
+                            if (!subSig.trim()) {
+                                alert('Please enter your name to sign the contract.');
+                                return;
+                            }
+
+                            // Save signature to database
+                            const { error } = await supabaseClient
+                                .from('contracts')
+                                .update({
+                                    submissive_signature: subSig,
+                                    submissive_signature_date: subDate
+                                })
+                                .eq('id', currentContract.id);
+
+                            if (error) {
+                                console.error('Error saving signature:', error);
+                                alert('Failed to save signature. Please try again.');
+                            } else {
+                                // Update local contract
+                                currentContract.submissive_signature = subSig;
+                                currentContract.submissive_signature_date = subDate;
+
+                                // Show success message
+                                alert('✅ Signature saved successfully!');
+
+                                // Re-render to show signed state
+                                renderPreview();
+                            }
+                        }
+                    });
                 } else {
                     // Viewers also get presence (but read-only)
                     currentUser = {
@@ -4629,15 +4858,31 @@
                         isPublicViewer: true
                     };
 
+                    // For viewers, hide both app and auth screens - only show preview overlay
+                    document.getElementById('app-screen').style.display = 'none';
+                    document.getElementById('auth-screen').style.display = 'none';
+
                     // Show preview for viewers
                     renderPreview();
-                    document.getElementById('preview-overlay').classList.add('open');
+                    const previewOverlay = document.getElementById('preview-overlay');
+                    previewOverlay.classList.add('open');
+                    previewOverlay.setAttribute('data-viewer-mode', 'true'); // Mark as viewer mode to prevent closing
                     setupPresence(); // Enable presence for viewers too
 
                     // Add message to preview
                     const previewHeader = document.querySelector('.preview-header h3');
                     if (previewHeader) {
                         previewHeader.innerHTML = '📄 ' + (data.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Shared View)</span>';
+                    }
+
+                    // Hide close button and print button for public viewers
+                    const closeBtn = document.getElementById('close-preview-btn');
+                    const printBtn = document.querySelector('.preview-actions .btn-secondary');
+                    if (closeBtn) {
+                        closeBtn.style.display = 'none';
+                    }
+                    if (printBtn) {
+                        printBtn.style.display = 'none';
                     }
                 }
             } catch (err) {
@@ -4674,9 +4919,9 @@
                 lastCapturedState = null;
                 updateUndoRedoUI();
 
-                // Hide auth screen and show main app
+                // Hide both auth and app screens - only show preview overlay for brag mode
                 document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-screen').style.display = 'block';
+                document.getElementById('app-screen').style.display = 'none';
 
                 // Show brag mode banner
                 const banner = document.getElementById('brag-mode-banner');
@@ -4693,12 +4938,24 @@
 
                 // Show preview (read-only) with filtered data
                 renderPreview();
-                document.getElementById('preview-overlay').classList.add('open');
+                const previewOverlay = document.getElementById('preview-overlay');
+                previewOverlay.classList.add('open');
+                previewOverlay.setAttribute('data-viewer-mode', 'true'); // Mark as viewer mode to prevent closing
 
                 // Update preview header to indicate brag mode
                 const previewHeader = document.querySelector('.preview-header h3');
                 if (previewHeader) {
                     previewHeader.innerHTML = '✨ ' + (contract.title || 'Contract Preview') + ' <span style="color: var(--accent-pink); font-size: 0.7em; margin-left: 10px;">(Brag Mode - Personal Info Hidden)</span>';
+                }
+
+                // Hide close button and print button for brag mode viewers
+                const closeBtn = document.getElementById('close-preview-btn');
+                const printBtn = document.querySelector('.preview-actions .btn-secondary');
+                if (closeBtn) {
+                    closeBtn.style.display = 'none';
+                }
+                if (printBtn) {
+                    printBtn.style.display = 'none';
                 }
 
                 // Add additional notice in the preview
@@ -4837,6 +5094,13 @@
 
         document.getElementById('close-settings-btn').addEventListener('click', () => {
             document.getElementById('settings-modal').classList.remove('open');
+        });
+
+        // Click outside to close settings modal
+        document.getElementById('settings-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'settings-modal') {
+                document.getElementById('settings-modal').classList.remove('open');
+            }
         });
 
         document.getElementById('cancel-settings-btn').addEventListener('click', () => {
@@ -7155,6 +7419,15 @@
             document.getElementById('preview-overlay').classList.remove('open');
         });
 
+        // Click outside to close preview overlay (but not for viewer mode)
+        document.getElementById('preview-overlay').addEventListener('click', (e) => {
+            const previewOverlay = document.getElementById('preview-overlay');
+            // Don't allow closing if in viewer mode (public/brag viewers)
+            if (e.target.id === 'preview-overlay' && !previewOverlay.hasAttribute('data-viewer-mode')) {
+                previewOverlay.classList.remove('open');
+            }
+        });
+
         function renderPreview() {
             const sections = currentContract.data?.sections || [];
             const title = currentContract.title || 'D/s Dynamic Contract';
@@ -7163,6 +7436,18 @@
             // Get party names from contract data
             const domName = currentContract.dominant_name || 'Matthew';
             const subName = currentContract.submissive_name || 'Shailah';
+
+            // Check if we're in brag mode and get obscure settings
+            const isBragMode = currentContract.isBragMode || false;
+            const bragConfig = currentContract.brag_mode_config || {};
+            const obscureMethod = bragConfig.obscure_method || 'redacted';
+            const obscuredSections = bragConfig.obscured_section_names || [];
+
+            // Helper function to get blur class based on obscure method
+            const getObscureClass = (shouldObscure) => {
+                if (!shouldObscure || !isBragMode) return '';
+                return obscureMethod === 'blur' ? 'brag-blurred' : '';
+            };
 
             let html = `
                 <div class="preview-bow preview-bow-top-left">🎀</div>
@@ -7185,6 +7470,9 @@
             sections.forEach((section, index) => {
                 if (!section.title) return;
 
+                // Check if this section should be obscured
+                const sectionIsObscured = obscuredSections.includes(section.title);
+
                 // Add decorative divider before each section (except first)
                 if (index > 0) {
                     html += `<div class="preview-divider">⛓️ 🎀 ⛓️</div>`;
@@ -7200,6 +7488,8 @@
                 section.fields.forEach(field => {
                     if (!field || (!field.label && !field.value && (!field.items || field.items.length === 0))) return;
 
+                    const obscureClass = getObscureClass(sectionIsObscured);
+
                     html += `<div class="preview-field-group">`;
                     html += `<label class="preview-field-label">${escapeHtml(field.label || 'Field')}</label>`;
 
@@ -7211,7 +7501,7 @@
                                 html += `
                                     <div class="preview-list-item">
                                         <span class="preview-list-bow">🎀</span>
-                                        <textarea class="preview-readonly-textarea" readonly>${escapeHtml(item)}</textarea>
+                                        <textarea class="preview-readonly-textarea ${obscureClass}" readonly>${escapeHtml(item)}</textarea>
                                     </div>
                                 `;
                             }
@@ -7220,12 +7510,12 @@
                     } else if (field.type === 'text') {
                         // Render text input as readonly
                         const value = field.value || '';
-                        html += `<input type="text" class="preview-readonly-input" value="${escapeHtml(value)}" readonly>`;
+                        html += `<input type="text" class="preview-readonly-input ${obscureClass}" value="${escapeHtml(value)}" readonly>`;
                     } else {
                         // Render textarea as readonly (for both textarea type and list type with no items)
                         const value = field.value || '';
                         if (value.trim()) {
-                            html += `<textarea class="preview-readonly-textarea" readonly>${escapeHtml(value)}</textarea>`;
+                            html += `<textarea class="preview-readonly-textarea ${obscureClass}" readonly>${escapeHtml(value)}</textarea>`;
                         }
                     }
 
@@ -7233,7 +7523,7 @@
                 });
             });
 
-            // Add signature section with readonly inputs
+            // Add signature section with readonly inputs (or editable for signers)
             const ownerSig = currentContract.owner_signature || '';
             const ownerDate = currentContract.owner_signature_date || '';
             const subSig = currentContract.submissive_signature || '';
@@ -7242,18 +7532,43 @@
             const ownerDateFormatted = ownerDate ? new Date(ownerDate).toISOString().split('T')[0] : '';
             const subDateFormatted = subDate ? new Date(subDate).toISOString().split('T')[0] : '';
 
+            // Check if we're in signer mode
+            const isSignerMode = currentContract.isSignerMode || false;
+
+            // Get today's date for signature date default
+            const today = new Date();
+            const todayFormatted = today.toISOString().split('T')[0];
+
             html += `
                 <div class="preview-divider" style="margin-top: 50px;">⛓️ 🎀 ⛓️</div>
-                <div class="preview-signature-section">
+                <div class="preview-signature-section" id="preview-signature-section">
                     <div class="preview-signature-box">
                         <label class="preview-field-label">Owner's Signature</label>
                         <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(ownerSig)}" readonly placeholder="Not signed">
                         <input type="date" class="preview-readonly-input preview-date-input" value="${ownerDateFormatted}" readonly>
                     </div>
-                    <div class="preview-signature-box">
-                        <label class="preview-field-label">Submissive's Acceptance</label>
-                        <input type="text" class="preview-readonly-input preview-signature-input" value="${escapeHtml(subSig)}" readonly placeholder="Not signed">
-                        <input type="date" class="preview-readonly-input preview-date-input" value="${subDateFormatted}" readonly>
+                    <div class="preview-signature-box" style="${isSignerMode ? 'border: 2px solid var(--accent-pink); padding: 15px; border-radius: 8px; background: rgba(255, 105, 180, 0.05);' : ''}">
+                        <label class="preview-field-label" style="${isSignerMode ? 'color: var(--hot-pink); font-weight: 700; font-size: 1.1em;' : ''}">
+                            Submissive's Acceptance ${isSignerMode ? '<span style="color: var(--hot-pink);">✍️</span>' : ''}
+                        </label>
+                        <input type="text"
+                            id="preview-submissive-signature"
+                            class="${isSignerMode ? 'preview-signature-input' : 'preview-readonly-input preview-signature-input'}"
+                            value="${escapeHtml(subSig)}"
+                            ${isSignerMode ? '' : 'readonly'}
+                            placeholder="${isSignerMode ? 'Type your name to sign' : 'Not signed'}"
+                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: text; font-family: \'Brush Script MT\', \'Lucida Handwriting\', cursive; font-size: 24px;' : ''}">
+                        <input type="date"
+                            id="preview-submissive-signature-date"
+                            class="${isSignerMode ? 'preview-date-input' : 'preview-readonly-input preview-date-input'}"
+                            value="${isSignerMode && !subDateFormatted ? todayFormatted : subDateFormatted}"
+                            ${isSignerMode ? '' : 'readonly'}
+                            style="${isSignerMode ? 'border: 2px solid var(--accent-pink); background: var(--input-bg); cursor: pointer;' : ''}">
+                        ${isSignerMode ? `
+                            <button class="btn" id="save-signature-btn" style="margin-top: 15px; width: 100%; background: linear-gradient(135deg, var(--primary-light), var(--hot-pink)); border: none; font-weight: 600; box-shadow: 0 4px 12px rgba(255, 105, 180, 0.3);">
+                                ✍️ Save Signature
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -7692,6 +8007,13 @@
         // Cancel snapshot
         document.getElementById('cancel-snapshot-btn').addEventListener('click', () => {
             document.getElementById('snapshot-dialog').classList.remove('open');
+        });
+
+        // Click outside to close snapshot dialog
+        document.getElementById('snapshot-dialog').addEventListener('click', (e) => {
+            if (e.target.id === 'snapshot-dialog') {
+                document.getElementById('snapshot-dialog').classList.remove('open');
+            }
         });
 
         // Create snapshot
@@ -8157,6 +8479,13 @@
             document.getElementById('snapshot-manager-overlay').classList.remove('open');
         });
 
+        // Click outside to close snapshot manager
+        document.getElementById('snapshot-manager-overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'snapshot-manager-overlay') {
+                document.getElementById('snapshot-manager-overlay').classList.remove('open');
+            }
+        });
+
         // Create first snapshot from empty state
         document.getElementById('create-first-snapshot-btn').addEventListener('click', () => {
             document.getElementById('snapshot-manager-overlay').classList.remove('open');
@@ -8424,6 +8753,13 @@
             document.getElementById('share-dialog').classList.remove('open');
         });
 
+        // Click outside to close share dialog
+        document.getElementById('share-dialog').addEventListener('click', (e) => {
+            if (e.target.id === 'share-dialog') {
+                document.getElementById('share-dialog').classList.remove('open');
+            }
+        });
+
         document.getElementById('confirm-share-btn').addEventListener('click', async () => {
             const email = document.getElementById('share-email').value;
             const role = document.getElementById('share-role').value;
@@ -8510,7 +8846,14 @@
                 container.style.display = 'block';
                 const shareUrl = `${window.location.origin}${window.location.pathname}?share=${currentContract.public_share_token}`;
                 linkInput.value = shareUrl;
-                roleSelect.value = currentContract.public_share_role || 'viewer';
+                const role = currentContract.public_share_role || 'viewer';
+                roleSelect.value = role;
+
+                // Update radio buttons to match the role
+                const radioButtons = document.querySelectorAll('input[name="public-share-permission"]');
+                radioButtons.forEach(radio => {
+                    radio.checked = radio.value === role;
+                });
             } else {
                 container.style.display = 'none';
             }
@@ -8600,7 +8943,8 @@
                 hide_names: true,
                 hide_signatures: true,
                 hide_signature_dates: true,
-                hidden_section_names: [],
+                obscured_section_names: [],
+                obscure_method: 'redacted',
                 personal_field_ids: []
             };
 
@@ -8611,8 +8955,13 @@
             document.getElementById('brag-hide-signatures').checked = config.hide_signatures !== false;
             document.getElementById('brag-hide-dates').checked = config.hide_signature_dates !== false;
 
+            // Update obscure method radio buttons
+            const obscureMethod = config.obscure_method || 'redacted';
+            const methodRadio = document.querySelector(`input[name="brag-obscure-method"][value="${obscureMethod}"]`);
+            if (methodRadio) methodRadio.checked = true;
+
             // Populate sections list dynamically from current contract
-            populateBragSectionsList(config.hidden_section_names || []);
+            populateBragSectionsList(config.obscured_section_names || []);
 
             if (isBragMode && currentContract.brag_mode_token) {
                 container.style.display = 'block';
@@ -8623,29 +8972,29 @@
             }
         }
 
-        function populateBragSectionsList(hiddenSectionNames = []) {
+        function populateBragSectionsList(obscuredSectionNames = []) {
             const sectionsList = document.getElementById('brag-sections-list');
             if (!sectionsList) return;
 
             const sections = currentContract.data?.sections || [];
 
             if (sections.length === 0) {
-                sectionsList.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1 / -1;">No sections yet. Add sections to your contract first.</p>';
+                sectionsList.innerHTML = '<p style="color: var(--text-secondary); grid-column: 1 / -1; font-size: 0.85em; font-style: italic;">No sections yet. Add sections to your contract first.</p>';
                 return;
             }
 
             sectionsList.innerHTML = sections.map((section, index) => {
                 const sectionName = section.title || `Section ${index + 1}`;
-                const isHidden = hiddenSectionNames.includes(sectionName);
+                const isObscured = obscuredSectionNames.includes(sectionName);
 
                 return `
-                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 4px; transition: background 0.2s;">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: ${isObscured ? 'rgba(220, 20, 60, 0.2)' : 'rgba(255,255,255,0.05)'}; padding: 8px; border-radius: 5px; transition: all 0.2s; border: 1px solid ${isObscured ? 'var(--accent-pink)' : 'transparent'};">
                         <input type="checkbox"
                                class="brag-section-checkbox"
                                data-section-name="${sectionName.replace(/"/g, '&quot;')}"
-                               ${isHidden ? 'checked' : ''}
-                               style="cursor: pointer;">
-                        <span style="font-size: 0.9em;">${sectionName}</span>
+                               ${isObscured ? 'checked' : ''}
+                               style="cursor: pointer; width: 16px; height: 16px;">
+                        <span style="font-size: 0.85em; font-weight: ${isObscured ? '600' : '400'};">${sectionName}</span>
                     </label>
                 `;
             }).join('');
@@ -8681,16 +9030,19 @@
             }
 
             // Get current config
-            const hiddenSectionNames = [];
+            const obscuredSectionNames = [];
             document.querySelectorAll('.brag-section-checkbox:checked').forEach(checkbox => {
-                hiddenSectionNames.push(checkbox.dataset.sectionName);
+                obscuredSectionNames.push(checkbox.dataset.sectionName);
             });
+
+            const obscureMethod = document.querySelector('input[name="brag-obscure-method"]:checked')?.value || 'redacted';
 
             const config = {
                 hide_names: document.getElementById('brag-hide-names').checked,
                 hide_signatures: document.getElementById('brag-hide-signatures').checked,
                 hide_signature_dates: document.getElementById('brag-hide-dates').checked,
-                hidden_section_names: hiddenSectionNames,
+                obscured_section_names: obscuredSectionNames,
+                obscure_method: obscureMethod,
                 personal_field_ids: [] // Future feature: allow marking specific fields as personal
             };
 
@@ -8721,17 +9073,20 @@
         async function updateBragModeConfig() {
             if (!currentContract.brag_mode_enabled) return;
 
-            // Collect hidden section names from checkboxes
-            const hiddenSectionNames = [];
+            // Collect obscured section names from checkboxes
+            const obscuredSectionNames = [];
             document.querySelectorAll('.brag-section-checkbox:checked').forEach(checkbox => {
-                hiddenSectionNames.push(checkbox.dataset.sectionName);
+                obscuredSectionNames.push(checkbox.dataset.sectionName);
             });
+
+            const obscureMethod = document.querySelector('input[name="brag-obscure-method"]:checked')?.value || 'redacted';
 
             const config = {
                 hide_names: document.getElementById('brag-hide-names').checked,
                 hide_signatures: document.getElementById('brag-hide-signatures').checked,
                 hide_signature_dates: document.getElementById('brag-hide-dates').checked,
-                hidden_section_names: hiddenSectionNames,
+                obscured_section_names: obscuredSectionNames,
+                obscure_method: obscureMethod,
                 personal_field_ids: []
             };
 
@@ -8746,6 +9101,11 @@
                 console.error('Error updating brag mode config:', error);
             }
         }
+
+        // Add event listener for obscure method radio buttons
+        document.querySelectorAll('input[name="brag-obscure-method"]').forEach(radio => {
+            radio.addEventListener('change', updateBragModeConfig);
+        });
 
         document.getElementById('brag-hide-names').addEventListener('change', updateBragModeConfig);
         document.getElementById('brag-hide-signatures').addEventListener('change', updateBragModeConfig);
